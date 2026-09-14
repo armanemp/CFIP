@@ -65,3 +65,9 @@ jobs:
 
       - name: Verify global-scale architecture contract
         run: python tools/architecture/validate_global_scale_contracts.py docs/CFIP-CONTINUATION-PROMPT.md docs/evidence/CFIP-TARGET-FILE-MANIFEST.md
+
+      - name: Verify recursive frontend census tool
+        run: python -m unittest tests/architecture/test_census_frontend.py
+
+      - name: Verify policy/configuration census tool
+        run: python -m unittest tests/architecture/test_census_policy_config.py
