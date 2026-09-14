@@ -1,13 +1,13 @@
-# CFIP Engine Census — D4 Continuation 03
+# CFIP Engine Census — D4 Continuation 04
 
-**Source:** `armanemp/CForex` `main` v0.9.154
-**Source commit:** `900882154cab3b9b74d0543b9bbf72a708a08134`
-**Target:** `armanemp/CFIP` `main`
+**Source:** `armanemp/CForex` `main` v0.9.154  
+**Source commit:** `900882154cab3b9b74d0543b9bbf72a708a08134`  
+**Target:** `armanemp/CFIP` `main`  
 **Status:** evidence materially advanced; D4 remains OPEN
 
 ## Purpose
 
-This document records only directly inspected CForex evidence. It distinguishes three different inventories:
+This document records only directly inspected CForex evidence. It distinguishes three inventories:
 
 1. engine namespace/package;
 2. executable implementation and descriptor;
@@ -17,7 +17,7 @@ A directory name is never treated as proof of a runtime capability.
 
 ## 1. Exact runtime registration census
 
-The API composition root `apps/api/src/fi_api/trading.py` constructs exactly 15 `EngineRuntime` instances in one tuple. The inspected `pyproject.toml` confirms the 13 dedicated `fi_engine_*` packages plus the application built-ins are on the runtime/test package path.
+The API composition root `apps/api/src/fi_api/trading.py` constructs exactly 15 engine instances in the `EngineRuntime` tuple. The source `engines/` tree contains 14 named engine namespaces; two additional executable engines (`technical.momentum` and `technical.volatility`) are application built-ins. This reconciles the apparent namespace/runtime count difference.
 
 | # | Runtime instance | Descriptor | Version | Executable source |
 |---:|---|---|---|---|
@@ -37,34 +37,31 @@ The API composition root `apps/api/src/fi_api/trading.py` constructs exactly 15 
 | 14 | `StrategyEngine` | `strategy.baseline` | `1.1.0` | `engines/strategy/src/fi_engine_strategy/engine.py` |
 | 15 | `StructureEngine` | `structure.swing` | `1.1.0` | `engines/structure/src/fi_engine_structure/engine.py` |
 
-**Important correction from the previous census:** `signal.scoring` belongs to `fi_engine_scoring`; `signal.trigger` belongs to `fi_engine_signal`. They are separate runtime instances and separate implementations. The earlier ambiguity was documentation-level, not evidence of a second descriptor inside `fi_engine_signal`.
+`signal.scoring` and `signal.trigger` are separate implementations and separate runtime instances. The previous ambiguity was documentation-level, not evidence of two descriptors inside one runtime class.
 
-The current evidence therefore establishes an exact 15-instance runtime → descriptor → implementation mapping for the known runtime composition path.
+## 2. Namespace census and bounded negative evidence
 
-## 2. Descriptor/runtime contract
+The inspected `engines/` root contains these 14 namespaces:
+
+`backtest`, `confluence`, `contradiction`, `fvg`, `intelligence_score`, `liquidity`, `mtf`, `order_block`, `regime`, `scoring`, `signal`, `strategy`, `structure`, `technical`.
+
+The `technical` namespace contains a reference implementation and is not part of the runtime tuple. The two production technical runtime engines are instead located in the application built-in module.
+
+The repository tree and known API composition root therefore reconcile the **known** executable engine census to 15 runtime implementations. GitHub code-search results for broad registration terms are incomplete/empty and cannot be treated as proof of absence. Consequently, alternate registration/composition paths remain a bounded OPEN item rather than being falsely marked closed.
+
+## 3. Descriptor/runtime contract
 
 `EngineRuntime` registers by `(engine_id, version)`, rejects duplicate registrations, supports exact/latest descriptor lookup, executes the selected engine under `asyncio.wait_for` using its descriptor latency budget, and records in-memory executions/failures/timeouts plus a bounded 256-sample latency history. Health is derived from failure rate and p95 latency. The inspected runtime does not persist health or emit health events itself.
 
-`EngineDescriptorV2` is frozen/strict and contains:
-
-- engine identity/version;
-- display name;
-- input/output contracts;
-- supported timeframes;
-- dependencies;
-- warmup bars;
-- latency budget;
-- failure policy;
-- deterministic flag;
-- capability ID.
+`EngineDescriptorV2` is frozen/strict and contains engine identity/version, display name, input/output contracts, supported timeframes, dependencies, warmup bars, latency budget, failure policy, deterministic flag and capability ID.
 
 `EngineExecutionContext` is frozen/strict and contains execution/correlation/causation IDs, instrument, timeframe, `data_revision`, observations and `as_of`.
 
 `EngineOutput` is frozen/strict and contains bounded direction/score/confidence, structured values, evidence, provenance references and degraded state.
 
-## 3. Exact descriptor behavior observed
+## 4. Exact descriptor behavior observed
 
-All 13 dedicated modular engines use `market.timeline.ohlcv` → `analysis.engine.output`. All declare deterministic behavior through the V2 default and expose bounded `score`/`confidence` outputs with evidence referencing `timeline:{data_revision}`.
+All 13 dedicated modular engines use `market.timeline.ohlcv` → `analysis.engine.output`. All expose bounded score/confidence output and revision-linked evidence.
 
 | Engine | Warmup | Latency | Timeframes | Main deterministic calculation observed |
 |---|---:|---:|---|---|
@@ -82,70 +79,88 @@ All 13 dedicated modular engines use `market.timeline.ohlcv` → `analysis.engin
 | `strategy.baseline@1.1.0` | 10 | 60ms | 1m/5m/15m/1h/4h/1d | EMA(8)/EMA(21) spread |
 | `structure.swing@1.1.0` | 7 | 60ms | 1m/5m/15m/1h/4h/1d | current close break against preceding six bars |
 
-The two application built-ins are also deterministic and use the same V2 execution context/output boundary:
+The two application built-ins are deterministic and use the same V2 execution boundary:
 
-- `technical.momentum@1.0.0`: up to 20 prior returns, supported on 1m/5m/15m/1h/4h/1d, 20-bar warmup, 50ms budget.
-- `technical.volatility@1.0.0`: current range relative to preceding range mean, supported on 5m/15m/1h/4h/1d, 20-bar warmup, 50ms budget.
+- `technical.momentum@1.0.0`: up to 20 prior returns; 1m/5m/15m/1h/4h/1d; 20-bar warmup; 50ms budget.
+- `technical.volatility@1.0.0`: current range relative to preceding range mean; 5m/15m/1h/4h/1d; 20-bar warmup; 50ms budget.
 
-## 4. Parameterization and reproducibility finding
+## 5. Parameterization and reproducibility
 
-The historical V1 `AnalysisRequest` contract explicitly contains a `parameters` dictionary and `AnalysisProvenance` explicitly requires a `parameter_hash`, alongside input and engine hashes. The current V2 `EngineExecutionContext` does **not** contain a parameters field, and the 15 inspected runtime engines expose no parameter-schema field in their V2 descriptors; their current algorithms use fixed constants such as lookback windows, EMA periods, weights, thresholds and ATR scaling.
+V1 `AnalysisRequest` contains `parameters`; V1 `AnalysisProvenance` requires `parameter_hash`, `input_hash` and `engine_hash`. V2 `EngineExecutionContext` contains no parameters field, and the inspected runtime descriptors expose no parameter-schema field. The 15 runtime implementations currently use fixed algorithm constants such as lookbacks, EMA periods, weights, thresholds and ATR scaling.
 
-This is important migration evidence, not an error to silently fix during documentation. CFIP must decide during target-contract design whether these source algorithms are intentionally immutable for a given engine version or whether parameterized execution is part of the preserved capability contract. Until that decision is evidenced, parameterized parity remains **OPEN**.
+This is a source contract finding, not something to silently normalize during migration. CFIP must explicitly decide whether fixed constants are immutable semantics of the engine version or whether parameterized execution must be restored. **Parameterized parity remains OPEN.**
 
-## 5. PIT and dataset identity finding
+## 6. PIT and dataset identity
 
-The runtime context propagates `data_revision` and `as_of`, and engine evidence/provenance references the data revision. However, the inspected V2 context does not carry a dataset fingerprint, observation-set hash, availability watermark or explicit point-in-time snapshot identity. The historical V1 provenance contract does require `input_hash`, `parameter_hash` and `engine_hash`.
+The runtime propagates `data_revision` and `as_of`, and engine evidence/provenance references the revision. V1 provenance additionally supports input hashing. V2 does not carry an explicit dataset fingerprint, observation-set hash, availability watermark or point-in-time snapshot identifier.
 
-Therefore `data_revision + as_of` proves causal revision propagation, but does **not** by itself prove complete PIT reconstruction/fingerprint semantics. CFIP must preserve or deliberately strengthen this contract with explicit dataset/snapshot identity before parity closure.
+Therefore `data_revision + as_of` proves causal revision propagation but not complete PIT reconstruction. **PIT dataset/snapshot identity remains OPEN.**
 
-## 6. Replay/backtest finding
+## 7. Replay/backtest behavior
 
-`backtest.replay@1.1.0` is a deterministic executable engine and its unit tests prove bounded deterministic behavior. Its implementation evaluates adjacent historical return-sign pairs using only available history. This is useful evidence for leakage-aware behavior.
+`backtest.replay@1.1.0` is deterministic and evaluates adjacent historical return-sign pairs using only history available before each outcome. This provides direct leakage-aware evidence for the engine itself.
 
-It does **not** by itself prove equivalence between the dedicated backtest engine and every other analytical engine when replayed through the broader replay/backtest application flow. Whole replay/backtest equivalence remains open.
+It does not establish whole-system equivalence across every analytical engine participating in a broader replay/backtest workflow. **Full replay/backtest parity remains OPEN.**
 
-## 7. Failure policy
+## 8. Failure policy and runtime health
 
-`EngineDescriptorV2.failure_policy` supports `FAIL_CLOSED`, `RETURN_PARTIAL` and `SKIP`. `AnalysisFabric` executes requested engines concurrently under one shared causal context and explicitly raises when a `FAIL_CLOSED` engine fails. A direct negative test verifies this behavior. Runtime execution itself does not apply the policy; the fabric is the policy boundary.
+`EngineDescriptorV2.failure_policy` supports `FAIL_CLOSED`, `RETURN_PARTIAL` and `SKIP`. `AnalysisFabric` executes requested engines concurrently under a shared causal context and explicitly raises when a `FAIL_CLOSED` engine fails. A negative test verifies this policy boundary.
 
-## 8. Test evidence
+Runtime health is operational/in-memory state at the inspected boundary: execution/failure/timeout counts and bounded latency samples feed a health snapshot. No persistence or health-event emission is established by `EngineRuntime` itself. **Durable health projection/telemetry mapping remains OPEN.**
 
-Directly inspected tests include:
+## 9. Test coverage mapping
 
-- `tests/unit/analysis_engine/test_modular_engine_catalog.py`: instantiates all 13 dedicated modular classes; executes each twice; verifies identical outputs, provenance, bounded score/confidence.
-- `tests/unit/analysis_engine/test_modular_engine_behavior.py`: executes all 13 modular engines, verifies IDs/versions, bounded outputs, provenance/evidence, deterministic repeatability, FVG parity and future-fill causality.
-- `tests/unit/analysis_engine/test_engine_runtime.py`: verifies momentum/volatility runtime behavior, provenance, timeout accounting and health thresholds.
-- `tests/unit/analysis_engine/test_fabric_failure_policy.py`: verifies `FAIL_CLOSED` cannot silently degrade into a partial result.
+Directly inspected tests establish:
 
-The modular tests therefore cover every one of the 13 dedicated modular runtime implementations, while the built-in tests cover the two application-level engines.
+- `test_modular_engine_catalog.py`: all 13 dedicated modular classes execute twice with deterministic equality, bounded score/confidence and revision provenance;
+- `test_modular_engine_behavior.py`: all 13 dedicated classes execute real behavior; IDs/versions, bounded outputs, evidence, provenance and determinism are checked; FVG semantic parity and future-fill causality are explicitly tested;
+- `test_engine_runtime.py`: momentum/volatility runtime behavior, provenance, timeout accounting and health thresholds;
+- `test_fabric_failure_policy.py`: fail-closed execution cannot silently become a partial result.
 
-## 9. Registry reconciliation
+Thus every one of the 15 known runtime implementations has direct implementation evidence and test evidence. What remains incomplete is not basic existence/behavior proof but engine-specific golden/regression fixtures, broader replay equivalence and cross-document parity.
 
-The historical `fi_domain.analysis.registry.EngineRegistry` is a framework-independent descriptor registry using the V1 `EngineDescriptor`. It supports duplicate rejection, exact/latest lookup, enumeration and capability-graph generation. The inspected API runtime instead constructs `EngineRuntime` directly with concrete V2 engine instances.
+## 10. V1 registry versus V2 runtime
 
-This establishes two distinct registry concepts:
+`fi_domain.analysis.registry.EngineRegistry` is an in-process descriptor registry built around the V1 `EngineDescriptor`; it supports duplicate rejection, exact/latest lookup, enumeration and capability-graph generation. The current API composition directly constructs V2 `EngineRuntime` from concrete engine instances.
 
-- V1 domain descriptor registry for capability metadata;
-- V2 executable runtime registry for concrete engine instances.
+No inspected call-site evidence proves that the V1 registry is populated from the same 15 runtime instances or is authoritative for API execution. This is a bounded **registry-authority reconciliation item**, not an inventory gap.
 
-No evidence yet proves that the V1 `EngineRegistry` is populated from the same 15 runtime instances or that it is authoritative for current API execution. This remains a reconciliation item rather than an assumption.
+## 11. D4 closure matrix
 
-## 10. Remaining D4 gaps
+| Closure item | Evidence status | Current conclusion |
+|---|---|---|
+| Known runtime inventory | CLOSED for inspected composition root | 15 instances proven |
+| Descriptor → implementation mapping | CLOSED for known 15 | exact mapping proven |
+| Runtime composition path | CLOSED for inspected API root | direct tuple proven |
+| Namespace census | CLOSED for `engines/` root | 14 namespaces proven |
+| Alternate registration paths | OPEN | code-search index is insufficient negative evidence |
+| V1/V2 registry authority | OPEN | no call-site proof yet |
+| Parameter schema/fingerprint | OPEN | V1 supports it; V2/runtime does not expose it |
+| PIT dataset/snapshot identity | OPEN | revision/as-of insufficient for full reconstruction |
+| Provenance/evidence propagation | ADVANCED | direct revision-linked evidence proven |
+| Failure policy | ADVANCED | Fabric enforcement proven |
+| Replay engine determinism | ADVANCED | direct engine-level evidence proven |
+| Whole replay/backtest parity | OPEN | broader workflow not yet proven |
+| Engine-specific golden fixtures | OPEN | shared modular tests exist; per-engine golden inventory incomplete |
+| Runtime health | ADVANCED | in-memory health proven |
+| Durable health/telemetry projection | OPEN | not proven at runtime boundary |
+| Capability/parity reconciliation | OPEN | D11 dependency |
+| Engine-like components outside known census | OPEN | bounded negative evidence only |
 
-D4 is now materially closer to closure. Remaining evidence tasks are narrowed to:
+## 12. Remaining D4 work
 
-1. exhaustive census of any alternate engine registration/composition paths beyond the inspected API composition root;
-2. V1 `EngineRegistry` population/use mapping and authoritative-status reconciliation;
-3. parameterized-execution decision and any hidden parameter schemas/callers;
-4. PIT dataset/snapshot identity, input/observation fingerprint and availability-watermark evidence;
-5. full replay/backtest equivalence across engine execution and simulation workflows;
-6. engine-specific golden/regression fixtures beyond the shared modular behavior/catalog tests;
-7. execution event/telemetry producers and persistent health projections;
-8. reconciliation with capability registry/parity matrix;
-9. census of executable engine-like components outside the known 15 runtime implementations.
+The remaining work is now tightly bounded:
 
-## 11. Migration invariants
+1. inspect any remaining concrete call sites for V1 `EngineRegistry` and V1 `AnalysisRequest`/parameterized execution;
+2. inspect replay/backtest orchestration around the engine itself and establish equivalence requirements;
+3. inventory engine-specific golden/regression fixtures and negative/PIT cases;
+4. map engine execution/health events and durable projections through event/worker code;
+5. reconcile engine capabilities with the capability registry and migration parity matrix;
+6. complete a final executable-component census outside the known 15 runtime implementations.
+
+No unresolved item should be converted into an assumption during CFIP implementation.
+
+## 13. Migration invariants
 
 CFIP migration must preserve or explicitly ADR any intentional divergence for:
 
@@ -158,4 +173,4 @@ CFIP migration must preserve or explicitly ADR any intentional divergence for:
 - replay/backtest compatibility;
 - runtime health visibility without confusing transient health with durable business truth.
 
-**Conclusion:** the known runtime composition now has an exact 15-instance descriptor-to-implementation map, with direct source and test evidence for every runtime engine. D4 is **not closed** because parameterization, PIT fingerprinting, replay equivalence, alternate registration, telemetry/health persistence and cross-document reconciliation still require evidence. Gate 0 remains OPEN and CFIP runtime implementation remains locked at 0%.
+**Conclusion:** the known runtime composition has an exact 15-instance descriptor-to-implementation map and direct test evidence for every runtime implementation. D4 is now a bounded closure problem rather than an engine-inventory discovery problem, but it is **not closed** until the remaining registry, parameter, PIT, replay, fixture, telemetry and reconciliation evidence is directly established. Gate 0 remains OPEN and CFIP runtime implementation remains locked at 0%.
