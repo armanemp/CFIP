@@ -1,12 +1,12 @@
 # CFIP Target File Manifest
 
-**Status:** Controlled implementation manifest; runtime creation remains Gate-0 locked. Architecture-contract materialization is now physically present in GitHub.  
+**Status:** Controlled implementation manifest; runtime creation remains Gate-0 locked. Architecture-contract materialization and migration-governance tooling are physically present in GitHub.  
 **Source:** `armanemp/CForex` `main` v0.9.154  
 **Target:** `armanemp/CFIP` `main`
 
 ## Purpose
 
-This manifest turns the canonical target tree into a file-level implementation plan and distinguishes **architecture contracts already materialized** from runtime artifacts still gated. It is not a substitute for source evidence and does not authorize production implementation.
+This manifest turns the canonical target tree into a file-level implementation plan and distinguishes **architecture contracts and verification tooling already materialized** from runtime artifacts still gated. It is not a substitute for source evidence and does not authorize production implementation.
 
 ## Status vocabulary
 
@@ -34,8 +34,10 @@ The following architecture-contract layer is now present on `main`:
 | `infrastructure/` | `ARCH-CONTRACT` | `LOCKED` |
 | `tests/` | `ARCH-CONTRACT` | `LOCKED` |
 | `scripts/` | `ARCH-CONTRACT` | `LOCKED` |
+| `tools/architecture/` | `ARCH-CONTRACT` verification tooling | `ACTIVE` |
+| `.github/workflows/architecture-contracts.yml` | CI architecture-contract gate | `ACTIVE` |
 
-These files are deliberate architecture artifacts, not empty-folder markers or fake modules.
+The verification tooling is intentionally outside CFIP production runtime. It validates the target architecture while Gate 0 remains open.
 
 ## 2. Repository root
 
@@ -54,7 +56,22 @@ These files are deliberate architecture artifacts, not empty-folder markers or f
 | `CONTRIBUTING.md` | governance | FOUNDATION |
 | `LICENSE` | repository | FOUNDATION |
 
-## 3. Application process files
+## 3. Architecture verification tooling
+
+`tools/architecture/validate_target_contracts.py` is an active, runtime-independent validator. It checks:
+
+- canonical migration/control documents exist and are non-empty;
+- the physical bounded-context inventory is exactly 34;
+- bounded-context names are unique;
+- canonical migration-ownership rules remain present;
+- obvious duplicate logical corrective migration scopes are rejected if a target migrations tree exists;
+- prohibited legacy target names are absent from the physical tree.
+
+`.github/workflows/architecture-contracts.yml` runs this validator on relevant pull requests and on `main` changes to architecture, documentation, migrations or the validator itself.
+
+This is a **real operational quality gate**, not a placeholder runtime module. It does not close Gate 0 and does not execute CFIP production code.
+
+## 4. Application process files
 
 Application architecture contracts are materialized under `apps/<process>/README.md`; implementation files remain `FOUNDATION` and require Gate 0 exit.
 
@@ -68,11 +85,11 @@ Application architecture contracts are materialized under `apps/<process>/README
 | `apps/autonomy_worker` | `src/cfip_autonomy_worker/main.py`, `lanes.py`, `policy.py`, `verification.py`, tests | `ARCH-CONTRACT` |
 | `apps/web` | `package.json`, Next app routes/components/tests | `ARCH-CONTRACT` |
 
-## 4. Shared packages
+## 5. Shared packages
 
 Architecture contracts are materialized for `contracts`, `domain_kernel`, `application_kernel`, `eventing`, `observability`, `security`, `testing` and `configuration`. Runtime package files remain `FOUNDATION` or `EVIDENCE-REQUIRED` according to capability.
 
-## 5. Bounded contexts
+## 6. Bounded contexts
 
 The mandatory target contexts are:
 
@@ -80,9 +97,11 @@ The mandatory target contexts are:
 
 All **34** context `README.md` contracts are now physically materialized. Internal `domain/application/infrastructure/tests` runtime files remain gated.
 
-## 6. Analysis engine files
+## 7. Analysis engine files
 
-Architecture contracts are now materialized for all 14 top-level namespaces:
+Architecture contracts are now materialized for all 14 top-level namespaces and 15 concrete runtime engine classes. The runtime classes do not imply one-to-one namespace/class cardinality.
+
+Concrete source engine identities currently mapped include:
 
 - `technical.momentum@1.0.0`
 - `technical.volatility@1.0.0`
@@ -100,31 +119,31 @@ Architecture contracts are now materialized for all 14 top-level namespaces:
 - `strategy.baseline@1.1.0`
 - `structure.swing@1.1.0`
 
-The 15 runtime classes remain represented without assuming one-to-one namespace/class cardinality. Executable engine files (`contract.py`, `inputs.py`, `outputs.py`, `implementation.py`, `version.py`, tests) remain gated.
+Executable engine files (`contract.py`, `inputs.py`, `outputs.py`, `implementation.py`, `version.py`, tests) remain gated.
 
-## 7. Data files
+## 8. Data files
 
 `data/migrations/`, `data/schemas/`, `data/seeds/`, `data/fixtures/` and `data/retention/` architecture contracts are physically present. Concrete schema artifacts and lifecycle producers remain `EVIDENCE-REQUIRED` where source closure is incomplete.
 
 A bounded negative source search on `dataset_fingerprints`, `DatasetFingerprint`, `replay_cases` and `ReplayCase` returned no code-search matches in CForex. This is recorded as **NEGATIVE-SEARCH only**, not proof of absence. Migration/schema evidence remains stronger where directly available.
 
-## 8. Adapters
+## 9. Adapters
 
 All inbound/outbound adapter-family architecture contracts are physically present. Concrete provider clients, persistence mappings, health semantics and integration tests remain gated by source closure and Gate 1.
 
-## 9. Frontend file contract
+## 10. Frontend file contract
 
 Frontend architecture contracts are physically present. Required feature areas remain planned and are not claimed implemented.
 
-## 10. Verification files
+## 11. Verification files
 
 Verification architecture contracts are physically present for architecture, contracts, integration, E2E, replay, PIT, performance, security and fixtures. Runtime test files remain planned until implementation is authorized.
 
-## 11. Infrastructure/operations files
+## 12. Infrastructure/operations files
 
 Infrastructure architecture contracts are physically present. SLO/SLI, DR/backup, scaling/partitioning, threat model and AI-agent-control runtime documents remain planned or evidence-driven additions.
 
-## 12. Materialization order
+## 13. Materialization order
 
 1. governance/toolchain;
 2. contracts/domain kernel;
@@ -137,14 +156,14 @@ Infrastructure architecture contracts are physically present. SLO/SLI, DR/backup
 9. frontend;
 10. governance/autonomy/operations hardening.
 
-## 13. File-level acceptance rule
+## 14. File-level acceptance rule
 
 A target runtime file may move from `PLANNED` to implementation only when it has:
 
 `owner + source mapping/target rationale + contract + implementation purpose + dependency direction + tests + telemetry/recovery requirements + migration/parity status`.
 
-Architecture-contract files may be materialized earlier because they carry no executable production behavior and explicitly preserve Gate 0.
+Architecture-contract and verification tooling may be materialized earlier because they carry no executable production behavior and explicitly preserve Gate 0.
 
-## 14. Inventory correction
+## 15. Inventory correction
 
 The explicit context list in this manifest contains **34** directories. Earlier progress material that reported 33 was a counting error. This is a documentation reconciliation only; no new context was added in this correction.
