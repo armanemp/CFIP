@@ -49,14 +49,37 @@ Active verification tools include:
 - `validate_worker_lifecycle.py` — worker entrypoint/shutdown/health/error-boundary evidence extraction.
 - `validate_dependency_direction.py` — target layer dependency-direction validation.
 - `validate_pit_replay_contracts.py` — PIT/replay evidence-contract validation.
+- `validate_global_scale_contracts.py` — global-scale architecture obligations covering statelessness, partitioning, idempotency, backpressure, data-store scaling, residency, SLO/capacity, recovery, checkpoints and telemetry.
 
 The tests under `tests/architecture/` exercise these tools without importing CFIP production runtime.
 
-`.github/workflows/architecture-contracts.yml` is the single consolidated architecture/source-closure gate. It runs the architecture validator, architecture-tool tests, migration graph validation when a target migration tree exists, worker lifecycle verification, dependency-direction verification and PIT/replay contract verification.
+`.github/workflows/architecture-contracts.yml` is the single consolidated architecture/source-closure gate. It runs the architecture validator, architecture-tool tests, migration graph validation when a target migration tree exists, worker lifecycle verification, dependency-direction verification, PIT/replay contract verification and global-scale contract verification.
 
 These are **real operational quality gates**, not placeholder runtime modules. They do not close Gate 0 and do not execute CFIP production business behavior.
 
-## 3. Application process files
+## 3. Global-scale architecture contract
+
+Global scale is a first-class target constraint from Gate 0 onward. The contract covers:
+
+- stateless regional API scaling;
+- partition ownership and checkpoint semantics;
+- tenant/noisy-neighbor isolation;
+- bounded caching and explicit authority;
+- PostgreSQL control-plane scaling and retention;
+- ClickHouse analytical workload isolation;
+- asynchronous workload isolation and bounded fan-out;
+- data residency and jurisdiction-aware processing when required;
+- SLO/capacity/load methodology;
+- RPO/RTO, recovery and rollback;
+- multi-region consistency classification;
+- schema/data evolution compatibility across regions/workers;
+- rate limits, quotas and fair-use controls;
+- queue/lag/watermark/lateness/backpressure telemetry;
+- cost-aware scaling.
+
+The validator protects the presence of the architectural contract. It does **not** claim that any production scale characteristic has been benchmarked or implemented.
+
+## 4. Application process files
 
 Application architecture contracts are materialized under `apps/<process>/README.md`; implementation files remain `FOUNDATION` and require Gate 0 exit.
 
@@ -70,11 +93,11 @@ Application architecture contracts are materialized under `apps/<process>/README
 | `apps/autonomy_worker` | `src/cfip_autonomy_worker/main.py`, `lanes.py`, `policy.py`, `verification.py`, tests | `ARCH-CONTRACT` |
 | `apps/web` | `package.json`, Next app routes/components/tests | `ARCH-CONTRACT` |
 
-## 4. Shared packages
+## 5. Shared packages
 
 Architecture contracts are materialized for `contracts`, `domain_kernel`, `application_kernel`, `eventing`, `observability`, `security`, `testing` and `configuration`. Runtime package files remain `FOUNDATION` or `EVIDENCE-REQUIRED` according to capability.
 
-## 5. Bounded contexts
+## 6. Bounded contexts
 
 The mandatory target contexts are:
 
@@ -82,7 +105,7 @@ The mandatory target contexts are:
 
 All **34** context `README.md` contracts are physically materialized. Internal `domain/application/infrastructure/tests` runtime files remain gated.
 
-## 6. Analysis engine files
+## 7. Analysis engine files
 
 Architecture contracts are materialized for all 14 top-level namespaces and 15 concrete runtime engine classes. The runtime classes do not imply one-to-one namespace/class cardinality.
 
@@ -106,7 +129,7 @@ Concrete source engine identities currently mapped include:
 
 Executable engine files remain gated.
 
-## 7. Data/PIT/replay
+## 8. Data/PIT/replay
 
 `data/migrations/`, `data/schemas/`, `data/seeds/`, `data/fixtures/` and `data/retention/` architecture contracts are physically present. Concrete schema artifacts and lifecycle producers remain `EVIDENCE-REQUIRED` where source closure is incomplete.
 
@@ -114,23 +137,23 @@ Executable engine files remain gated.
 
 A bounded negative source search on `dataset_fingerprints`, `DatasetFingerprint`, `replay_cases` and `ReplayCase` returned no code-search matches in CForex. This remains **NEGATIVE-SEARCH only**, not proof of absence.
 
-## 8. Adapters
+## 9. Adapters
 
 All inbound/outbound adapter-family architecture contracts are physically present. Concrete provider clients, persistence mappings, health semantics and integration tests remain gated by source closure and Gate 1.
 
-## 9. Frontend file contract
+## 10. Frontend file contract
 
 Frontend architecture contracts are physically present. Required feature areas remain planned and are not claimed implemented.
 
-## 10. Verification files
+## 11. Verification files
 
 Verification architecture contracts are physically present for architecture, contracts, integration, E2E, replay, PIT, performance, security and fixtures. Runtime test files remain planned until implementation is authorized.
 
-## 11. Infrastructure/operations files
+## 12. Infrastructure/operations files
 
 Infrastructure architecture contracts are physically present. SLO/SLI, DR/backup, scaling/partitioning, threat model and AI-agent-control runtime documents remain planned or evidence-driven additions.
 
-## 12. Materialization order
+## 13. Materialization order
 
 1. governance/toolchain;
 2. contracts/domain kernel;
@@ -143,7 +166,7 @@ Infrastructure architecture contracts are physically present. SLO/SLI, DR/backup
 9. frontend;
 10. governance/autonomy/operations hardening.
 
-## 13. File-level acceptance rule
+## 14. File-level acceptance rule
 
 A target runtime file may move from `PLANNED` to implementation only when it has:
 
@@ -151,6 +174,6 @@ A target runtime file may move from `PLANNED` to implementation only when it has
 
 Architecture-contract and verification tooling may be materialized earlier because they carry no executable production behavior and explicitly preserve Gate 0.
 
-## 14. Inventory correction
+## 15. Inventory correction
 
 The explicit context list in this manifest contains **34** directories. Earlier progress material that reported 33 was a counting error. This is a documentation reconciliation only; no new context was added in this correction.
