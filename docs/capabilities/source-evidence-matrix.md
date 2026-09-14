@@ -25,6 +25,9 @@ When evidence conflicts, stop target implementation and reconcile the higher-con
 | `README.md` | Python/FastAPI/Pydantic/SQLAlchemy/Alembic; Next.js/React; PostgreSQL/ClickHouse/Redis/NATS; analytics and OTel | Technology choices inform adapters, but CFIP contracts remain technology-independent. |
 | `apps/api/src/fi_api/main.py` | API composition, authentication/authorization middleware, readiness, intelligence surfaces, realtime/trading/research/admin routers, database and analytics adapters | CFIP API must be an inbound adapter/composition root; auth and readiness become explicit context/application responsibilities. |
 | `apps/api/src/fi_api/trading.py` | Verified trading route family `/v1/trading`; canonical workspace, terminal-context, watchlist, technical, decision/live-decision, market-state, intelligence, learning, calibration, provider-reliability, realtime observation/canonical ingestion, deterministic engine registry/evidence, WebSocket realtime and execution/journal/risk surfaces further in the same router | Trading must not be modeled as a single decision endpoint. CFIP must preserve the complete terminal/read-model/analysis/evidence/realtime/risk/execution surface and keep the canonical consensus boundary singular. |
+| `packages/contracts/src/fi_contracts/events.py` | Strict `EventEnvelope` with event ID, type/version, UTC occurrence time, producer, correlation/causation and payload; broad canonical event vocabulary across market, analysis, signals, AI, learning, governance, replay and realtime | CFIP needs a versioned event contract registry and must preserve the broad event surface rather than reducing eventing to market-data transport. |
+| `packages/contracts/src/fi_contracts/eventing.py` | Immutable durable event record with dedupe key, pending/processing/published/failed/dead lifecycle, attempts, availability/publication timestamps and lock lease fields | Durable outbox semantics, idempotency, retries and lease/recovery behavior are migration contracts. |
+| `apps/worker/src/fi_worker/main.py` | Durable PostgreSQL application-event outbox → NATS JetStream; separate canonical-observation outbox → NATS; durable realtime consumer; separate ClickHouse consumer; bounded dispatch and graceful shutdown | CFIP must retain distinct application-event and canonical-market-data paths and make consumers/replay/scaling semantics explicit. |
 | `migrations/versions/0001..0023` | Durable schema evolution covering market reference, domain kernel, outbox, replay/provenance, intelligence/learning, evaluation, workspaces/billing and governed evolution | CFIP data ownership and migration map must trace every durable capability; migration numbers are evidence, not target filenames. |
 | `0023_governed_evolution_control_plane.py` | Change transactions, verification evidence, runtime health and rollback-related fields are durable | Governance becomes a first-class context with immutable/evidentiary lifecycle requirements. |
 | `apps/` | API, web, worker, learning worker, autonomy worker | CFIP deployment units remain separate from bounded-context ownership. |
@@ -66,6 +69,16 @@ The same router constructs and wires technical analysis, MTF intelligence, risk,
 
 Security evidence already verified at this boundary includes production authentication, workspace membership enforcement for protected trading reads, fail-closed demo mutation authorization, internal realtime ingest token validation, and authenticated WebSocket behavior with an explicit development bypass only under development configuration.
 
+## Verified event evidence pass — D2
+
+The executable CForex contract layer verifies a strict event envelope with stable identity, event type/version, UTC occurrence time, producer, correlation ID, optional causation ID and payload. The durable event contract verifies deduplication, lifecycle status, attempts, availability/publication timestamps and lock ownership/expiry.
+
+The executable event vocabulary covers canonical market observations, analysis lifecycle, engine execution, signals, strategy/backtest, AI/agent activity, incidents/security/health, replay/provenance, learning/evaluation/drift, intelligence memory/graph/attribution, provider/model governance, self-evolution and realtime lifecycle/backpressure/health. The worker composition directly verifies PostgreSQL durable application-event outbox → NATS JetStream publication, a separate canonical-observation outbox → NATS path, durable realtime consumption and a separate ClickHouse consumer, with bounded dispatch and graceful shutdown.
+
+Detailed evidence: `docs/evidence/CFIP-EVENT-EVIDENCE.md`.
+
+**D2 status: advanced, not closed.** The exhaustive event census still requires every producer, consumer, subject, schema/version, partition key, ordering, idempotency, retry/quarantine, replay, retention, security and telemetry contract to be traced to executable source/tests.
+
 ## Known evidence gaps to resolve before parity closure
 
 - Complete API endpoint catalog with owning capability/context, including the remainder of `trading.py` and all mounted router modules.
@@ -80,4 +93,4 @@ Security evidence already verified at this boundary includes production authenti
 - Complete external provider/broker/model/research adapter inventory.
 - Complete operational SLO, retention, partitioning and recovery requirements.
 
-These gaps are intentionally tracked rather than inferred. D1 is materially advanced, but **Gate 0 remains open and no CFIP implementation status is advanced by this evidence pass**.
+These gaps are intentionally tracked rather than inferred. D1 and D2 are materially advanced, but **Gate 0 remains open and no CFIP implementation status is advanced by these evidence passes**.
