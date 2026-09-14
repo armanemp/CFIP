@@ -6,7 +6,9 @@
 
 ## 1. Standards refresh
 
-The target observability model is refreshed against current OpenTelemetry Semantic Conventions 1.44.0. OTel currently provides standardized conventions across HTTP, databases, messaging, events, sessions, resources, metrics, logs and traces, and the project guidance favors reuse of existing semantic attributes before introducing custom ones. citeturn0search1turn0search10
+The target observability model is refreshed against current OpenTelemetry Semantic Conventions 1.44.0. OTel currently provides standardized conventions across HTTP, databases, messaging, events, sessions, resources, metrics, logs and traces, and the project guidance favors reuse of existing semantic attributes before introducing custom ones.
+
+Reference: OpenTelemetry Semantic Conventions 1.44.0 and OpenTelemetry guidance on writing semantic conventions.
 
 CFIP therefore uses this precedence:
 
@@ -14,21 +16,23 @@ CFIP therefore uses this precedence:
 
 ## 2. Event telemetry rule
 
-Named telemetry events must represent meaningful occurrences such as state transitions, checkpoints or outcomes. Dynamic identifiers belong in attributes rather than event names, and failure/outcome events should carry an appropriate `error.type` when applicable. citeturn0search12
+Named telemetry events must represent meaningful occurrences such as state transitions, checkpoints or outcomes. Dynamic identifiers belong in attributes rather than event names, and failure/outcome events should carry an appropriate `error.type` when applicable.
 
 CFIP event instrumentation must therefore avoid dynamic event names such as embedding instrument IDs, workspace IDs or run IDs in the event name.
 
 ## 3. Messaging migration rule
 
-Messaging instrumentation must account for the current OpenTelemetry stability/opt-in migration guidance rather than inventing a private messaging vocabulary. During any future migration between semantic-convention generations, the transition strategy must be explicit and version-aware. citeturn0search9
+Messaging instrumentation must account for the current OpenTelemetry stability/opt-in migration guidance rather than inventing a private messaging vocabulary. During any future migration between semantic-convention generations, the transition strategy must be explicit and version-aware.
 
 ## 4. Client session observability
 
-Frontend telemetry should use a session identity that correlates client logs/events/spans over a session lifecycle, while preserving privacy and avoiding sensitive market/account/AI content by default. OpenTelemetry defines session semantics specifically for client applications. citeturn0search14
+Frontend telemetry should use a session identity that correlates client logs/events/spans over a session lifecycle, while preserving privacy and avoiding sensitive market/account/AI content by default. OpenTelemetry defines session semantics specifically for client applications.
 
 ## 5. Agent-control modernization
 
-Current OWASP guidance has materially strengthened the agent-control requirement. The OWASP Agent Control Standard (ACS), published September 1, 2026, emphasizes agents being inspectable, traceable and instrumentable, with runtime policy hooks for portable safety controls. citeturn0search19
+Current OWASP guidance has materially strengthened the agent-control requirement. The OWASP Agent Control Standard (ACS), published September 1, 2026, emphasizes agents being inspectable, traceable and instrumentable, with runtime policy hooks for portable safety controls.
+
+Reference: OWASP GenAI Security Project — Agent Control Standard (ACS).
 
 CFIP target agent architecture is therefore:
 
@@ -50,7 +54,7 @@ Required controls:
 
 ## 6. Agent threat model additions
 
-The target threat model explicitly covers prompt injection, tool abuse/privilege escalation, data exfiltration and memory poisoning, all of which are identified as agent-specific risks in current OWASP guidance. citeturn0search18
+The target threat model explicitly covers prompt injection, tool abuse/privilege escalation, data exfiltration and memory poisoning, all identified as agent-specific risks in current OWASP guidance.
 
 The architecture must also preserve the existing rule that analytical engines and agents have separate authority domains. An agent cannot gain analytical, execution, governance or infrastructure authority merely because a tool is available.
 
