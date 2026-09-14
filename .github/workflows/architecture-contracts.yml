@@ -56,3 +56,9 @@ jobs:
 
       - name: Verify worker lifecycle tool contract
         run: python -m unittest tests/architecture/test_validate_worker_lifecycle.py
+
+      - name: Verify dependency direction tool contract
+        run: python -m unittest tests/architecture/test_validate_dependency_direction.py
+
+      - name: Verify PIT and replay contract tool
+        run: python tools/architecture/validate_pit_replay_contracts.py docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md docs/evidence/CFIP-SOURCE-CLOSURE-TRACEABILITY-RULES.md
