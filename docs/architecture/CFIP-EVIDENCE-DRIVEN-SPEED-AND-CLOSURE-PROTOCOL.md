@@ -1,6 +1,6 @@
 # CFIP Evidence-Driven Speed and Closure Protocol
 
-**Date:** 2026-09-14  
+**Date:** 2026-09-15  
 **Status:** Canonical operating protocol for Gate 0 continuation
 
 ## Purpose
@@ -36,7 +36,7 @@ Each lane writes evidence to its own batch artifact first. Shared canonical matr
 
 Before changing a canonical register, compare:
 
-`source evidence ↔ capability registry ↔ target file manifest ↔ parity matrix ↔ Gate 0 register ↔ ADRs`.
+`source evidence ↔ capability registry ↔ target file manifest ↔ parity matrix ↔ Gate 0 register ↔ ADRs`
 
 If a contradiction is found:
 
@@ -69,7 +69,8 @@ The following are safe accelerators:
 - maintain stable evidence IDs;
 - run contradiction checks after each batch rather than waiting for a large release;
 - verify every GitHub write immediately;
-- maintain a single canonical owner for each decision.
+- maintain a single canonical owner for each decision;
+- batch independent GitHub documentation changes where the repository write mechanism permits it.
 
 The following are not allowed accelerators:
 
@@ -80,21 +81,49 @@ The following are not allowed accelerators:
 - closing a Gate dimension because an inventory exists;
 - duplicating an analytical implementation to satisfy two execution paths;
 - introducing a dependency only because it is fashionable;
-- fragmenting into microservices before measured need.
+- fragmenting into microservices before measured need;
+- creating corrective migration files for schema work that belongs to an existing, not-yet-frozen target migration;
+- creating duplicate documentation artifacts when an existing canonical document owns the decision.
 
 ## 6. Evidence compression
 
 For repeated evidence, store a canonical source reference and summarize the behavioral conclusion rather than copying source prose into multiple documents. Cross-reference the canonical evidence artifact. This reduces documentation drift and review cost.
 
-## 7. Runtime lock discipline
+## 7. Migration and schema change discipline
+
+Migration files are treated as part of the canonical target schema history, not as disposable implementation patches.
+
+### 7.1 Canonical migration ownership
+
+When CFIP runtime implementation is authorized and a schema change belongs to an existing target migration that has not been released/applied as an immutable production contract, **modify the original migration file itself**. Do not create a second corrective migration merely to repair, complete or optimize the same logical schema change.
+
+The same rule applies to equivalent schema artifacts: indexes, constraints, defaults, ownership metadata and migration-linked data contracts must be corrected at their canonical owner rather than duplicated in a follow-up patch artifact.
+
+### 7.2 No duplicate migration history
+
+A new migration is not a substitute for a missing edit to an existing canonical migration. Before creating any new migration, the continuation must first prove that the change is genuinely a new schema evolution rather than a correction or completion of an existing migration. During the current pre-Gate-1 phase, target migrations are not yet frozen, so related schema corrections must be consolidated into their original migration files.
+
+### 7.3 Source migrations are evidence
+
+CForex migrations remain source evidence and must not be rewritten as part of CFIP migration work. Source migration files such as `0008_event_replay_provenance` and `0012_dataset_integrity_intelligence_memory` are behavioral/schema evidence; CFIP may improve their target design, but must preserve the source facts and explicitly document intentional divergence.
+
+### 7.4 Verification
+
+Any migration modification must be followed by:
+
+`migration graph check → upgrade/downgrade review → schema/contract check → affected repository/adapter review → integration test → rollback verification`
+
+No migration correction is considered complete merely because the file parses.
+
+## 8. Runtime lock discipline
 
 While Gate 0 is OPEN, target runtime implementation remains locked. Architecture contracts, evidence tools, manifests, ADRs and governance documents may be improved. Runtime code may not be counted as Gate 1 implementation until the formal Gate 0 exit decision.
 
-## 8. Definition of closure
+## 9. Definition of closure
 
 A dimension is closed only when its evidence graph has no unresolved material link, or every remaining bounded risk has an explicit owner, impact, mitigation and Gate 0 exit disposition.
 
-## 9. Release/continuation sequence
+## 10. Release/continuation sequence
 
 ```text
 inspect current heads
@@ -110,6 +139,6 @@ inspect current heads
 → progress report
 ```
 
-## 10. Quality invariant
+## 11. Quality invariant
 
 **Completeness beats speed; parallelism provides speed without reducing completeness.** The process should optimize elapsed time while preserving the same evidence threshold for every capability.
