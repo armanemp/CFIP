@@ -12,10 +12,11 @@ Read these documents in this order at the start of every migration continuation:
 2. `docs/CFIP-MIGRATION-MASTER-PLAN.md` — sequencing and release gates.
 3. `docs/CFIP-ARCHITECTURE-GUIDE.md` — target architecture and invariants.
 4. `docs/capabilities/source-study-integration.md` — source-study/evidence workflow.
-5. `docs/capabilities/CFIP-CAPABILITY-REGISTRY.md` — capability ownership.
-6. `docs/capabilities/source-evidence-matrix.md` — source evidence.
-7. `docs/capabilities/parity-matrix.md` — target implementation/parity status.
-8. `docs/CFIP-SOURCE-TREE.md` — target tree and ownership grammar.
+5. `docs/CFIP-GATE-0-SOURCE-CLOSURE.md` — active Gate 0 evidence register.
+6. `docs/capabilities/CFIP-CAPABILITY-REGISTRY.md` — capability ownership.
+7. `docs/capabilities/source-evidence-matrix.md` — source evidence.
+8. `docs/capabilities/parity-matrix.md` — target implementation/parity status.
+9. `docs/CFIP-SOURCE-TREE.md` — target tree and ownership grammar.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -69,20 +70,7 @@ The current CForex release truth records **101 required release gates with 100 P
 
 ### Gate 0 — Source closure
 
-Close the following evidence records before declaring the source inventory frozen:
-
-| Evidence area | Required artifact | Closure condition |
-|---|---|---|
-| API | exhaustive HTTP/WS catalog | every route/channel has owner, contract, auth, tests and side effects mapped |
-| Events | producer/consumer/topic/schema map | every durable event family has lifecycle semantics |
-| Data | entity/table/column ownership | every authoritative entity has exactly one owner |
-| Engines | implementation/contract/test matrix | every executable engine has deterministic evidence |
-| Workers | runtime topology | entrypoints, jobs, subscriptions, producers and scaling mapped |
-| Frontend | route/component/hook map | every meaningful interaction maps to capability and API/realtime behavior |
-| Tests | capability/test matrix | positive, negative, security, PIT and replay coverage identified |
-| Policy | config/flag/entitlement inventory | hardcoded policy separated from legitimate invariants |
-| Adapters | provider/broker/model/research inventory | boundaries, credentials, capabilities and failure behavior mapped |
-| Operations | SLO/retention/recovery requirements | runtime obligations are explicit |
+The active Gate 0 register is `docs/CFIP-GATE-0-SOURCE-CLOSURE.md`. It tracks API/WS, events, data ownership, engines, workers, frontend, tests, policy, adapters and operations evidence. These areas remain controlled closure work until their executable evidence is sufficient.
 
 ### Gate 1 — Foundation
 
@@ -167,21 +155,26 @@ At every continuation:
 1. inspect current CForex state;
 2. inspect current CFIP state;
 3. read this index and the master plan/integration guide;
-4. identify the active gate and evidence gaps;
-5. make the smallest coherent set of changes that advances the gate;
-6. verify architecture, tests, security, contracts and operational behavior;
-7. update evidence and capability status;
-8. re-read the resulting repository state from GitHub;
-9. never claim parity without executable comparison evidence.
+4. read the active Gate 0 register;
+5. identify the active gate and evidence gaps;
+6. make the smallest coherent set of changes that advances the gate;
+7. verify architecture, tests, security, contracts and operational behavior;
+8. update evidence and capability status;
+9. re-read the resulting repository state from GitHub;
+10. never claim parity without executable comparison evidence.
 
 No silent deletion, history rewrite, capability retirement or architecture divergence is allowed. Intentional divergence requires an ADR and preserved source evidence.
 
 ## 12. Definition of project start
 
-The project is considered ready to move from documentation into implementation when Gate 0 has enough executable evidence to prevent material capability loss and Gate 1 foundation contracts can be implemented without guessing ownership or semantics.
+The project may now begin **controlled implementation work**, but Gate 0 remains open for evidence closure. Foundation work is permitted only where contracts are evidence-backed; unresolved source behavior must not be guessed.
 
-The implementation start point is therefore **not** “copy CForex into CFIP”. It is the first verified vertical slice through the complete target chain:
+The first implementation slice is Gate 1 and must prove the complete target chain:
 
-`contract → domain → use case → adapter → persistence/event → API/realtime → tests → observability`
+`contract → domain → use case → port → adapter → persistence/event → API/realtime → tests → observability`
 
-Subsequent capabilities follow the same chain and are promoted only through the lifecycle above.
+Subsequent capabilities follow the same chain and are promoted only through the lifecycle above. Gate 0 evidence closure continues in parallel until its closure criteria are satisfied.
+
+## 13. Integrated project rule
+
+The architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree and Gate 0 register form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index is updated before implementation proceeds.
