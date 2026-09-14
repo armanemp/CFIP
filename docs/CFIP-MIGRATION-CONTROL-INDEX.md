@@ -4,26 +4,33 @@
 **Target:** `armanemp/CFIP` `main`  
 **Purpose:** single front door for architecture, source evidence, migration sequencing, parity and release control.
 
+## 0. Continuation entrypoint
+
+For a new chat/session, use `docs/CFIP-KEY-CONTINUATION-PROMPT.md`. It is intentionally short and points to the authoritative full operating contract at `docs/CFIP-CONTINUATION-PROMPT.md`. The full contract, not the chat prompt or historical report, is the source of operating rules.
+
 ## 1. Canonical document order
 
 Read these documents in this order at the start of every migration continuation:
 
-1. `docs/CFIP-MIGRATION-CONTROL-INDEX.md` — this control index and current gate.
-2. `docs/CFIP-MIGRATION-MASTER-PLAN.md` — sequencing and release gates.
-3. `docs/CFIP-ARCHITECTURE-GUIDE.md` — target architecture and invariants.
-4. `docs/capabilities/source-study-integration.md` — source-study/evidence workflow.
-5. `docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md` — canonical Gate 0 evidence register.
-6. `docs/capabilities/CFIP-CAPABILITY-REGISTRY.md` — capability ownership.
-7. `docs/capabilities/source-evidence-matrix.md` — source evidence.
-8. `docs/capabilities/parity-matrix.md` — target implementation/parity status.
-9. `docs/CFIP-SOURCE-TREE.md` — target tree and ownership grammar.
-10. `docs/adr/ADR-001-ANALYSIS-CATALOG-AND-RUNTIME-EXECUTION-PLANE.md` — canonical analysis identity/execution-plane decision.
-11. `docs/adr/ADR-002-REALTIME-EVENT-TIME-AND-BACKPRESSURE-SEMANTICS.md` — canonical realtime event-time/backpressure decision.
-12. `docs/adr/ADR-003-OBSERVABILITY-AND-AGENT-CONTROL-SEMANTICS.md` — standard-first telemetry and agent-control decision.
-13. `docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md` — dataset identity, PIT, replay and reproducibility decision.
-14. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
-15. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
-16. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
+0. `docs/CFIP-KEY-CONTINUATION-PROMPT.md` — short continuation entrypoint.
+1. `docs/CFIP-CONTINUATION-PROMPT.md` — authoritative operating contract.
+2. `docs/CFIP-MIGRATION-CONTROL-INDEX.md` — this control index and current gate.
+3. `docs/CFIP-MIGRATION-MASTER-PLAN.md` — sequencing and release gates.
+4. `docs/CFIP-ARCHITECTURE-GUIDE.md` — target architecture and invariants.
+5. `docs/capabilities/source-study-integration.md` — source-study/evidence workflow.
+6. `docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md` — canonical Gate 0 evidence register.
+7. `docs/capabilities/CFIP-CAPABILITY-REGISTRY.md` — capability ownership.
+8. `docs/capabilities/source-evidence-matrix.md` — source evidence.
+9. `docs/capabilities/parity-matrix.md` — target implementation/parity status.
+10. `docs/CFIP-SOURCE-TREE.md` — target tree and ownership grammar.
+11. `docs/adr/ADR-001-ANALYSIS-CATALOG-AND-RUNTIME-EXECUTION-PLANE.md` — canonical analysis identity/execution-plane decision.
+12. `docs/adr/ADR-002-REALTIME-EVENT-TIME-AND-BACKPRESSURE-SEMANTICS.md` — canonical realtime event-time/backpressure decision.
+13. `docs/adr/ADR-003-OBSERVABILITY-AND-AGENT-CONTROL-SEMANTICS.md` — standard-first telemetry and agent-control decision.
+14. `docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md` — dataset identity, PIT, replay and reproducibility decision.
+15. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
+16. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
+17. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
+18. Latest progress report and latest contradiction sweep.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -173,29 +180,31 @@ At every continuation:
 
 1. inspect current CForex state;
 2. inspect current CFIP state;
-3. read this index and the master plan/integration guide;
-4. read the canonical Gate 0 register;
-5. identify the active gate and evidence gaps;
-6. inspect canonical migration ownership before any schema change;
-7. make the smallest coherent set of changes that advances the gate;
-8. verify architecture, tests, security, contracts and operational behavior;
-9. update evidence and capability status;
-10. re-read the resulting repository state from GitHub;
-11. never claim parity without executable comparison evidence;
-12. perform a contradiction sweep across the controlled documentation stack;
-13. perform a current standards check for material improvements without introducing novelty-only dependencies.
+3. read the key prompt and full continuation contract;
+4. read this index and the master plan/integration guide;
+5. read the canonical Gate 0 register;
+6. identify the active gate and evidence gaps;
+7. inspect canonical migration ownership before any schema change;
+8. make the smallest coherent set of changes that advances the gate;
+9. verify architecture, tests, security, contracts and operational behavior;
+10. update evidence and capability status;
+11. re-read the resulting repository state from GitHub;
+12. never claim parity without executable comparison evidence;
+13. perform a contradiction and duplicate-artifact sweep across the controlled documentation stack;
+14. perform a current standards check for material improvements without introducing novelty-only dependencies;
+15. report exact changes, verification, progress and blockers.
 
 No silent deletion, history rewrite, capability retirement or architecture divergence is allowed. Intentional divergence requires an ADR and preserved source evidence.
 
 ## 12. Definition of project start
 
-The project is **not yet authorized for Gate 1 runtime implementation**. Gate 0 remains open and its canonical final register explicitly locks CFIP runtime implementation at 0% until Documentation Freeze and formal Gate 0 closure.
+The project is **not yet authorized for Gate 1 runtime implementation**. Gate 0 remains open and its canonical final register locks CFIP runtime implementation at 0% until Documentation Freeze and formal Gate 0 closure.
 
 Documentation, source inspection, evidence extraction, reconciliation and governance work may continue. Foundation implementation may begin only after the formal Gate 0 exit decision authorizes Gate 1.
 
 ## 13. Integrated project rule
 
-The architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
+The key prompt, continuation contract, architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
 
 ## 14. Execution-lifecycle evidence rule
 
@@ -203,7 +212,7 @@ Migration-tree inspection is authoritative evidence for schema existence when di
 
 `schema → producer → consumer → composition → production entrypoint → test → telemetry/recovery → end-to-end lifecycle`.
 
-The new execution-lifecycle addendum records the current stronger evidence for analysis runs, replay cases, dataset fingerprints, realtime runtime events/state and governed evolution records.
+The execution-lifecycle evidence records the current stronger evidence for analysis runs, replay cases, dataset fingerprints, realtime runtime events/state and governed evolution records.
 
 ## 15. Migration hygiene rule
 
