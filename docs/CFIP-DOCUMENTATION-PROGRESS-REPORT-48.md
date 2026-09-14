@@ -3,21 +3,22 @@
 ## Evidence snapshot
 
 - CForex source: `main` / v0.9.154.
-- CFIP target HEAD: `cf11d26b94e1eccf65a35d70a66dec8575f565ba`.
+- CFIP target HEAD: `1c56606180bf23e9d2bda271c90abdab880ec43b`.
 - Gate 0: **OPEN**.
 - CFIP production business runtime: **0% / LOCKED**.
 - Parallel documentation + engineering rule: **ACTIVE**.
 
 ## Batch 48 changes
 
-1. Root-caused the prior global-scale CI failure at the validator/test boundary and hardened `tools/architecture/validate_global_scale_contracts.py` with punctuation-insensitive normalization and more robust obligation matching. The validator remains evidence-only and does not claim measured production capacity.
+1. Root-caused the prior global-scale CI failure at the validator/test boundary. The failure was the canonical prompt-wording test omitting explicit schema-evolution compatibility while the validator correctly required it. The validator was also hardened with punctuation-insensitive normalization and robust obligation matching.
 2. Added `docs/architecture/CFIP-STANDARDS-REVIEW-47.md`, recording current OpenTelemetry Semantic Conventions 1.44.0 and OWASP Agent Control Standard/agentic-security guidance as architecture inputs without introducing mandatory vendor dependencies.
 3. Updated `docs/CFIP-MIGRATION-CONTROL-INDEX.md` to register Amendment 47, D3 PIT/replay contract, standards review, and the explicit parallel documentation/engineering rule.
-4. The Architecture Contracts workflow was triggered for the new target HEAD; its run was queued at report time, so **CI PASS is not claimed**.
+4. Updated the global-scale test fixture to explicitly require `schema evolution compatibility`.
+5. Architecture Contracts was triggered again for the final test-fix HEAD; the newest run was not yet complete at report time, so **CI PASS is not claimed**.
 
 ## External standards findings
 
-OpenTelemetry currently lists Semantic Conventions 1.44.0. CFIP remains OTel-first and provider-neutral. OWASP released the Agent Control Standard on 2026-09-01, emphasizing inspectable, traceable, instrumentable agents and enforceable runtime controls; this reinforces CFIP's existing governed-agent architecture rather than requiring a new runtime dependency.
+OpenTelemetry currently lists Semantic Conventions 1.44.0. CFIP remains OTel-first and provider-neutral. OWASP released the Agent Control Standard on 2026-09-01, emphasizing inspectable, traceable, instrumentable agents and enforceable runtime controls; this reinforces CFIP's existing governed-agent architecture rather than requiring a new runtime dependency. citeturn0search1turn0search0
 
 ## Progress
 
@@ -30,7 +31,7 @@ OpenTelemetry currently lists Semantic Conventions 1.44.0. CFIP remains OTel-fir
 | Analysis engines (D4) | 79% | 79% | Advanced+ / Open |
 | Workers/realtime (D5) | 79% | 79% | Advanced+ / Open |
 | Frontend (D6) | 62% | 62% | Advanced / Open |
-| Tests/verification (D7) | 80% | 81% | Advanced / Open |
+| Tests/verification (D7) | 80% | 82% | Advanced / Open |
 | Policy/config (D8) | 79% | 80% | Advanced+ / Open |
 | External adapters (D9) | 63% | 63% | Advanced / Open |
 | Observability/governance/intelligence | 82% | 84% | Advanced++ / Open |
@@ -48,7 +49,7 @@ OpenTelemetry currently lists Semantic Conventions 1.44.0. CFIP remains OTel-fir
 | D4 Engines | 79% | all concrete engines linked to fixtures and controlled composition |
 | D5 Workers | 79% | ownership/leases/checkpoints/recovery/scale evidence |
 | D6 Frontend | 62% | workflow-level parity and intelligence UX evidence |
-| D7 Tests | 81% | end-to-end/PIT/recovery/capacity evidence |
+| D7 Tests | 82% | end-to-end/PIT/recovery/capacity evidence |
 | D8 Policy | 80% | exhaustive hardcode/config/entitlement reconciliation |
 | D9 Adapters | 63% | provider/broker/model/research lifecycle evidence |
 | D10 Operations | 60% | measured SLO/capacity/DR/residency/failure-domain evidence |
@@ -57,7 +58,7 @@ OpenTelemetry currently lists Semantic Conventions 1.44.0. CFIP remains OTel-fir
 ## Current blockers
 
 1. Gate 0 remains open and runtime remains locked.
-2. Latest Architecture Contracts run for `cf11d26...` was **QUEUED** when this report was written; no CI PASS claim is permitted until completion is observed.
+2. Architecture Contracts CI for the final test-fix HEAD is **PENDING** at report time; no CI PASS claim is permitted until completion is observed.
 3. D3 still lacks executable deterministic reconstruction/replay parity evidence.
 4. D1/D2 exhaustive source graphs remain incomplete.
 5. D5/D10 measured scaling/recovery/residency evidence remains incomplete.
