@@ -21,6 +21,7 @@ Read these documents in this order at the start of every migration continuation:
 11. `docs/adr/ADR-002-REALTIME-EVENT-TIME-AND-BACKPRESSURE-SEMANTICS.md` — canonical realtime event-time/backpressure decision.
 12. `docs/adr/ADR-003-OBSERVABILITY-AND-AGENT-CONTROL-SEMANTICS.md` — standard-first telemetry and agent-control decision.
 13. `docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md` — dataset identity, PIT, replay and reproducibility decision.
+14. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -42,7 +43,7 @@ When evidence conflicts:
 2. migrations, schemas and machine-readable contracts;
 3. runtime composition and adapters;
 4. CI/configuration/scripts;
-5. architecture/state documents;
+5. architecture/state documentation;
 6. release prose/history.
 
 The source-study ZIP is an evidence accelerator and index; it does not override executable CForex evidence.
@@ -190,3 +191,11 @@ Documentation, source inspection, evidence extraction, reconciliation and govern
 ## 13. Integrated project rule
 
 The architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
+
+## 14. Execution-lifecycle evidence rule
+
+Migration-tree inspection is authoritative evidence for schema existence when direct executable migration files are available. GitHub code-search no-results remain bounded negative evidence only. For every important capability, the closure workflow must distinguish:
+
+`schema → producer → consumer → composition → production entrypoint → test → telemetry/recovery → end-to-end lifecycle`.
+
+The new execution-lifecycle addendum records the current stronger evidence for analysis runs, replay cases, dataset fingerprints, realtime runtime events/state and governed evolution records.
