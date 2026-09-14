@@ -12,7 +12,7 @@
 
 | Area | Result | Current rule |
 |---|---|---|
-| Architecture CI | CORRECTED | Final corrected run must be observed before claiming green |
+| Architecture CI | VERIFIED | Final corrective architecture run completed successfully |
 | PIT/replay vocabulary | CORRECTED | Validator accepts source schema terms and documented target-domain aliases |
 | Dynamic Python test loading | CORRECTED | Dynamically loaded modules are registered in `sys.modules` before execution |
 | Migration ownership | CONSISTENT | Original logical owner is corrected; no duplicate corrective migration |
@@ -32,4 +32,4 @@ Historical progress reports remain immutable snapshots. Current canonical docume
 
 ## Decision
 
-Sweep 38: **PASS**, subject to final observation of the corrective GitHub Actions run.
+Sweep 38: **PASS**. Gate 0 remains OPEN until source-closure evidence is complete.
