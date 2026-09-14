@@ -20,6 +20,7 @@ Read these documents in this order at the start of every migration continuation:
 10. `docs/adr/ADR-001-ANALYSIS-CATALOG-AND-RUNTIME-EXECUTION-PLANE.md` — canonical analysis identity/execution-plane decision.
 11. `docs/adr/ADR-002-REALTIME-EVENT-TIME-AND-BACKPRESSURE-SEMANTICS.md` — canonical realtime event-time/backpressure decision.
 12. `docs/adr/ADR-003-OBSERVABILITY-AND-AGENT-CONTROL-SEMANTICS.md` — standard-first telemetry and agent-control decision.
+13. `docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md` — dataset identity, PIT, replay and reproducibility decision.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -68,6 +69,7 @@ The current CForex release truth records **101 required release gates with 100 P
 - i18n, RTL/LTR, accessibility, security, performance and observability are first-class architecture requirements.
 - OpenTelemetry standard semantic conventions are preferred before CFIP-specific telemetry attributes.
 - Agent identity, capability, policy, authorized tool/action and post-action evidence remain separate from analytical-engine authority.
+- Dataset identity, PIT market-data identity, replay-case identity and learning revision identity remain distinct and explicitly linked.
 - Git is the canonical VCS; the Evolution Control Plane is governance/evidence above Git.
 - No premature microservice fragmentation.
 
@@ -128,6 +130,7 @@ No stage may be skipped. A capability can only advance when its required evidenc
 - MongoDB is not introduced without a demonstrated document workload and explicit ownership/consistency/retention/backup decision.
 - Object storage is used for large immutable artifacts when justified.
 - Telemetry is observational; it must not become an implicit correctness database.
+- Dataset/replay artifacts are immutable evidence objects; transactional metadata and large immutable artifacts may use separate storage boundaries when scale requires it.
 
 ## 9. Global-scale requirements
 
@@ -144,7 +147,8 @@ Global scale is established through evidence, not directory count:
 - OpenTelemetry/SLO evidence;
 - tested recovery and rollback;
 - partition ownership/checkpoint semantics for correctness-critical realtime state;
-- observable watermark, lag, lateness and backpressure behavior.
+- observable watermark, lag, lateness and backpressure behavior;
+- incremental/content-addressed integrity verification for large immutable datasets where justified.
 
 Microservices are introduced only when measured scale, fault isolation, ownership or security requires them.
 
