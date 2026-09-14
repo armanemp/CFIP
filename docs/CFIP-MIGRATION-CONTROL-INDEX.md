@@ -2,7 +2,7 @@
 
 **Source:** `armanemp/CForex` `main` v0.9.154  
 **Target:** `armanemp/CFIP` `main`  
-**Purpose:** single front door for architecture, source evidence, migration sequencing, parity and release control.
+**Purpose:** single front door for architecture, source evidence, migration sequencing, parity, project control and release governance.
 
 ## 0. Continuation entrypoint
 
@@ -35,7 +35,9 @@ Read these documents in this order at the start of every migration continuation:
 20. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
 21. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
 22. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
-23. Latest progress report and latest contradiction sweep.
+23. `docs/governance/CFIP-EVOLUTION-CONTROL-PLANE.md` — internal project-control/Git governance and autonomous change lifecycle.
+24. `docs/governance/CFIP-INTELLIGENCE-TRAINING-LIFECYCLE.md` — continuous governed intelligence training/evaluation lifecycle.
+25. Latest progress report and latest contradiction sweep.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -90,6 +92,7 @@ The current CForex release truth records **101 required release gates with 100 P
 - Target schema changes belong to one canonical migration owner; during the mutable pre-Gate-1 phase, corrections to an existing logical migration modify that original migration rather than creating duplicate corrective migrations.
 - Every registered capability has an explicit Platform Intelligence integration boundary; intelligence is cross-cutting and never a second domain authority.
 - Current external standards are reviewed as evidence inputs; no standard review may silently turn into a mandatory vendor/framework dependency.
+- Project-control state is evidence-driven and append-oriented; it cannot hide failed changes by rewriting history.
 
 ## 6. Migration gates
 
@@ -181,7 +184,7 @@ AI agents operate through explicit tools and policy. Sensitive prompt/tool conte
 
 Agent authority is independent of analytical-engine authority; multi-agent actions must remain reconstructable across identities, coordination events and shared-state ownership.
 
-Platform Intelligence is a cross-cutting capability across market data, analysis, consensus, risk/decision, research, learning, frontend assistance, operations, security and governed development. It may automate routine observation, diagnosis, research, planning, verification and bounded remediation, but it must use authoritative domain contracts rather than becoming a second domain authority. See ADR-005 and `docs/capabilities/CFIP-PLATFORM-INTELLIGENCE-COVERAGE-MATRIX.md`.
+Platform Intelligence is a cross-cutting capability across market data, analysis, consensus, risk/decision, research, learning, frontend assistance, operations, security and governed development. It may automate routine observation, diagnosis, research, planning, verification and bounded remediation, but it must use authoritative domain contracts rather than becoming a second domain authority. See ADR-005, `docs/capabilities/CFIP-PLATFORM-INTELLIGENCE-COVERAGE-MATRIX.md` and `docs/governance/CFIP-INTELLIGENCE-TRAINING-LIFECYCLE.md`.
 
 ## 11. Release/continuation protocol
 
@@ -194,15 +197,17 @@ At every continuation:
 5. read the canonical Gate 0 register;
 6. identify the active gate and evidence gaps;
 7. inspect canonical migration ownership before any schema change;
-8. make the smallest coherent set of changes that advances the gate;
-9. verify architecture, tests, security, contracts and operational behavior;
-10. update evidence and capability status;
-11. re-read the resulting repository state from GitHub;
-12. never claim parity without executable comparison evidence;
-13. perform a contradiction and duplicate-artifact sweep across the controlled documentation stack;
-14. perform a current standards check for material improvements without introducing novelty-only dependencies;
-15. verify that every capability remains covered by the Platform Intelligence matrix and that no intelligence hook bypasses domain authority;
-16. report exact changes, verification, progress and blockers.
+8. inspect current ECP project-control state before any autonomous change;
+9. make the smallest coherent set of changes that advances the gate;
+10. verify architecture, tests, security, contracts and operational behavior;
+11. update evidence and capability status;
+12. re-read the resulting repository state from GitHub;
+13. never claim parity without executable comparison evidence;
+14. perform a contradiction and duplicate-artifact sweep across the controlled documentation stack;
+15. perform a current standards check for material improvements without introducing novelty-only dependencies;
+16. verify that every capability remains covered by the Platform Intelligence matrix and that no intelligence hook bypasses domain authority;
+17. run the governed intelligence-learning/evaluation lifecycle over newly verified evidence where applicable;
+18. report exact changes, verification, progress and blockers.
 
 Documentation and safe Gate-0-compatible engineering are parallel tracks. The previous documentation-first sequencing restriction is removed by Amendment 47; neither documentation completeness nor engineering work may be used as an excuse to postpone the other when the work can be progressed safely and independently.
 
