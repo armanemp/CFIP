@@ -50,8 +50,35 @@ Before large-scale target implementation, complete the remaining evidence passes
 | Policy inventory | config/flags/entitlements/hardcode classification | source closure |
 | External adapters | provider/broker/model/research inventory | source closure |
 | Operations | SLO/retention/partition/recovery requirements | source closure |
+| Execution wiring | contract → implementation → adapter → composition/bootstrap → production entrypoint → tests → telemetry/recovery | source closure |
+| Alternate execution paths | canonical identity → runtime/durable/replay path relationship and divergence classification | source closure |
 
 No inferred data should be promoted to authoritative evidence.
+
+### 3.1 Execution-wiring evidence standard
+
+A source capability is not considered operationally evidenced merely because a class, repository, schema or contract exists. Gate 0 must distinguish:
+
+1. contract exists;
+2. implementation exists;
+3. adapter/repository exists;
+4. composition/bootstrap wiring exists;
+5. a production entrypoint invokes the capability;
+6. tests exercise the production path or explicitly cover the isolated component;
+7. operational telemetry/recovery exists where required;
+8. relationships with alternate execution paths are explicit.
+
+Repository search results must also be classified precisely:
+
+- **Positive indexed evidence:** a concrete source location was returned.
+- **Bounded negative evidence:** a search returned no indexed result, but index completeness cannot establish absence.
+- **Verified absence:** an exhaustive source/tree/entrypoint inspection establishes absence.
+
+A code-search no-result must never be promoted directly to an authoritative "unused" or "not implemented" claim.
+
+### 3.2 Analysis execution-path rule
+
+Where CForex contains both durable/application execution and low-latency runtime execution for the same semantic capability, CFIP must preserve the behavior while avoiding duplicate analytical implementations. The target uses one canonical `(engine_id, version)` identity and one semantic implementation per version, with separate governed execution projections where workload requirements differ. Production wiring and the relationship between paths are explicit Gate 0 evidence items.
 
 ## 4. Phase 1 — CFIP foundation
 
