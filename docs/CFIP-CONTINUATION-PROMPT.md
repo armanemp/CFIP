@@ -4,7 +4,7 @@
 
 ## 0. Mission
 
-Build CFIP into a complete, evidence-backed, modern, secure and globally scalable successor to CForex while preserving meaningful source behavior and deliberately improving boundaries, correctness, performance, operability and maintainability.
+Build CFIP into a complete, evidence-backed, modern, secure and globally scalable successor to CForex while preserving meaningful source behavior and deliberately improving boundaries, correctness, performance, operability, maintainability and international scale characteristics.
 
 The atomic unit of progress is a **verified capability**, not a file count, directory count, document count or percentage.
 
@@ -46,6 +46,7 @@ Before every continuation:
 6. Reconcile contradictions before implementing against a disputed assumption.
 7. Inspect actual CForex implementation, migrations/schemas, composition roots, tests and operational artifacts for the capability under study.
 8. For material architecture/security/AI/data/observability/performance/dependency decisions, check current primary/official standards and upstream guidance.
+9. Record the inspected source and target HEADs as the evidence snapshot for the batch; if either HEAD changes during the batch, stop and re-baseline before making canonical status claims.
 
 ## 3. Gate 0 discipline
 
@@ -128,22 +129,30 @@ Never claim parity, PIT correctness, replay equivalence, recovery, scale, securi
 
 ## 7. Global scale and performance
 
-Scale is evidence, not directory structure. Require evidence for:
+Global scale is a first-class architecture constraint from the beginning, not a post-migration optimization phase. Scale is evidence, not directory structure. Require evidence for:
 
 - stateless horizontally scalable APIs;
-- partitionable workers/streams;
+- regional API placement and latency-aware routing when justified;
+- tenant/workspace isolation and noisy-neighbor controls;
+- partitionable workers/streams with explicit ownership keys;
 - deterministic idempotent consumers;
-- bounded caches;
+- bounded caches with explicit invalidation/authority semantics;
 - explicit backpressure and graceful degradation;
-- PostgreSQL indexing/partitioning/retention;
-- ClickHouse analytical workload isolation;
+- PostgreSQL indexing/partitioning/retention and a clear control-plane/data-plane boundary;
+- ClickHouse analytical workload isolation and retention strategy;
 - asynchronous workload isolation;
 - regional latency/data-residency strategy when required;
-- capacity/SLO measurements;
-- tested recovery/rollback;
+- jurisdiction-aware storage/processing boundaries where required;
+- capacity/SLO measurements and representative load methodology;
+- tested recovery/rollback and failure-domain assumptions;
 - partition ownership/checkpoints for correctness-critical realtime state;
-- queue depth, lag, watermark lag, lateness, processing latency and backpressure telemetry;
-- representative load/capacity methodology.
+- queue depth, consumer lag, watermark lag, lateness, processing latency and backpressure telemetry;
+- connection-pool, concurrency and resource-budget controls;
+- cost-aware scaling and bounded fan-out for expensive workloads;
+- multi-region consistency semantics explicitly classified as strong, causal, eventual or intentionally regional rather than left implicit;
+- disaster-recovery objectives (RPO/RTO) tied to actual data ownership and recovery mechanisms;
+- schema/data evolution compatibility across independently deployed regions/workers;
+- rate limits, quotas and fair-use controls at tenant/provider/workload boundaries.
 
 Performance workflow:
 
@@ -153,9 +162,24 @@ Never trade correctness, PIT, idempotency, auditability or security for speed.
 
 Project speed should improve through parallel read/evidence tracks, deterministic reusable artifacts, batched inspection and serialized canonical writes—not through weaker evidence.
 
-## 8. Observability and agent control
+## 8. Global-scale data architecture rules
 
-Use OpenTelemetry Semantic Conventions before custom CFIP attributes. Current official conventions cover common HTTP, messaging, database, events, traces, metrics, logs and resources; custom attributes need a clear use case, naming, sensitivity classification and consumer/query purpose. citeturn0search2turn0search5
+The target must remain intentionally polyglot but not polyglot-by-default:
+
+- PostgreSQL is the authoritative transactional/control-plane store unless an explicit ADR says otherwise.
+- ClickHouse is for high-volume analytical/time-series workloads where its workload model is appropriate.
+- Redis is bounded cache/coordination/ephemeral state and never the sole correctness authority.
+- Object storage is preferred for large immutable artifacts when database storage would create unnecessary cost or contention.
+- MongoDB is conditional; introduce it only after a demonstrated document-shaped workload and explicit ownership, consistency, indexing, retention, backup, recovery and residency analysis.
+- Every durable dataset has an owner, lifecycle, revision/identity strategy, retention class, access policy and recovery strategy.
+- Cross-region replication must specify whether it is authoritative replication, read scaling, disaster recovery, or analytical copy; these are not interchangeable.
+- Market data must have explicit partitioning, retention and historical reconstruction semantics so global scale never compromises PIT correctness.
+- Hot-path reads must have bounded latency and cache authority rules; cache misses must not silently alter domain semantics.
+- Large fan-out operations must use asynchronous workflows, bounded concurrency and observable completion state.
+
+## 9. Observability and agent control
+
+Use OpenTelemetry Semantic Conventions before custom CFIP attributes. Current official conventions cover common HTTP, messaging, database, events, traces, metrics, logs and resources; custom attributes need a clear use case, naming, sensitivity classification and consumer/query purpose.
 
 Telemetry remains observational and cannot become an implicit correctness database.
 
@@ -165,7 +189,9 @@ Agent boundary:
 
 Agent authority is separate from analytical-engine authority. Sensitive prompt/tool content is not captured by default. Autonomous changes require checkpoint, risk classification, isolation, verification, release gates, health guard and rollback.
 
-## 9. Migration/source-study method
+For multi-agent or concurrent autonomous workers, also require shared-state integrity, authenticated role-bounded messaging, safe-default disagreement handling, worker isolation/containment and per-agent plus coordination-level audit reconstruction.
+
+## 10. Migration/source-study method
 
 The migration unit is a capability contract, not a source file:
 
@@ -175,7 +201,7 @@ Target architecture may diverge intentionally from CForex structure only when be
 
 Source migrations are immutable. In mutable CFIP target migrations, a correction belonging to an existing logical migration **modifies that original migration**; never create a duplicate corrective migration for the same logical change.
 
-## 10. Active verification tooling
+## 11. Active verification tooling
 
 Current tools include:
 
@@ -187,10 +213,11 @@ Current tools include:
 - `tools/architecture/validate_worker_lifecycle.py`
 - `tools/architecture/validate_dependency_direction.py`
 - `tools/architecture/validate_pit_replay_contracts.py`
+- `tools/architecture/validate_global_scale_contracts.py`
 
 These are evidence accelerators, not automatic parity proof. Architecture CI remains consolidated in `.github/workflows/architecture-contracts.yml`.
 
-## 11. Required work phases
+## 12. Required work phases
 
 ### A — Inspect
 
@@ -216,7 +243,7 @@ Update canonical manifest/matrices only from verified evidence. Run contradictio
 
 Always report exact heads, exact changed files/commits, engineering vs documentation work, verification/CI, unverified claims, overall progress, D1–D11, blockers, evidence gaps, next parallel tracks, Gate 0 and runtime status.
 
-## 12. Parallel evidence tracks
+## 13. Parallel evidence tracks
 
 Run independent tracks in parallel where tooling permits:
 
@@ -231,7 +258,7 @@ Run independent tracks in parallel where tooling permits:
 
 Parallel reads are encouraged. Shared canonical writes and status changes must be reconciled and serialized.
 
-## 13. Stop conditions
+## 14. Stop conditions
 
 Stop and reconcile when:
 
@@ -244,11 +271,13 @@ Stop and reconcile when:
 - a dependency lacks a demonstrated need;
 - a performance change lacks a baseline;
 - negative search is being treated as absence proof;
-- runtime code would be added solely to improve progress metrics.
+- runtime code would be added solely to improve progress metrics;
+- a global-scale decision introduces a cross-region consistency assumption without an explicit classification/ADR;
+- a new datastore or external service is proposed without workload, ownership, failure, retention, recovery and cost evidence.
 
 Record the blocker, gather/repair evidence, then resume.
 
-## 14. Baseline to verify, never blindly trust
+## 15. Baseline to verify, never blindly trust
 
 Current documented baseline:
 
@@ -259,7 +288,7 @@ Current documented baseline:
 
 Recheck all of these against GitHub at every continuation.
 
-## 15. Completion criteria
+## 16. Completion criteria
 
 Migration is complete only when every source capability is either:
 
@@ -268,11 +297,11 @@ Migration is complete only when every source capability is either:
 
 Gate 0 closes only after sufficient D1–D11 source-closure evidence and a formal decision in the canonical Gate-0 register. Runtime gates then proceed sequentially.
 
-## 16. Key-prompt rule
+## 17. Key-prompt rule
 
 The short chat prompt is a pointer, not a second operating contract. It must direct the next session to read `docs/CFIP-KEY-CONTINUATION-PROMPT.md` and then this file. Keeping one authoritative long prompt prevents prompt drift.
 
-## 17. Critical reminder
+## 18. Critical reminder
 
 Do not spend the whole batch writing reports. Do not spend the whole batch coding without source study and documentation reconciliation. Every cycle must combine:
 
