@@ -9,6 +9,7 @@ system has demonstrated those properties under production load.
 from __future__ import annotations
 
 import argparse
+import re
 from pathlib import Path
 
 # Each obligation contains alternatives; every term in an alternative must be
@@ -16,29 +17,36 @@ from pathlib import Path
 # ``PostgreSQL`` and prevents unrelated prose from satisfying the contract.
 REQUIRED_CONTRACTS: tuple[tuple[str, tuple[tuple[str, ...], ...]], ...] = (
     ("stateless_api", (("stateless", "horizontally scalable", "api"),)),
-    ("partitionable_workers", (("partitionable workers",), ("partitionable", "workers/streams"))),
+    ("partitionable_workers", (("partitionable workers",), ("partitionable", "workers streams"))),
     ("idempotent_consumers", (("deterministic idempotent consumers",), ("idempotent", "consumers"))),
     ("backpressure", (("explicit backpressure",),)),
-    ("postgresql_scale", (("PostgreSQL indexing/partitioning/retention",), ("PostgreSQL", "partitioning", "retention"))),
-    ("clickhouse_isolation", (("ClickHouse analytical workload isolation",), ("ClickHouse", "workload isolation"))),
+    ("postgresql_scale", (("postgresql indexing partitioning retention",), ("postgresql", "partitioning", "retention"))),
+    ("clickhouse_isolation", (("clickhouse analytical workload isolation",), ("clickhouse", "workload isolation"))),
     ("async_isolation", (("asynchronous workload isolation",), ("asynchronous", "workload isolation"))),
-    ("regional_strategy", (("regional latency/data-residency strategy",), ("regional", "data-residency"))),
-    ("capacity_slo", (("capacity/SLO measurements",), ("capacity/SLO",), ("capacity", "SLO"))),
-    ("recovery_rollback", (("tested recovery/rollback",), ("recovery", "rollback"))),
-    ("checkpoint_ownership", (("partition ownership/checkpoints",), ("partition ownership", "checkpoint"))),
-    ("realtime_telemetry", (("queue depth, lag, watermark lag",), ("queue depth", "watermark lag"))),
-    ("load_methodology", (("representative load/capacity methodology",), ("representative load methodology",), ("load/capacity",))),
+    ("regional_strategy", (("regional latency data-residency strategy",), ("regional", "data-residency"))),
+    ("capacity_slo", (("capacity slo measurements",), ("capacity slo",), ("capacity", "slo"))),
+    ("recovery_rollback", (("tested recovery rollback",), ("recovery", "rollback"))),
+    ("checkpoint_ownership", (("partition ownership checkpoints",), ("partition ownership", "checkpoint"))),
+    ("realtime_telemetry", (("queue depth lag watermark lag",), ("queue depth", "watermark lag"))),
+    ("load_methodology", (("representative load capacity methodology",), ("representative load methodology",), ("load capacity",))),
     ("resource_budgets", (("resource budgets",), ("bounded concurrency",))),
-    ("rate_limits", (("rate limits, quotas",), ("rate limits", "quotas"), ("rate limits",))),
-    ("consistency_semantics", (("consistency semantics",), ("strong, causal, eventual",), ("strong", "causal", "eventual"))),
-    ("schema_evolution", (("schema/data evolution compatibility",), ("schema evolution", "compatibility"), ("data evolution", "compatibility"))),
-    ("rpo_rto", (("RPO/RTO",), ("recovery point objective", "recovery time objective"))),
+    ("rate_limits", (("rate limits quotas",), ("rate limits", "quotas"), ("rate limits",))),
+    ("consistency_semantics", (("consistency semantics",), ("strong causal eventual",), ("strong", "causal", "eventual"))),
+    ("schema_evolution", (("schema data evolution compatibility",), ("schema evolution", "compatibility"), ("data evolution", "compatibility"))),
+    ("rpo_rto", (("rpo rto",), ("recovery point objective", "recovery time objective"))),
 )
+
+
+def _normalize(text: str) -> str:
+    """Normalize case and punctuation without changing word boundaries."""
+    text = text.lower().replace("/", " ")
+    text = re.sub(r"[^\w\-]+", " ", text, flags=re.UNICODE)
+    return " ".join(text.split())
 
 
 def validate(text: str) -> list[str]:
     """Return missing architecture obligations from a text corpus."""
-    normalized = " ".join(text.lower().split())
+    normalized = _normalize(text)
     missing: list[str] = []
     for key, alternatives in REQUIRED_CONTRACTS:
         if not any(all(term.lower() in normalized for term in alternative) for alternative in alternatives):
