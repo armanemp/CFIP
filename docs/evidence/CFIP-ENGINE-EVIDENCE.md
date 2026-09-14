@@ -51,108 +51,149 @@ The executable API composition in `apps/api/src/fi_api/trading.py` constructs an
 - `StrategyEngine`
 - `StructureEngine`
 
-This is a material finding: two runtime engines (`MomentumEngine`, `VolatilityEngine`) are outside the 14 top-level `engines/` package directories previously counted. Conversely, the `technical` directory's reference implementation is not present in this `EngineRuntime` tuple. Therefore the migration must maintain **three distinct inventories** rather than collapsing them:
+Two runtime engines are imported from `fi_application.analysis_engine.builtin`, not from the top-level `engines/` namespace. The other 13 runtime instances are imported from their dedicated `fi_engine_*` packages. The runtime therefore cannot be reconstructed safely from the `engines/` directory tree alone.
+
+The migration must maintain **three distinct inventories**:
 
 1. source engine namespaces/directories;
-2. executable engine implementations;
+2. executable engine implementations/descriptors;
 3. runtime-registered engine instances.
 
 The previous directory-only count must not be treated as the runtime engine count.
 
-## 4. Execution-kernel evidence
+## 4. EngineRuntime execution semantics
 
-`packages/domain/src/fi_domain/analysis/registry.py` defines the framework-independent `EngineRegistry`. Registration is keyed by `(engine_id, version)` and duplicate registration is rejected. The registry can retrieve an exact version, select the latest registered version, enumerate descriptors and construct a capability graph from engine descriptors.
+`packages/application/src/fi_application/analysis_engine/runtime.py` directly defines the production runtime behavior.
 
-The registry therefore establishes:
+Observed semantics:
 
-- stable engine identity;
-- explicit engine versioning;
-- duplicate-registration protection;
-- descriptor-driven capability discovery;
-- separation between engine registration and execution.
+- engines are registered by `(descriptor.engine_id, descriptor.version)`;
+- duplicate `(engine_id, version)` registration raises `ValueError`;
+- `engine_ids` exposes stable sorted unique engine IDs;
+- descriptor lookup supports exact version or latest registered version;
+- execution increments per-engine execution count;
+- execution is bounded by `descriptor.latency_budget_ms` using `asyncio.wait_for`;
+- timeouts increment both timeout and failure counters and re-raise `TimeoutError`;
+- other exceptions increment failure counters and re-raise;
+- latency is recorded for every execution attempt in a bounded 256-sample deque;
+- health derives status from failure rate and p95 latency after a minimum three-sample threshold;
+- health exposes executions, failures, timeouts, last latency, p95, failure rate and score.
 
-`packages/contracts/src/fi_contracts/analysis/execution.py` defines the historical execution contract with `AnalysisRequest`, `AnalysisResult`, `AnalysisRunRecord` and `AnalysisProvenance`. The request persists engine identity/version, input snapshot, parameters, `data_revision`, request time and correlation/causation IDs. Provenance persists input references, dependency versions, parameter hash, input hash and engine hash.
+This is an in-memory runtime health contract. The inspected runtime file does **not** itself persist engine health, emit an engine-health event, or implement resource/concurrency admission control. Those concerns therefore remain open unless another executable source path proves them.
 
-`packages/infrastructure/src/fi_infrastructure/analysis.py` persists the analysis-run state through PostgreSQL. Existing run IDs are treated idempotently on creation; status/result updates use a row lock.
+## 5. Concrete runtime-only engine evidence
 
-## 5. Production engine contract V2
+`packages/application/src/fi_application/analysis_engine/builtin.py` directly defines both runtime-only engines.
 
-`packages/contracts/src/fi_contracts/analysis/engine.py` defines the production `EngineDescriptorV2`, `EngineExecutionContext`, `EngineEvidence`, `EngineOutput` and `EngineHealthSnapshot` contracts.
+### `technical.momentum@1.0.0`
 
-The descriptor explicitly carries:
+- display name: `Momentum`
+- input contract: `market.timeline.ohlcv`
+- output contract: `analysis.engine.output`
+- timeframes: `1m`, `5m`, `15m`, `1h`, `4h`, `1d`
+- warmup: 20 bars
+- latency budget: 50 ms
+- capability: `technical_analysis`
+- deterministic descriptor defaults to true
+- calculation: bounded normalized return over up to a 20-bar lookback
+- direction: bullish above `0.05`, bearish below `-0.05`, otherwise neutral
+- confidence: `min(1, len(closes)/20)`
+- insufficient observations produce neutral, zero-confidence, degraded output
+- evidence references `timeline:{data_revision}` and propagates the same `data_revision` as provenance
 
-- `engine_id`
-- version
-- display name
-- input/output contracts
-- supported timeframes
-- dependencies
-- warmup bars
-- latency budget
-- failure policy
-- deterministic flag
-- capability ID
+### `technical.volatility@1.0.0`
 
-The execution context carries execution/correlation/causation IDs, instrument, timeframe, `data_revision`, observations and `as_of`.
+- display name: `Volatility`
+- input contract: `market.timeline.ohlcv`
+- output contract: `analysis.engine.output`
+- timeframes: `5m`, `15m`, `1h`, `4h`, `1d`
+- warmup: 20 bars
+- latency budget: 50 ms
+- capability: `volatility_analysis`
+- deterministic descriptor defaults to true
+- calculation: current high-low range divided by close, compared with the mean of prior ranges
+- score: bounded `ratio - 1`
+- insufficient ranges produce neutral, zero-confidence, degraded output
+- evidence references `timeline:{data_revision}` and propagates the same `data_revision` as provenance
 
-The output carries engine identity/version, bounded direction/score/confidence, structured numeric values, evidence, provenance references and degraded status.
+These implementations are simple deterministic contract implementations, not evidence that CForex's full technical-analysis namespace is exhausted by these two engines.
 
-Health evidence includes execution/failure/timeout counts, latency, p95 latency, failure rate and health score.
+## 6. Execution-fabric failure semantics
 
-The source therefore has a richer production contract than a simple function returning a score. CFIP must preserve this operational and reproducibility surface.
+`packages/application/src/fi_application/analysis_engine/fabric.py` runs requested engine IDs concurrently against a shared `EngineExecutionContext` containing instrument, timeframe, `data_revision`, observations, correlation ID, optional causation ID and `as_of`.
 
-## 6. Concrete engine evidence
+The fabric behavior is explicit:
 
-| Engine | Descriptor | Warmup | Latency | Observed behavior |
-|---|---|---:|---:|---|
-| Structure | `structure.swing@1.1.0` | 7 | 60 ms | Detects current close breaking the prior six-bar high/low range; normalizes break magnitude by ATR; degraded when fewer than 7 bars. |
-| Liquidity | `liquidity.map@1.1.0` | 6 | 65 ms | Counts recent highs/lows near current extremes using ATR-derived tolerance and combines imbalance with current candle direction. |
-| FVG | `fvg.causal@1.2.0` | 3 | 50 ms | Detects a causal three-bar FVG, normalizes gap size by ATR and emits gap bounds/sign. |
-| Order Block | `order_block.causal@1.1.0` | 3 | 55 ms | Detects displacement following an opposite-direction prior candle and normalizes displacement by ATR. |
-| Regime | `regime.classify@1.1.0` | 8 | 55 ms | Derives directional trend from mean return and scales it by recent return volatility. |
-| MTF | `mtf.alignment@1.1.0` | 12 | 65 ms | Builds higher-timeframe targets from canonical timeframe semantics and scores directional agreement. |
-| Confluence | `confluence.score@1.1.0` | 20 | 75 ms | Combines EMA trend, momentum and volatility-conditioned trend evidence with weighted components. |
-| Contradiction | `contradiction.detect@1.1.0` | 12 | 60 ms | Detects sign disagreement between short and longer mean returns and emits conflict evidence. |
-| Intelligence Score | `intelligence.score@1.1.0` | 20 | 60 ms | Combines mean-return direction with consistency/data-quality evidence. |
-| Scoring | `signal.scoring@1.1.0` | 5 | 55 ms | Combines momentum, candle-body and recent-range position into a bounded score. |
-| Signal | `signal.trigger@1.1.0` | 8 | 50 ms | Converts bounded mean-return evidence into a trigger only above the observed threshold. |
-| Strategy | `strategy.baseline@1.1.0` | 10 | 60 ms | Uses fast/slow EMA spread as a deterministic baseline strategy score. |
-| Backtest | `backtest.replay@1.1.0` | 5 | 100 ms | Performs deterministic one-step directional hit-rate replay from prior return information. |
-| Technical reference | `technical.reference@0.1.0` | legacy/reference | legacy/reference | Minimal deterministic passthrough/reference implementation; not a complete technical-indicator engine. |
-| Momentum | runtime-only component | runtime contract must be traced | runtime contract must be traced | Constructed directly in API runtime; implementation and descriptor must be mapped explicitly. |
-| Volatility | runtime-only component | runtime contract must be traced | runtime contract must be traced | Constructed directly in API runtime; implementation and descriptor must be mapped explicitly. |
+- successful `EngineOutput` values are retained;
+- if an engine raises and its descriptor is `FAIL_CLOSED`, the fabric raises a `RuntimeError` rather than silently dropping the engine;
+- `RETURN_PARTIAL` and `SKIP` are explicitly represented by the descriptor contract and permit the fabric to return the successful outputs;
+- evidence projection converts engine outputs into normalized intelligence evidence with source engine identity, polarity, weight, reliability and freshness.
 
-The table intentionally distinguishes evidence already inspected from runtime components whose implementation contracts still require direct tracing.
+The dedicated test `tests/unit/analysis_engine/test_fabric_failure_policy.py` verifies the fail-closed behavior with a synthetic failing engine. This closes an important ambiguity from the earlier pass: failure policy is enforced at the fabric boundary, not by `EngineRuntime.execute()` itself.
 
-## 7. Runtime API evidence
+## 7. Historical execution contract and V1/V2 relationship
 
-`GET /v1/trading/analysis/engines` iterates `EngineRuntime.engine_ids`, retrieves each descriptor and health snapshot, and exposes both through the API. Therefore runtime registration is not merely construction-time wiring: the registered engine inventory and operational health are observable API contracts.
+`packages/contracts/src/fi_contracts/analysis/execution.py` defines the historical `EngineDescriptor` plus durable execution models:
 
-`GET /v1/trading/analysis/engine-evidence` runs the registered runtime engine IDs against one causal workspace timeline. The request validates bar bounds, obtains a workspace snapshot, constructs observations from the snapshot, passes the snapshot `data_revision` and `as_of` into the execution fabric, propagates a correlation ID, and returns engine outputs plus evidence. This establishes a concrete source contract for same-input multi-engine execution and evidence projection.
+- `EngineDescriptor`: identity/version, display/input/output contracts, dependencies, reproducibility level and capabilities;
+- `AnalysisRequest`: engine identity/version, input snapshot, arbitrary parameters, `data_revision`, request timestamp and correlation/causation IDs;
+- `AnalysisProvenance`: input references, dependency versions, parameter hash, input hash and engine hash;
+- `AnalysisResult`: terminal execution status, output/error and provenance;
+- `AnalysisRunRecord`: replayable request/result/status record.
 
-The API also wires `AnalysisFabric(_engine_runtime)`, making the runtime registry the execution source for the engine-evidence route rather than independently constructing engines per request.
+`packages/contracts/src/fi_contracts/analysis/engine.py` defines the newer `EngineDescriptorV2` operational contract with timeframes, warmup, latency budget, failure policy, deterministic flag and singular capability ID, plus execution context/output/health contracts.
 
-## 8. Determinism and temporal evidence
+The source does **not** justify treating V1 as deleted merely because V2 exists. The two contracts serve overlapping but different concerns: V1 is coupled to durable analysis-run/reproducibility records, while V2 is coupled to operational runtime registration/execution/health. Exact authoritative usage across every engine path remains an open reconciliation item.
 
-Production engine descriptors explicitly mark deterministic behavior and expose failure policy. `EngineExecutionContext` carries `data_revision` and `as_of`; engine output evidence references the same revision. The historical analysis contract additionally stores input/parameter/engine hashes and dependency versions.
+## 8. Registry and runtime separation
 
-This establishes a strong source reproducibility contract. It does not yet prove full PIT reconstruction, dataset fingerprinting or replay equivalence for every engine; those require direct inspection of the corresponding data/replay/test implementations.
+`packages/domain/src/fi_domain/analysis/registry.py` provides a framework-independent registry keyed by `(engine_id, version)`, with duplicate protection, exact/latest lookup, descriptor enumeration and capability-graph construction.
 
-## 9. Failure, degraded and health behavior
+The API runtime separately constructs `EngineRuntime` and `AnalysisFabric`. Therefore CFIP must not collapse the domain registry, executable runtime registry and durable execution record into one mechanism. Their ownership and synchronization rules must be explicit during migration.
 
-The production descriptor supports `FAIL_CLOSED`, `RETURN_PARTIAL` and `SKIP` failure policies. Concrete engines inspected so far explicitly degrade on insufficient history rather than fabricating a normal result. The production health snapshot tracks executions, failures, timeouts, last/p95 latency, failure rate and health score.
+## 9. Runtime API evidence
 
-The source test surface under `tests/unit/analysis_engine/` includes:
+`GET /v1/trading/analysis/engines` exposes the active runtime IDs together with descriptors and health snapshots.
 
-- `test_analysis_fabric.py`
-- `test_engine_runtime.py`
-- `test_fabric_failure_policy.py`
-- `test_modular_engine_behavior.py`
-- `test_modular_engine_catalog.py`
+`GET /v1/trading/analysis/engine-evidence` validates the input bars, obtains one causal workspace snapshot, builds observations from that same snapshot, propagates `data_revision` and `as_of`, generates a correlation ID, executes the registered runtime IDs through `AnalysisFabric`, and returns outputs/evidence.
 
-Exact assertion-to-engine mapping remains open.
+This proves a shared causal execution path across engines rather than independent market-state loading per engine.
 
-## 10. Migration invariants
+## 10. Determinism and temporal evidence
+
+The production V2 descriptor defaults engines to deterministic behavior and exposes an explicit deterministic field. `EngineExecutionContext` carries `data_revision` and `as_of`; the runtime-only engines include the revision in their evidence/provenance references. The historical analysis contract additionally preserves input/parameter/engine hashes and dependency versions.
+
+This establishes a strong reproducibility contract. It does **not yet prove** full PIT dataset reconstruction, immutable dataset fingerprinting or replay equivalence for every engine. Those require direct evidence from the market-data snapshot, replay/backtest and engine-specific fixture paths.
+
+## 11. Test evidence mapped in this pass
+
+`tests/unit/analysis_engine/test_engine_runtime.py` directly verifies:
+
+- momentum deterministic output and provenance propagation;
+- successful volatility health accounting;
+- timeout counting;
+- single-sample latency not causing premature health degradation;
+- repeated latency breach producing degraded health.
+
+`tests/unit/analysis_engine/test_fabric_failure_policy.py` directly verifies that a `FAIL_CLOSED` engine failure cannot be silently converted into a partial result.
+
+The remaining engine-specific test files still require exact assertion-to-engine mapping and fixture extraction.
+
+## 12. Failure, degraded and health boundaries
+
+Concrete engines degrade on insufficient history rather than fabricating a normal result. Runtime timeout and exception accounting is explicit. Failure policy is enforced by the fabric. Health is computed from bounded in-memory samples.
+
+Important negative evidence:
+
+- no engine-health persistence was observed in `EngineRuntime` itself;
+- no engine-health event emission was observed in `EngineRuntime` itself;
+- no general resource/concurrency admission policy was observed in `EngineRuntime` itself;
+- no per-engine parameter schema beyond the generic execution contract was observed in the inspected runtime-only engines;
+- no full PIT dataset fingerprint/replay equivalence was established by these files alone.
+
+These are evidence gaps, not claims that no other source module implements them.
+
+## 13. Migration invariants
 
 CFIP must preserve:
 
@@ -166,27 +207,29 @@ CFIP must preserve:
 - operational engine health;
 - one runtime execution fabric rather than duplicated per-route engine logic;
 - API projection of runtime descriptors/health without making the API the engine implementation;
-- live/replay/backtest semantic compatibility.
+- live/replay/backtest semantic compatibility;
+- separation of durable execution records from transient runtime health state.
 
-## 11. D4 closure gaps
+## 14. D4 closure gaps
 
-D4 remains **advanced, not closed**. Remaining evidence tasks:
+D4 remains **advanced, not closed**. Remaining evidence tasks are now narrower:
 
-1. Trace `EngineRuntime` implementation and every runtime-only engine (`MomentumEngine`, `VolatilityEngine`) to concrete descriptors and source files.
-2. Reconcile V1 `EngineDescriptor` and V2 `EngineDescriptorV2` usage and determine which contract is authoritative for each execution path.
-3. Map all engine namespaces to executable implementations and runtime registration, including any implementation outside `engines/`.
-4. Map every engine to exact test assertions and golden/regression fixtures.
-5. Verify parameter schemas, serialization and deterministic fingerprints.
-6. Verify dependencies and upstream data requirements.
-7. Verify PIT dataset/snapshot semantics per engine.
-8. Verify replay/backtest equivalence and stateful behavior.
-9. Verify timeout/resource behavior and actual failure-policy handling.
-10. Map engine events, telemetry and health persistence/retention.
-11. Reconcile engine capabilities against the capability registry and parity matrix.
-12. Preserve explicit negative evidence where a named namespace is only a reference implementation.
+1. map all 15 runtime engines to their exact source files, descriptors, tests and fixtures;
+2. enumerate all engine registration paths and reconcile domain registry vs runtime registry;
+3. determine authoritative V1/V2 usage for each execution path;
+4. extract per-engine parameter schemas/serialization/fingerprints where present;
+5. verify dependencies and upstream data contracts for every engine;
+6. verify PIT dataset/snapshot semantics per engine;
+7. verify replay/backtest equivalence and stateful behavior;
+8. trace engine execution events/telemetry and any persistent health projections outside `EngineRuntime`;
+9. reconcile runtime capabilities against the capability registry and parity matrix;
+10. inspect remaining engine test modules and golden/regression fixtures;
+11. explicitly census any executable engine-like components outside both `engines/` and `analysis_engine/builtin.py`.
 
-## 12. Migration conclusion
+## 15. Migration conclusion
 
-This pass materially deepens D4 and corrects the earlier directory-only inventory. CForex exposes a runtime engine surface that is broader than the top-level `engines/` directories, and the runtime itself is an externally observable contract. CFIP migration evidence must therefore model namespace, executable implementation and runtime registration separately.
+This pass materially closes the previous ambiguity around runtime-only engines and failure policy. The source now has directly evidenced runtime composition, concrete `MomentumEngine`/`VolatilityEngine` implementations, `EngineRuntime` timeout/health behavior, `AnalysisFabric` failure-policy enforcement, V1/V2 contract coexistence and direct runtime tests.
+
+D4 is therefore **advanced and materially closer to closure**, but it remains open until the remaining engine-wide registration, fixture, PIT/replay, telemetry and reconciliation evidence is collected.
 
 No CFIP runtime implementation or parity status is advanced by this document.
