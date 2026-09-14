@@ -75,6 +75,8 @@ The verification tooling is intentionally outside CFIP production runtime. It va
 
 `tools/architecture/reconcile_engine_registry.py` reconciles the expected 15 source engine classes against static class, registration and test evidence. It is deliberately conservative and does not claim semantic parity, PIT correctness or replay equivalence from names alone.
 
+`tools/architecture/validate_worker_lifecycle.py` scans source worker/realtime Python files for entrypoint, shutdown, health/readiness and error-boundary lifecycle signals. It is evidence collection only and does not prove deployment, partition ownership, checkpoint durability, recovery, scaling or SLO compliance.
+
 `.github/workflows/architecture-contracts.yml` runs the architecture validator and standard-library architecture/source-closure tests. If a target migration runtime tree is later materialized, the same gate automatically validates its migration graph without creating a second workflow.
 
 These are **real operational quality gates**, not placeholder runtime modules. They do not close Gate 0 and do not execute CFIP production code.
