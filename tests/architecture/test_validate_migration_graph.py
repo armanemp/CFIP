@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
@@ -9,7 +10,7 @@ TOOL = Path(__file__).resolve().parents[2] / "tools" / "architecture" / "validat
 spec = importlib.util.spec_from_file_location("validate_migration_graph", TOOL)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)
-assert spec.loader
+sys.modules[spec.name] = module
 spec.loader.exec_module(module)
 
 
