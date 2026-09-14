@@ -31,7 +31,8 @@ Read these documents in this order at the start of every migration continuation:
 16. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
 17. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
 18. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
-19. Latest progress report and latest contradiction sweep.
+19. `docs/capabilities/CFIP-PLATFORM-INTELLIGENCE-COVERAGE-MATRIX.md` — mandatory capability-wide intelligence integration contract.
+20. Latest progress report and latest contradiction sweep.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -84,6 +85,7 @@ The current CForex release truth records **101 required release gates with 100 P
 - Git is the canonical VCS; the Evolution Control Plane is governance/evidence above Git.
 - No premature microservice fragmentation.
 - Target schema changes belong to one canonical migration owner; during the mutable pre-Gate-1 phase, corrections to an existing logical migration modify that original migration rather than creating duplicate corrective migrations.
+- Every registered capability has an explicit Platform Intelligence integration boundary; intelligence is cross-cutting and never a second domain authority.
 
 ## 6. Migration gates
 
@@ -175,7 +177,7 @@ AI agents operate through explicit tools and policy. Sensitive prompt/tool conte
 
 Agent authority is independent of analytical-engine authority; multi-agent actions must remain reconstructable across identities, coordination events and shared-state ownership.
 
-Platform Intelligence is a cross-cutting capability across market data, analysis, consensus, risk/decision, research, learning, frontend assistance, operations, security and governed development. It may automate routine observation, diagnosis, research, planning, verification and bounded remediation, but it must use authoritative domain contracts rather than becoming a second domain authority. See ADR-005.
+Platform Intelligence is a cross-cutting capability across market data, analysis, consensus, risk/decision, research, learning, frontend assistance, operations, security and governed development. It may automate routine observation, diagnosis, research, planning, verification and bounded remediation, but it must use authoritative domain contracts rather than becoming a second domain authority. See ADR-005 and `docs/capabilities/CFIP-PLATFORM-INTELLIGENCE-COVERAGE-MATRIX.md`.
 
 ## 11. Release/continuation protocol
 
@@ -195,7 +197,8 @@ At every continuation:
 12. never claim parity without executable comparison evidence;
 13. perform a contradiction and duplicate-artifact sweep across the controlled documentation stack;
 14. perform a current standards check for material improvements without introducing novelty-only dependencies;
-15. report exact changes, verification, progress and blockers.
+15. verify that every capability remains covered by the Platform Intelligence matrix and that no intelligence hook bypasses domain authority;
+16. report exact changes, verification, progress and blockers.
 
 No silent deletion, history rewrite, capability retirement or architecture divergence is allowed. Intentional divergence requires an ADR and preserved source evidence.
 
