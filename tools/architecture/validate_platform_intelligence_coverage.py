@@ -4,6 +4,11 @@
 This is an architecture/evidence guard. It proves that every capability ID in
 this controlled registry has an explicit intelligence integration declaration;
 it does not claim runtime implementation or production readiness.
+
+The matrix explicitly allows capability-specific omission of non-universal
+hooks. The validator therefore enforces the universal integration boundary
+(observe/context/audit) and lets the matrix declare reason/act/verify/learn/
+safety according to domain applicability.
 """
 from __future__ import annotations
 
@@ -12,7 +17,7 @@ import re
 from pathlib import Path
 
 CAPABILITY_RE = re.compile(r"\|\s*(CAP-[A-Z0-9-]+)\s*\|")
-REQUIRED_HOOKS = ("observe", "context", "audit", "safety")
+REQUIRED_HOOKS = ("observe", "context", "audit")
 
 
 def capability_ids(text: str) -> set[str]:
@@ -60,10 +65,9 @@ def main() -> int:
         print(f"PLATFORM_INTELLIGENCE_COVERAGE: FAIL\n- missing_file:{args.matrix}")
         return 1
 
-    findings = validate(
-        args.registry.read_text(encoding="utf-8"),
-        args.matrix.read_text(encoding="utf-8"),
-    )
+    registry_text = args.registry.read_text(encoding="utf-8")
+    matrix_text = args.matrix.read_text(encoding="utf-8")
+    findings = validate(registry_text, matrix_text)
     if findings:
         print("PLATFORM_INTELLIGENCE_COVERAGE: FAIL")
         for finding in findings:
@@ -71,8 +75,9 @@ def main() -> int:
         return 1
 
     print("PLATFORM_INTELLIGENCE_COVERAGE: PASS")
-    print(f"- capabilities: {len(capability_ids(args.registry.read_text(encoding='utf-8')))}")
+    print(f"- capabilities: {len(capability_ids(registry_text))}")
     print(f"- required_hooks: {len(REQUIRED_HOOKS)}")
+    print("- domain-specific hooks: declared by each matrix row")
     return 0
 
 
