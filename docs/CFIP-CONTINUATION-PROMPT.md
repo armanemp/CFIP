@@ -1,56 +1,263 @@
-# CFIP Continuation Prompt
+# CFIP Continuation Operating Contract
 
-Continue the **CForex → CFIP** migration/source-closure and engineering workflow from the current GitHub state.
+**Purpose:** canonical handoff/continuation contract for the CForex → CFIP migration, source study, evidence closure and target engineering workflow. Always start from the actual GitHub state; never assume an older chat, report or commit is current.
 
-## Non-negotiable rules
+## 0. Identity and authority
 
-- Canonical target: `armanemp/CFIP`; source of behavioral truth: `armanemp/CForex`.
-- Never use the discarded `cforex-platform`/Laravel architecture as the target.
-- Before every batch: inspect current `CFIP/main` and `CForex/main`; read `docs/CFIP-MIGRATION-CONTROL-INDEX.md`, `docs/CFIP-MIGRATION-MASTER-PLAN.md`, `docs/capabilities/source-study-integration.md`, Gate-0 control and latest progress/contradiction sweep.
-- Directly apply useful changes to GitHub `main` when permitted; do not wait for approval.
-- Do real engineering and verification alongside documentation; avoid report-only batches.
-- Preserve history. Do not delete or overwrite source evidence. Do not create duplicate corrective migration/documentation artifacts.
-- For an existing mutable target logical migration, correct the original owner; create a new migration only for a genuinely new schema evolution.
-- Do not create fake/marker-only runtime files to improve status.
-- Gate 0 stays OPEN until executable source-closure evidence is complete. CFIP production runtime stays LOCKED until then.
-- Never promote code-search no-result to verified absence.
-- Never claim parity, production readiness, test success or CI green without executable evidence.
+- Source behavioral truth: `armanemp/CForex` `main`.
+- Target architecture and engineering repository: `armanemp/CFIP` `main`.
+- Discarded architecture: `cforex-platform` / Laravel / Filament / Livewire. Never use it as a target, migration basis or architecture reference unless the user explicitly reverses that decision.
+- CForex source migrations and source history are immutable evidence.
+- GitHub `main` is the canonical current project state.
+- Documentation is controlled evidence, not a substitute for executable source behavior.
 
-## Required workflow
+## 1. Mandatory first actions
 
-1. Re-check current GitHub heads and repository health.
-2. Read canonical migration workflow/control docs first.
-3. Study CForex source deeply and use the strongest evidence precedence: executable implementation/tests > schema/contracts/migrations > composition/entrypoints > CI/config > prose.
-4. Run/extend source-closure tooling in parallel where safe, then reconcile results serially to avoid contradictory canonical docs.
-5. Fix actual defects and structural inconsistencies discovered across the whole project, not only the requested item.
-6. Keep architecture modern, modular, dependency-directed, globally scalable, observable, secure, i18n/RTL/LTR/accessibility-ready and provider-neutral; avoid novelty-only dependencies and premature microservices.
-7. Maintain one canonical `(engine_id, version)` identity and one semantic implementation per engine version; runtime/durable/replay are execution projections, not duplicate engines.
-8. Preserve PIT correctness, provenance, lineage, causal ordering, live/replay/backtest semantic compatibility, durable outbox, idempotency, event-time/watermark semantics, governed learning and controlled autonomy.
-9. Prefer OpenTelemetry semantic conventions before custom attributes; agent/autonomy controls must remain inspectable, traceable and instrumentable with explicit policy hooks.
-10. After changes: verify files, run available tests/CI evidence, update canonical manifest/matrices, perform contradiction sweep, and write a precise progress report.
+Before making any change, in this exact order:
 
-## Current known baseline
+1. Read current CFIP HEAD and repository metadata.
+2. Read current CForex HEAD and confirm the source baseline/version.
+3. Read:
+   - `docs/CFIP-MIGRATION-CONTROL-INDEX.md`
+   - `docs/CFIP-MIGRATION-MASTER-PLAN.md`
+   - `docs/CFIP-ARCHITECTURE-GUIDE.md`
+   - `docs/capabilities/source-study-integration.md`
+   - `docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md`
+   - `docs/capabilities/CFIP-CAPABILITY-REGISTRY.md`
+   - `docs/capabilities/source-evidence-matrix.md`
+   - `docs/capabilities/parity-matrix.md`
+   - `docs/CFIP-SOURCE-TREE.md`
+   - latest progress report;
+   - latest contradiction sweep;
+   - all active ADRs relevant to the work.
+4. Reconcile any conflict in canonical documents before implementing against the conflicting assumption.
+5. Inspect the actual CForex source artifacts relevant to the current capability, not just summaries.
 
-- Source: CForex `main` v0.9.154.
-- Target: CFIP `main`.
-- Current target inventory: **34 bounded contexts**, **14 engine namespaces**, **15 concrete runtime engine classes**.
+## 2. Non-negotiable engineering rules
+
+- Directly apply useful repository changes to GitHub when technically possible; do not wait for user approval for ordinary project maintenance.
+- Work on documentation and real engineering simultaneously. Report-only batches are not acceptable when a safe Gate-0-compatible engineering change is possible.
+- Preserve history and source evidence. Never silently delete, rename away, or rewrite historical evidence.
+- Never create duplicate corrective documentation for an existing canonical artifact.
+- Never create a duplicate corrective migration for an existing logical target migration. Modify the original mutable owner. A new migration is allowed only for a genuinely new schema evolution with a distinct scope.
+- Never modify CForex source migrations as part of CFIP migration work.
+- Never create fake, marker-only, empty or nominal runtime files just to improve a progress number.
+- Never manufacture test/CI success. A result is `VERIFIED` only when executable evidence exists.
+- Never promote code-search no-result to `VERIFIED ABSENCE`; classify it as bounded negative evidence.
+- Never claim parity, production readiness, scalability, PIT correctness or replay equivalence from naming or static presence alone.
+- Do not introduce a dependency unless it has clear, durable architectural value and current stable support.
+- Do not introduce premature microservices. Split processes/services only when ownership, security, fault isolation or measured scale justifies it.
+- Correct architectural defects discovered during any batch, even if outside the initially requested feature, provided the change is evidence-backed and does not bypass a gate.
+
+## 3. Gate discipline
+
+**Gate 0 — Source Closure is OPEN until explicitly closed.**
+
+While Gate 0 is open:
+
+- CFIP production runtime implementation remains `0% / LOCKED`.
+- Allowed engineering includes source census, evidence extraction, validators, architecture contracts, CI gates, documentation reconciliation, test tooling and other runtime-independent quality infrastructure.
+- Do not implement target business runtime merely to make a capability appear implemented.
+- Do not advance a capability beyond its evidence lifecycle state.
+
+Capability lifecycle:
+
+`MAPPED → CONTRACTED → IMPLEMENTED → VERIFIED → PARITY-VERIFIED → PRODUCTION-READY`
+
+No stage may be skipped.
+
+## 4. Evidence precedence and closure
+
+When evidence conflicts, prefer:
+
+1. executable implementation and tests;
+2. migrations, schemas and machine-readable contracts;
+3. runtime composition, adapters and production entrypoints;
+4. CI/config/scripts;
+5. architecture documentation;
+6. release prose/history.
+
+For every important capability, seek the complete chain:
+
+`artifact/schema → producer → consumer → composition → production entrypoint → test → telemetry/recovery → end-to-end lifecycle`.
+
+A file name, directory, class name or README is never sufficient by itself.
+
+## 5. Source-closure dimensions
+
+Maintain and report D1–D11:
+
+- **D1 API/WS:** route → caller → service/use case → repository/port → auth → entitlement → events → tests → telemetry.
+- **D2 Events:** producer → outbox → subject/topic → consumer → ordering/partition → idempotency → retry/DLQ → projection → replay/retention.
+- **D3 Data/PIT:** schema → owner → producer → revision → dataset identity → PIT reconstruction → replay loader → integrity checks → tests.
+- **D4 Engines:** canonical `(engine_id, version)` → descriptor → implementation → registry/runtime projection → durable projection → fixtures/tests → PIT/replay → production composition.
+- **D5 Workers:** entrypoint → configuration → subscriptions/schedules → partition ownership → concurrency → checkpoint → idempotency → retry → health → telemetry → graceful shutdown → recovery → deployment/scale.
+- **D6 Frontend:** route → feature → context → component/hook/state → API/query/mutation → realtime → authorization → loading/error/empty → i18n → accessibility → telemetry → tests.
+- **D7 Tests:** unit → contract → integration → E2E → negative → security → recovery → replay/PIT → performance/capacity.
+- **D8 Policy/config:** hardcode inventory → classification → config owner → feature flag → entitlement → secret boundary → environment/deployment behavior → tests.
+- **D9 Adapters:** provider/broker/model/research/identity/billing/storage → port → configuration → health → retries/timeouts → rights/security → lifecycle tests.
+- **D10 Operations:** SLO/SLI → capacity → retention → partitioning → backup/restore → DR → rollback → residency → security → observability.
+- **D11 Reconciliation:** source evidence matrix ↔ capability registry ↔ parity matrix ↔ target manifest ↔ ADRs ↔ Gate-0 register ↔ current repository state.
+
+## 6. Canonical architecture invariants
+
+- One authoritative analysis-consensus boundary.
+- One semantic analytical implementation per canonical `(engine_id, version)`.
+- Runtime, durable and replay execution are projections/adapters, not duplicate engines.
+- PIT correctness, provenance, lineage, revisions and causal ordering are mandatory.
+- Live/replay/backtest semantics must be demonstrably compatible.
+- Events are typed/versioned/idempotent/observable/replayable where required.
+- Durable outbox precedes durable event fan-out.
+- Realtime correctness includes sequence/partition ownership, deduplication, watermark/event-time policy, late-event policy, backpressure and recovery.
+- Account-aware risk, position sizing, leverage and execution safety remain explicit domain boundaries.
+- Learning is temporal, leakage-aware, governed and evidence-producing; it cannot silently mutate production behavior.
+- Autonomy cannot modify its own governor, safety controls or evidence history.
+- AI uses governed application tools and has no direct SQL/infrastructure authority.
+- Dataset identity, PIT market-data identity, replay-case identity and learning-revision identity remain distinct and explicitly linked.
+- Redis is not authoritative business state.
+- MongoDB is conditional: require a demonstrated document workload plus ownership, consistency, retention, backup and recovery decisions before introduction.
+- Large immutable research/replay artifacts may use object storage when justified.
+- Frontend rendering does not own domain semantics.
+- API/WebSocket are inbound adapters, not domain services.
+- Provider/vendor-specific concerns remain behind ports/adapters.
+
+## 7. Global-scale and performance rules
+
+Scale must be proven, not inferred from directory count.
+
+Require evidence for:
+
+- stateless API horizontal scaling;
+- partitionable workers/streams;
+- deterministic idempotent consumers;
+- bounded caches;
+- explicit backpressure;
+- PostgreSQL indexing/partitioning/retention;
+- ClickHouse analytical workload isolation;
+- asynchronous workload isolation;
+- regional latency/data-residency strategy when required;
+- capacity/SLO measurements;
+- tested recovery/rollback;
+- partition ownership/checkpoints for correctness-critical realtime state.
+
+Increase speed safely by running independent evidence tracks in parallel, using standard-library tooling where practical, keeping canonical documentation writes serialized, avoiding duplicate scans, and generating deterministic machine-readable evidence artifacts.
+
+Never trade evidence quality for speed.
+
+## 8. Observability and AI-agent control
+
+Use OpenTelemetry Semantic Conventions before defining CFIP-specific attributes. Custom telemetry requires a clear use case, stable naming, sensitivity classification and an explicit consumer/query purpose.
+
+Telemetry must remain observational and must not silently become a correctness database.
+
+Agent control boundary:
+
+`Agent Identity → Capability → Policy Hook → Authorized Tool → Action → Evidence/Telemetry → Post-action Control`
+
+Agent authority must remain separate from analytical-engine authority. Sensitive prompt/tool contents are not captured by default. Autonomous changes require checkpoint, risk classification, isolation, verification, release gates, health guard and rollback.
+
+## 9. Source-study and implementation method
+
+The atomic migration unit is a capability contract, not a source file.
+
+Use:
+
+`source evidence → capability → behavioral contract → domain model → application use case → port → adapter → data contract → event contract → API/UI contract → tests → parity evidence → production readiness`.
+
+Target architecture may intentionally diverge from CForex structure when the behavior/contract is preserved and the divergence has an explicit ADR and evidence.
+
+## 10. Tooling and verification
+
+Current active architecture/source-closure tooling includes:
+
+- `tools/architecture/validate_target_contracts.py`
+- `tools/architecture/census_api_ws.py`
+- `tools/architecture/census_event_graph.py`
+- `tools/architecture/validate_migration_graph.py`
+- `tools/architecture/reconcile_engine_registry.py`
+- `tools/architecture/validate_worker_lifecycle.py`
+- `tools/architecture/validate_dependency_direction.py`
+- `tools/architecture/validate_pit_replay_contracts.py`
+
+Their outputs are evidence accelerators, not automatic parity claims.
+
+The architecture CI remains consolidated in `.github/workflows/architecture-contracts.yml`.
+
+## 11. Required execution loop for every continuation
+
+### Phase A — Inspect
+
+- Fetch current repository heads.
+- Read control documents.
+- Identify current active gate and evidence gaps.
+- Inspect source implementation and tests for the relevant capability.
+
+### Phase B — Analyze
+
+- Build evidence graph.
+- Classify positive evidence, bounded negative evidence and unresolved evidence.
+- Detect stale/contradictory documentation.
+- Identify structural improvements and safe engineering opportunities.
+
+### Phase C — Implement
+
+- Make the smallest coherent repository changes that improve the actual system.
+- Add/update tests with every meaningful validator or behavior change.
+- Keep dependency direction explicit.
+- Avoid duplicate files and migrations.
+
+### Phase D — Verify
+
+- Read changed files back from GitHub.
+- Execute available tests/CI where possible.
+- Inspect GitHub Actions evidence when available.
+- Never label unexecuted verification as passed.
+
+### Phase E — Reconcile
+
+- Update canonical manifest/matrices only from verified evidence.
+- Run contradiction sweep.
+- Reconcile progress numbers with actual evidence.
+- Preserve historical reports as historical snapshots.
+
+### Phase F — Report
+
+Always report:
+
+1. exact current CFIP HEAD;
+2. exact CForex baseline;
+3. exact GitHub files/commits changed;
+4. actual engineering versus documentation-only changes;
+5. verification evidence;
+6. unverified claims and limitations;
+7. overall progress table;
+8. D1–D11 progress table;
+9. current blockers;
+10. remaining evidence gaps;
+11. next parallel work tracks;
+12. explicit Gate-0 status;
+13. explicit runtime status.
+
+## 12. Current baseline to verify, not blindly trust
+
+At the time this contract was last updated:
+
+- CForex source baseline: `v0.9.154`.
+- CFIP target inventory: **34 bounded contexts**, **14 engine namespaces**, **15 concrete runtime engine classes**.
 - Gate 0: **OPEN**.
-- CFIP runtime implementation: **0% / LOCKED**.
-- Active architecture/source-closure tooling includes target-contract validation, API/WS census, event census, migration graph validation, engine registry reconciliation and worker lifecycle validation.
-- The next priority is to **execute these tools against the complete CForex checkout**, reconcile actual evidence, then add PIT/replay, dependency-direction, frontend, policy/config, adapter and operations closure tooling as needed.
+- CFIP production runtime: **0% / LOCKED**.
 
-## Required progress report
+These values must be rechecked against GitHub at the beginning of every continuation rather than treated as permanent constants.
 
-Every continuation must end with:
+## 13. Completion criteria
 
-- exact current CFIP HEAD;
-- exact source baseline;
-- actual GitHub changes and files;
-- verification evidence and any unverified claims;
-- overall progress table;
-- detailed D1–D11 Gate-0 table;
-- blockers and remaining evidence gaps;
-- next engineering actions;
-- explicit statement whether Gate 0/runtime status changed.
+Do not declare migration complete until every source capability is either:
 
-Use this prompt as the operating contract, then continue from the repository's actual current state rather than assuming any older commit/report is current.
+- parity-verified and production-ready; or
+- intentionally divergent/retired with an explicit ADR, preserved source evidence, replacement capability and validated impact.
+
+Gate 0 closes only when source closure evidence is sufficient across D1–D11 and the canonical Gate-0 register records the formal decision. Runtime gates then proceed sequentially.
+
+## 14. Critical reminder
+
+Do not spend the whole batch writing reports. If safe Gate-0-compatible engineering is available, implement it. Do not spend the whole batch coding without reconciling documentation. The correct workflow is **source study + evidence extraction + engineering + verification + documentation reconciliation in the same cycle**.
