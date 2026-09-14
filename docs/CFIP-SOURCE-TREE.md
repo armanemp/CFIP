@@ -2,13 +2,15 @@
 
 **Status:** canonical target structure; runtime materialization remains gated by Gate 0.
 
-This document defines both the logical target tree and the rules for materializing it. The current GitHub repository intentionally contains the migration-control/documentation system rather than runtime implementation. Empty production folders or placeholder modules must not be committed merely to make the diagram look complete.
+This document defines the logical target tree and the rules for materializing it. The current GitHub repository intentionally contains the migration-control/documentation system rather than runtime implementation. Empty production folders or placeholder modules must not be committed merely to make the diagram look complete.
+
+**File-level implementation contract:** `docs/evidence/CFIP-TARGET-FILE-MANIFEST.md` is the authoritative file-by-file materialization manifest. This tree defines ownership and boundaries; the manifest defines concrete target artifacts and acceptance status.
 
 ## 1. Canonical target tree
 
 ```text
 cfip/
-├── apps/                         # deployable process composition roots
+├── apps/
 │   ├── api/
 │   ├── realtime/
 │   ├── market_data_worker/
@@ -16,8 +18,7 @@ cfip/
 │   ├── learning_worker/
 │   ├── autonomy_worker/
 │   └── web/
-│
-├── contexts/                     # bounded business contexts
+├── contexts/
 │   ├── identity/
 │   ├── organization/
 │   ├── workspace/
@@ -52,8 +53,7 @@ cfip/
 │   ├── governance/
 │   ├── observability/
 │   └── operations/
-│
-├── packages/                    # cross-context contracts/platform primitives
+├── packages/
 │   ├── contracts/
 │   ├── domain_kernel/
 │   ├── application_kernel/
@@ -62,141 +62,30 @@ cfip/
 │   ├── security/
 │   ├── testing/
 │   └── configuration/
-│
 ├── adapters/
-│   ├── inbound/
-│   │   ├── http/
-│   │   ├── websocket/
-│   │   ├── cli/
-│   │   └── scheduled_jobs/
-│   └── outbound/
-│       ├── postgres/
-│       ├── clickhouse/
-│       ├── redis/
-│       ├── nats/
-│       ├── object_storage/
-│       ├── market_providers/
-│       ├── broker_providers/
-│       ├── model_providers/
-│       ├── research_providers/
-│       └── notification_providers/
-│
-├── engines/
-│   ├── technical/
-│   ├── structure/
-│   ├── liquidity/
-│   ├── fvg/
-│   ├── order_block/
-│   ├── regime/
-│   ├── mtf/
-│   ├── confluence/
-│   ├── contradiction/
-│   ├── intelligence_score/
-│   ├── scoring/
-│   ├── signal/
-│   ├── strategy/
-│   └── backtest/
-│
-├── data/
-│   ├── migrations/
-│   ├── schemas/
-│   ├── seeds/
-│   ├── fixtures/
-│   └── retention/
-│
-├── frontend/
-│   ├── app/
-│   ├── features/
-│   ├── domain/
-│   ├── infrastructure/
-│   ├── components/
-│   ├── chart/
-│   ├── i18n/
-│   ├── accessibility/
-│   └── tests/
-│
-├── infrastructure/
-│   ├── docker/
-│   ├── compose/
-│   ├── observability/
-│   └── security/
-│
-├── tests/
-│   ├── architecture/
-│   ├── contracts/
-│   ├── integration/
-│   ├── e2e/
-│   ├── replay/
-│   ├── pit/
-│   ├── performance/
-│   ├── security/
-│   └── fixtures/
-│
-├── docs/
-│   ├── architecture/
-│   ├── adr/
-│   ├── capabilities/
-│   ├── evidence/
-│   ├── contracts/
-│   ├── operations/
-│   ├── security/
-│   └── research/
-│
-├── scripts/
-│   ├── bootstrap/
-│   ├── audit/
-│   ├── codegen/
-│   ├── database/
-│   ├── release/
-│   └── verification/
-│
-├── .github/
-│   ├── workflows/
-│   ├── CODEOWNERS
-│   ├── dependabot.yml
-│   └── pull_request_template.md
-│
-├── pyproject.toml
-├── uv.lock
-├── package.json
-├── pnpm-lock.yaml
-├── docker-compose.yml
-├── .env.example
-├── .python-version
-├── .node-version
-├── LICENSE
-├── SECURITY.md
-├── CONTRIBUTING.md
-└── README.md
+│   ├── inbound/{http,websocket,cli,scheduled_jobs}/
+│   └── outbound/{postgres,clickhouse,redis,nats,object_storage,market_providers,broker_providers,model_providers,research_providers,notification_providers}/
+├── engines/{technical,structure,liquidity,fvg,order_block,regime,mtf,confluence,contradiction,intelligence_score,scoring,signal,strategy,backtest}/
+├── data/{migrations,schemas,seeds,fixtures,retention}/
+├── frontend/{app,features,domain,infrastructure,components,chart,i18n,accessibility,tests}/
+├── infrastructure/{docker,compose,observability,security}/
+├── tests/{architecture,contracts,integration,e2e,replay,pit,performance,security,fixtures}/
+├── docs/{architecture,adr,capabilities,evidence,contracts,operations,security,research}/
+├── scripts/{bootstrap,audit,codegen,database,release,verification}/
+└── .github/{workflows,CODEOWNERS,dependabot.yml,pull_request_template.md}
 ```
 
 ## 2. Context-internal structure
 
-Every backend bounded context should converge on this grammar unless a documented architectural reason requires otherwise:
+Every backend bounded context should converge on:
 
 ```text
 contexts/<context>/
-├── domain/
-│   ├── entities/
-│   ├── value_objects/
-│   ├── services/
-│   ├── events/
-│   ├── policies/
-│   └── errors/
-├── application/
-│   ├── commands/
-│   ├── queries/
-│   ├── handlers/
-│   ├── ports/
-│   └── dto/
-├── infrastructure/
-│   ├── persistence/
-│   ├── projections/
-│   └── configuration/
-└── tests/
-    ├── unit/
-    ├── integration/
-    └── contract/
+├── README.md
+├── domain/{entities,value_objects,services,events,policies,errors}/
+├── application/{commands,queries,handlers,ports,dto}/
+├── infrastructure/{persistence,projections,configuration}/
+└── tests/{unit,integration,contract}/
 ```
 
 Technology adapters remain outside domain/application layers. A context depends on technology through ports, never by importing vendor implementations directly.
@@ -210,27 +99,16 @@ engines/<engine>/
 ├── outputs.py
 ├── implementation.py
 ├── version.py
-└── tests/
+└── tests/{test_engine.py,test_pit.py,test_replay.py}
 ```
 
-The canonical executable identity is `(engine_id, version)`. A directory is not an engine registration. Runtime, durable and replay execution paths must reuse the same semantic implementation rather than creating duplicate analytical authorities.
+The canonical executable identity is `(engine_id, version)`. A directory is not an engine registration. Runtime, durable and replay execution paths reuse the same semantic implementation rather than creating duplicate analytical authorities.
 
-The source study currently identifies 15 concrete runtime engine classes while the repository has 14 top-level engine namespaces. The target must preserve the complete runtime inventory without assuming one-to-one namespace/class cardinality.
+The source study identifies 15 concrete runtime engine classes while the repository has 14 top-level engine namespaces. The target preserves the complete runtime inventory without assuming one-to-one namespace/class cardinality.
 
 ## 4. Data/evidence structure
 
-The data layer must explicitly accommodate distinct identities for:
-
-- dataset artifact/version;
-- dataset fingerprint/content integrity;
-- PIT market-data revision/view;
-- replay-case identity and expected invariants;
-- replay verification result;
-- learning revision;
-- provenance nodes/edges;
-- immutable evidence references.
-
-These identifiers must not collapse into a generic revision field.
+Distinct identities are required for dataset artifact/version, dataset fingerprint/content integrity, PIT market-data revision/view, replay-case identity/expected invariants, replay verification result, learning revision, provenance nodes/edges and immutable evidence references. These must not collapse into a generic revision field.
 
 ## 5. Frontend structure
 
@@ -246,30 +124,17 @@ frontend/features/<feature>/
 └── tests/
 ```
 
-Market/timeframe/candle/event semantics are owned by canonical domain contracts, not by chart rendering components.
+Market/timeframe/candle/event semantics are owned by canonical domain contracts, not chart rendering components.
 
 ## 6. Verification structure
 
-Cross-context verification belongs under `tests/`; context-local tests stay with the owning context. The cross-context tree is:
-
 ```text
-tests/
-├── architecture/
-├── contracts/
-├── integration/
-├── e2e/
-├── replay/
-├── pit/
-├── performance/
-├── security/
-└── fixtures/
+tests/{architecture,contracts,integration,e2e,replay,pit,performance,security,fixtures}/
 ```
 
-Every important capability must map to verification evidence before implementation status can advance.
+Every important capability must map to verification evidence before implementation status advances.
 
 ## 7. Materialization policy
-
-The target tree is materialized incrementally in this order:
 
 1. repository governance and deterministic tooling;
 2. shared contracts and dependency-boundary verification;
@@ -282,35 +147,24 @@ The target tree is materialized incrementally in this order:
 9. frontend/product surface;
 10. governance/autonomy and operations hardening.
 
-A production path must not be created solely to satisfy this diagram. It must have an architectural owner, source/capability mapping, contract or implementation purpose and verification plan. Empty directories are not committed.
+A production path must have an architectural owner, source/capability mapping, contract or implementation purpose and verification plan. Empty directories are not committed.
 
 ## 8. Repository-level rules
 
-- Python packages/modules use `snake_case`.
+- Python modules use `snake_case`.
 - TypeScript uses project-standard `camelCase`/`PascalCase` according to artifact type.
 - Bounded contexts use stable domain names, not vendor names.
 - Contracts carry explicit versions.
 - Generated artifacts do not become source ownership by accident.
 - Generic `utils`, `helpers`, `misc` and `common` dumping grounds are prohibited without explicit ownership justification.
-- `uv.lock` and `pnpm-lock.yaml` are required once their corresponding runtime/toolchain is materialized; lockfiles are not optional production metadata.
-- Deployment-specific `kubernetes/` or `terraform/` trees are added only when operational evidence justifies them.
+- `uv.lock` and `pnpm-lock.yaml` are required once their corresponding runtime/toolchain is materialized.
+- Kubernetes/Terraform trees are added only when operational evidence justifies them.
 - Microservice boundaries are introduced only for measured scale, fault isolation, ownership or security requirements.
 
 ## 9. Current physical state
 
-The current CFIP repository intentionally materializes the migration-control/documentation system and does not claim that the target runtime tree already contains implementation. This is required by the canonical Gate 0 lock. The tree above is therefore the controlled implementation manifest, while actual production paths are created only when their Gate 0 evidence is sufficient.
+The current CFIP repository intentionally materializes the migration-control/documentation system plus the new file-level target manifest. It does not claim that the target runtime tree already contains implementation. This is required by the canonical Gate 0 lock.
 
 ## 10. Tree health invariant
 
-The tree is healthy only when:
-
-1. every production file has one architectural owner;
-2. every CForex capability maps to one target location;
-3. every target capability maps back to source evidence or an explicit platform concern;
-4. no duplicate authoritative implementation exists;
-5. persistence ownership is explicit;
-6. contracts are versioned/discoverable;
-7. tests map to capabilities;
-8. operational scripts are deterministic;
-9. documentation cannot contradict the canonical Gate 0 register;
-10. deployment topology can evolve without turning every bounded context into a microservice.
+The tree is healthy only when every production file has one owner; every CForex capability maps to one target location; every target capability maps back to source evidence or an explicit platform concern; no duplicate authoritative implementation exists; persistence ownership is explicit; contracts are versioned/discoverable; tests map to capabilities; operational scripts are deterministic; documentation cannot contradict the canonical Gate 0 register; and deployment topology can evolve without turning every bounded context into a microservice.
