@@ -27,10 +27,11 @@ Read these documents in this order at the start of every migration continuation:
 12. `docs/adr/ADR-002-REALTIME-EVENT-TIME-AND-BACKPRESSURE-SEMANTICS.md` — canonical realtime event-time/backpressure decision.
 13. `docs/adr/ADR-003-OBSERVABILITY-AND-AGENT-CONTROL-SEMANTICS.md` — standard-first telemetry and agent-control decision.
 14. `docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md` — dataset identity, PIT, replay and reproducibility decision.
-15. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
-16. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
-17. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
-18. Latest progress report and latest contradiction sweep.
+15. `docs/adr/ADR-005-PLATFORM-INTELLIGENCE-AND-AUTONOMOUS-OPERATION.md` — platform-wide intelligence, autonomous engineering/trading/research and governed operation.
+16. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
+17. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
+18. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
+19. Latest progress report and latest contradiction sweep.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -173,6 +174,8 @@ Learning is temporal and leakage-aware. Evaluation, attribution, calibration and
 AI agents operate through explicit tools and policy. Sensitive prompt/tool content is not captured in telemetry by default. Autonomous changes require checkpoint, evidence, risk classification, isolation, verification, release gates and rollback capability.
 
 Agent authority is independent of analytical-engine authority; multi-agent actions must remain reconstructable across identities, coordination events and shared-state ownership.
+
+Platform Intelligence is a cross-cutting capability across market data, analysis, consensus, risk/decision, research, learning, frontend assistance, operations, security and governed development. It may automate routine observation, diagnosis, research, planning, verification and bounded remediation, but it must use authoritative domain contracts rather than becoming a second domain authority. See ADR-005.
 
 ## 11. Release/continuation protocol
 
