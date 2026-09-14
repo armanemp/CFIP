@@ -1,23 +1,43 @@
 # CFIP Target File Manifest
 
-**Status:** Controlled implementation manifest; runtime creation remains Gate-0 locked.  
+**Status:** Controlled implementation manifest; runtime creation remains Gate-0 locked. Architecture-contract materialization is now physically present in GitHub.  
 **Source:** `armanemp/CForex` `main` v0.9.154  
 **Target:** `armanemp/CFIP` `main`
 
 ## Purpose
 
-This manifest turns the canonical target tree into a file-level implementation plan. It is intentionally a manifest rather than fake runtime scaffolding: no empty production directories, placeholder modules, or marker-only files are created while Gate 0 is open.
+This manifest turns the canonical target tree into a file-level implementation plan and now distinguishes **architecture contracts already materialized** from runtime artifacts still gated. It is not a substitute for source evidence and does not authorize production implementation.
 
 ## Status vocabulary
 
 - `PLANNED` — target artifact identified, not implemented.
 - `EVIDENCE-REQUIRED` — source trace must close first.
-- `FOUNDATION` — first materialization wave after Gate 0.
+- `ARCH-CONTRACT` — meaningful ownership/boundary/evidence contract physically materialized; no runtime implementation.
+- `FOUNDATION` — first runtime materialization wave after Gate 0.
 - `SOURCE-MAPPED` — direct CForex capability mapping exists.
 - `TARGET-ADDITION` — intentional CFIP improvement without one-to-one source file.
 - `VERIFIED` — implementation plus required tests/evidence complete.
 
-## 1. Repository root
+## 1. Current physical materialization
+
+The following architecture-contract layer is now present on `main`:
+
+| Area | Physical state | Runtime state |
+|---|---|---|
+| `apps/` | `ARCH-CONTRACT` | `LOCKED` |
+| `contexts/` | `ARCH-CONTRACT` for all 33 contexts | `LOCKED` |
+| `packages/` | `ARCH-CONTRACT` for all 8 shared packages | `LOCKED` |
+| `adapters/` | `ARCH-CONTRACT` for inbound/outbound families | `LOCKED` |
+| `engines/` | `ARCH-CONTRACT` for all 14 namespaces / 15 runtime classes | `LOCKED` |
+| `data/` | `ARCH-CONTRACT` | `LOCKED` |
+| `frontend/` | `ARCH-CONTRACT` | `LOCKED` |
+| `infrastructure/` | `ARCH-CONTRACT` | `LOCKED` |
+| `tests/` | `ARCH-CONTRACT` | `LOCKED` |
+| `scripts/` | `ARCH-CONTRACT` | `LOCKED` |
+
+These files are deliberate architecture artifacts, not empty-folder markers or fake modules.
+
+## 2. Repository root
 
 | File | Owner | Status |
 |---|---|---|
@@ -34,203 +54,77 @@ This manifest turns the canonical target tree into a file-level implementation p
 | `CONTRIBUTING.md` | governance | FOUNDATION |
 | `LICENSE` | repository | FOUNDATION |
 
-## 2. Application process files
+## 3. Application process files
 
-| Process | Required files | Source/target role |
+Application architecture contracts are materialized under `apps/<process>/README.md`; implementation files remain `FOUNDATION` and require Gate 0 exit.
+
+| Process | Required runtime files | Status |
 |---|---|---|
-| `apps/api` | `pyproject.toml`, `src/cfip_api/main.py`, `router.py`, `dependencies.py`, `middleware.py`, `error_handlers.py`, `tests/test_api_boot.py`, `tests/test_auth_boundary.py` | API composition and HTTP boundary |
-| `apps/realtime` | `pyproject.toml`, `src/cfip_realtime/main.py`, `runtime.py`, `partitioning.py`, `checkpoints.py`, `backpressure.py`, `tests/test_runtime_recovery.py` | event-time realtime runtime |
-| `apps/market_data_worker` | `pyproject.toml`, `src/cfip_market_data_worker/main.py`, `consumer.py`, `normalization.py`, `quality.py`, `tests/test_ingestion_contract.py` | provider ingestion/normalization |
-| `apps/analysis_worker` | `pyproject.toml`, `src/cfip_analysis_worker/main.py`, `executor.py`, `replay.py`, `tests/test_analysis_execution.py` | durable/research analysis plane |
-| `apps/learning_worker` | `pyproject.toml`, `src/cfip_learning_worker/main.py`, `revision.py`, `evaluation.py`, `tests/test_learning_governance.py` | governed learning |
-| `apps/autonomy_worker` | `pyproject.toml`, `src/cfip_autonomy_worker/main.py`, `lanes.py`, `policy.py`, `verification.py`, `tests/test_autonomy_controls.py` | governed autonomy |
-| `apps/web` | `package.json`, `app/layout.tsx`, `app/page.tsx`, route groups, `tests/smoke.spec.ts` | product UI |
+| `apps/api` | `src/cfip_api/main.py`, `router.py`, `dependencies.py`, `middleware.py`, `error_handlers.py`, tests | `ARCH-CONTRACT` |
+| `apps/realtime` | `src/cfip_realtime/main.py`, `runtime.py`, `partitioning.py`, `checkpoints.py`, `backpressure.py`, tests | `ARCH-CONTRACT` |
+| `apps/market_data_worker` | `src/cfip_market_data_worker/main.py`, `consumer.py`, `normalization.py`, `quality.py`, tests | `ARCH-CONTRACT` |
+| `apps/analysis_worker` | `src/cfip_analysis_worker/main.py`, `executor.py`, `replay.py`, tests | `ARCH-CONTRACT` |
+| `apps/learning_worker` | `src/cfip_learning_worker/main.py`, `revision.py`, `evaluation.py`, tests | `ARCH-CONTRACT` |
+| `apps/autonomy_worker` | `src/cfip_autonomy_worker/main.py`, `lanes.py`, `policy.py`, `verification.py`, tests | `ARCH-CONTRACT` |
+| `apps/web` | `package.json`, Next app routes/components/tests | `ARCH-CONTRACT` |
 
-## 3. Shared packages
+## 4. Shared packages
 
-### `packages/contracts`
+Architecture contracts are materialized for `contracts`, `domain_kernel`, `application_kernel`, `eventing`, `observability`, `security`, `testing` and `configuration`. Runtime package files remain `FOUNDATION` or `EVIDENCE-REQUIRED` according to capability.
 
-`src/identity.py`, `market_data.py`, `events.py`, `analysis.py`, `replay.py`, `provenance.py`, `decision.py`, `governance.py`, `tests/test_contract_versions.py`.
-
-### `packages/domain_kernel`
-
-`src/identifiers.py`, `time.py`, `result.py`, `value_objects.py`.
-
-### `packages/application_kernel`
-
-`src/commands.py`, `queries.py`, `ports.py`, `lifecycle.py`.
-
-### `packages/eventing`
-
-`src/envelope.py`, `outbox.py`, `idempotency.py`, `retry.py`, `correlation.py`.
-
-### `packages/observability`
-
-`src/tracing.py`, `metrics.py`, `logging.py`, `events.py`, `attributes.py`.
-
-### `packages/security`
-
-`src/identity.py`, `authorization.py`, `entitlements.py`, `secrets.py`, `audit.py`.
-
-### `packages/testing`
-
-`src/builders.py`, `golden.py`, `replay.py`, `pit.py`.
-
-### `packages/configuration`
-
-`src/settings.py`, `registry.py`, `secrets.py`.
-
-All package files are `FOUNDATION` except capability-specific contracts that require source closure.
-
-## 4. Bounded contexts
+## 5. Bounded contexts
 
 The mandatory target contexts are:
 
 `identity`, `organization`, `workspace`, `market_reference`, `market_data`, `data_lineage`, `realtime`, `chart_workspace`, `technical_analysis`, `market_structure`, `liquidity`, `fair_value_gap`, `order_block`, `market_regime`, `multi_timeframe`, `confluence`, `contradiction`, `intelligence_consensus`, `signals`, `strategy_research`, `backtest`, `replay`, `risk`, `decision`, `journal`, `execution_boundary`, `research_intelligence`, `learning_evaluation`, `platform_intelligence`, `ai_gateway`, `entitlements`, `governance`, `observability`, `operations`.
 
-Each context must materialize the same internal grammar unless evidence justifies a deviation:
+All 33 context `README.md` contracts are now physically materialized. Internal `domain/application/infrastructure/tests` runtime files remain gated.
 
-```text
-contexts/<context>/
-├── README.md
-├── domain/
-│   ├── entities/
-│   ├── value_objects/
-│   ├── services/
-│   ├── events/
-│   ├── policies/
-│   └── errors/
-├── application/
-│   ├── commands/
-│   ├── queries/
-│   ├── handlers/
-│   ├── ports/
-│   └── dto/
-├── infrastructure/
-│   ├── persistence/
-│   ├── projections/
-│   └── configuration/
-└── tests/
-    ├── unit/
-    ├── integration/
-    └── contract/
-```
+## 6. Analysis engine files
 
-`README.md` is a real ownership/evidence artifact, not a placeholder. Contexts without independently justified responsibility must not be split merely to make the tree larger.
+Architecture contracts are now materialized for all 14 top-level namespaces:
 
-## 5. Analysis engine files
+- `technical.momentum@1.0.0`
+- `technical.volatility@1.0.0`
+- `backtest.replay@1.1.0`
+- `confluence.score@1.1.0`
+- `contradiction.detect@1.1.0`
+- `fvg.causal@1.2.0`
+- `intelligence.score@1.1.0`
+- `liquidity.map@1.1.0`
+- `mtf.alignment@1.1.0`
+- `order_block.causal@1.1.0`
+- `regime.classify@1.1.0`
+- `signal.scoring@1.1.0`
+- `signal.trigger@1.1.0`
+- `strategy.baseline@1.1.0`
+- `structure.swing@1.1.0`
 
-Each canonical engine has:
+The 15 runtime classes remain represented without assuming one-to-one namespace/class cardinality. Executable engine files (`contract.py`, `inputs.py`, `outputs.py`, `implementation.py`, `version.py`, tests) remain gated.
 
-`contract.py`, `inputs.py`, `outputs.py`, `implementation.py`, `version.py`, `tests/test_engine.py`, `tests/test_pit.py`, `tests/test_replay.py`.
+## 7. Data files
 
-Required runtime identities:
+`data/migrations/`, `data/schemas/`, `data/seeds/`, `data/fixtures/` and `data/retention/` architecture contracts are physically present. Concrete schema artifacts and lifecycle producers remain `EVIDENCE-REQUIRED` where source closure is incomplete.
 
-- `technical.momentum`
-- `technical.volatility`
-- `backtest.replay`
-- `confluence.score`
-- `contradiction.detect`
-- `fvg.causal`
-- `intelligence.score`
-- `liquidity.map`
-- `mtf.alignment`
-- `order_block.causal`
-- `regime.classify`
-- `signal.scoring`
-- `signal.trigger`
-- `strategy.baseline`
-- `structure.swing`
+A bounded negative source search on `dataset_fingerprints`, `DatasetFingerprint`, `replay_cases` and `ReplayCase` returned no code-search matches in CForex. This is recorded as **NEGATIVE-SEARCH only**, not proof of absence. Migration/schema evidence remains stronger where directly available.
 
-The two technical builtins remain two semantic engine identities under the technical namespace. They are not to become duplicate authorities.
+## 8. Adapters
 
-## 6. Data files
+All inbound/outbound adapter-family architecture contracts are physically present. Concrete provider clients, persistence mappings, health semantics and integration tests remain gated by source closure and Gate 1.
 
-### `data/migrations/`
+## 9. Frontend file contract
 
-Ordered schema migrations, checksum manifest and rollback policy.
+Frontend architecture contracts are physically present. Required feature areas remain planned and are not claimed implemented.
 
-### `data/schemas/`
+## 10. Verification files
 
-`canonical_observation.schema.json`, `event_envelope.schema.json`, `analysis_run.schema.json`, `dataset_fingerprint.schema.json`, `replay_case.schema.json`, `provenance.schema.json`, `evolution_transaction.schema.json`.
+Verification architecture contracts are physically present for architecture, contracts, integration, E2E, replay, PIT, performance, security and fixtures. Runtime test files remain planned until implementation is authorized.
 
-### `data/retention/`
+## 11. Infrastructure/operations files
 
-`policy.yaml` for retention, rights and legal/data-class constraints.
+Infrastructure architecture contracts are physically present. SLO/SLI, DR/backup, scaling/partitioning, threat model and AI-agent-control runtime documents remain planned or evidence-driven additions.
 
-### `data/fixtures/`
-
-Canonical market fixtures, PIT fixtures, replay fixtures, engine golden fixtures and failure/recovery fixtures.
-
-These are `EVIDENCE-REQUIRED` because source lifecycle ownership is not yet fully closed.
-
-## 7. Adapters
-
-Inbound families:
-
-- `adapters/inbound/http`
-- `adapters/inbound/websocket`
-- `adapters/inbound/cli`
-- `adapters/inbound/scheduled_jobs`
-
-Outbound families:
-
-- `postgres`
-- `clickhouse`
-- `redis`
-- `nats`
-- `object_storage`
-- `market_providers`
-- `broker_providers`
-- `model_providers`
-- `research_providers`
-- `notification_providers`
-
-Every concrete adapter must expose a port boundary, client/mapping, health/error semantics and tests. Provider implementations cannot leak into domain/application code.
-
-## 8. Frontend file contract
-
-`frontend/app/` owns routing/layout; `frontend/features/<feature>/` owns feature modules; `frontend/domain/` owns UI-facing domain contracts; `frontend/infrastructure/` owns API/WS clients; `frontend/components/` owns reusable UI; `frontend/chart/` owns rendering; `frontend/i18n/` owns localization; `frontend/accessibility/` owns shared accessibility primitives; `frontend/tests/` owns UI-level verification.
-
-Required feature areas: public/landing, auth, terminal/workspace, chart, market data, analysis/evidence, consensus/decision, risk/execution, signals/scanners, replay/backtest, journal/evaluation, research/AI, learning/platform intelligence, administration, governance/autonomy, billing/entitlements, notifications and settings.
-
-Chart rendering must never become the owner of market/timeframe/candle semantics.
-
-## 9. Verification files
-
-The cross-system test tree must include:
-
-- `tests/architecture/test_dependency_direction.py`
-- `tests/architecture/test_no_duplicate_engine_authority.py`
-- `tests/contracts/test_event_contracts.py`
-- `tests/integration/test_outbox_delivery.py`
-- `tests/integration/test_realtime_recovery.py`
-- `tests/e2e/test_terminal_workflow.py`
-- `tests/replay/test_replay_equivalence.py`
-- `tests/pit/test_no_future_leakage.py`
-- `tests/performance/test_latency_budgets.py`
-- `tests/security/test_authorization_boundaries.py`
-- `tests/fixtures/README.md`
-
-These remain planned until runtime implementation is authorized.
-
-## 10. Infrastructure/operations files
-
-After Gate 0, materialize:
-
-- `infrastructure/docker/README.md`
-- `infrastructure/compose/README.md`
-- `infrastructure/observability/README.md`
-- `infrastructure/security/README.md`
-- `docs/operations/SLO-SLI-CATALOG.md`
-- `docs/operations/DR-AND-BACKUP-PLAN.md`
-- `docs/operations/SCALING-AND-PARTITIONING.md`
-- `docs/security/THREAT-MODEL.md`
-- `docs/security/AI-AGENT-CONTROL-MODEL.md`
-
-Kubernetes/Terraform are deliberately not mandatory yet; they require deployment evidence and a concrete operational need.
-
-## 11. Materialization order
+## 12. Materialization order
 
 1. governance/toolchain;
 2. contracts/domain kernel;
@@ -243,10 +137,10 @@ Kubernetes/Terraform are deliberately not mandatory yet; they require deployment
 9. frontend;
 10. governance/autonomy/operations hardening.
 
-## 12. File-level acceptance rule
+## 13. File-level acceptance rule
 
-A target file may move from `PLANNED` to implementation only when it has:
+A target runtime file may move from `PLANNED` to implementation only when it has:
 
 `owner + source mapping/target rationale + contract + implementation purpose + dependency direction + tests + telemetry/recovery requirements + migration/parity status`.
 
-This prevents the project from becoming a large collection of empty folders or speculative modules while still giving us an exact file-by-file target.
+Architecture-contract files may be materialized earlier because they carry no executable production behavior and explicitly preserve Gate 0.
