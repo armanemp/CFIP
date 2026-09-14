@@ -75,11 +75,13 @@ The historical durable execution contract explicitly carries arbitrary `paramete
 
 The inspected V2 runtime execution context carries market identity, timeframe, `data_revision`, observations, correlation/causation and `as_of`, while the inspected builtin engine descriptors expose no engine-specific parameter schema.
 
+The application-level source trace now proves that canonical fingerprint production is implemented in `AnalysisExecutionService`: SHA-256 is computed over sorted-key, compact JSON serialization for request parameters, input snapshot and engine descriptor. The service builds `AnalysisProvenance` with those hashes and dependency versions before execution.
+
 Therefore:
 
-- parameter hashing is contractually required for durable historical execution;
+- parameter hashing is not merely contractual; the V1 application service implements it;
 - the current runtime-only builtin engines do not expose a richer parameter schema in their descriptor;
-- a complete source census is still required to locate the code that computes/stores those hashes and to determine which execution paths populate durable `AnalysisRunRecord` objects.
+- the remaining question is execution-path wiring: which production entry points instantiate/inject `AnalysisExecutionService`, and whether the V2 trading route participates in durable provenance.
 
 No CFIP implementation should assume that generic `dict[str, Any]` parameters are sufficient as the final target contract.
 
@@ -87,9 +89,11 @@ No CFIP implementation should assume that generic `dict[str, Any]` parameters ar
 
 The engine tests prove deterministic repeated execution against an identical `EngineExecutionContext` and prove propagation of `data_revision`. They do **not** prove complete point-in-time dataset reconstruction.
 
-The durable analysis contract is designed for replayable request/result records, while `EngineExecutionContext` is the operational execution boundary. Full PIT closure still requires tracing the source snapshot/data-revision implementation, immutable input fingerprint generation, replay dataset loading and backtest/live equivalence.
+The durable analysis contract is designed for replayable request/result records, while `EngineExecutionContext` is the operational execution boundary. The migrations also prove durable replay/provenance and dataset-integrity structures exist, including `replay_cases`, `provenance_nodes`, `provenance_edges`, `dataset_fingerprints`, `point_in_time_verified`, observed/available timestamps and dataset versions.
 
-Consequently D4 remains open despite strong deterministic and causal evidence.
+However, the current repository-level code search did not yield an independently verifiable producer/loader call site for `replay_cases` or `dataset_fingerprints`. Because connector code search can be incomplete, this is **bounded negative evidence only**: it does not prove that such call sites do not exist. Direct file/path tracing remains required.
+
+Consequently D4 remains open despite strong deterministic, durable-schema and causal evidence.
 
 ## 8. Runtime health boundary
 
@@ -105,35 +109,7 @@ CFIP must therefore distinguish:
 
 They are not interchangeable records.
 
-## 9. D4 residual closure checklist
-
-The following are now explicitly narrowed rather than left as generic gaps:
-
-- [x] 15 runtime registrations identified.
-- [x] 14 namespace directories distinguished from runtime count.
-- [x] 2 runtime-only builtin engines identified.
-- [x] 13 dedicated runtime engines mapped to executable classes.
-- [x] generic deterministic/provenance coverage identified for all 13 dedicated engines.
-- [x] direct runtime/health/timeout tests identified.
-- [x] direct fabric failure-policy test identified.
-- [x] stronger FVG causal/PIT-boundary evidence identified.
-- [ ] complete V1↔V2 cross-registration trace.
-- [ ] complete parameter-schema and fingerprint implementation trace.
-- [ ] complete source snapshot/PIT reconstruction trace.
-- [ ] complete replay/live/backtest equivalence trace.
-- [ ] complete durable analysis-run persistence trace.
-- [ ] complete per-engine golden/regression fixture census.
-- [ ] complete engine execution telemetry/event persistence trace.
-- [ ] complete engine-like implementation census outside the current runtime tuple.
-- [ ] reconcile all findings into final D4 + D7 + D11 closure evidence.
-
-## 10. Migration decision
-
-D4 is now **strongly evidenced at the executable engine/runtime/test level but remains OPEN at the reproducibility/PIT/replay/registration-reconciliation level**.
-
-No target implementation or parity status is advanced by this document. The purpose is to prevent the common migration error of equating deterministic unit tests with full behavioral parity.
-
-## 11. Corrected durable analysis persistence finding
+## 9. Durable analysis persistence boundary
 
 The source has concrete PostgreSQL durable analysis-run persistence; it is not merely a contractual model.
 
@@ -141,24 +117,24 @@ The source has concrete PostgreSQL durable analysis-run persistence; it is not m
 - `packages/infrastructure/src/fi_infrastructure/analysis.py` defines `SqlAlchemyAnalysisRunRepository` with idempotent `create`, row-locking `update` and `get`;
 - `packages/domain/src/fi_domain/analysis/ports/__init__.py` defines the `AnalysisRunRepository` persistence port;
 - `packages/application/src/fi_application/analysis/service.py` defines `AnalysisExecutionService`, injects the repository port optionally, persists REQUESTED/VALIDATING/RUNNING/terminal states, computes parameter/input/engine hashes canonically and emits analysis lifecycle events;
-- canonical hashing is deterministic SHA-256 over sorted-key, compact JSON serialization;
-- the service creates `AnalysisProvenance` with `parameter_hash`, `input_hash`, `engine_hash` and dependency versions before execution;
 - timeout and failure results are durably persisted and accompanied by lifecycle events when the optional publisher is configured.
 
-This closes the previously unresolved **producer and fingerprint implementation** question at the application-service level. It still does not prove that the currently mounted `/v1/trading/analysis/engine-evidence` endpoint uses `AnalysisExecutionService`.
+This closes the previously unresolved **producer and fingerprint implementation** question at the application-service level. It does **not** establish that a live API execution path actually supplies the repository dependency.
 
-## 12. Critical execution-path asymmetry
+## 10. Critical execution-path asymmetry
 
 The current `apps/api/src/fi_api/trading.py` source constructs its own V2 `EngineRuntime` and `AnalysisFabric` directly. The inspected module contains no `AnalysisExecutionService` construction or call in the `/v1/trading/analysis/engine-evidence` path; that endpoint executes the V2 runtime fabric directly against a `WorkspaceService.snapshot()` and returns projected evidence.
 
-Therefore CForex currently contains **two analysis execution paths** with different guarantees:
+A repository-level search for the literal `AnalysisExecutionService(` and `SqlAlchemyAnalysisRunRepository` did not return an indexed call site. Because GitHub connector search is not a complete negative-proof mechanism, this result is recorded only as a bounded search observation; the direct API composition evidence is authoritative for the inspected trading path.
+
+Therefore CForex currently contains **at least two analysis execution paths** with different guarantees:
 
 1. **Durable V1 application path:** `AnalysisExecutionService → AnalysisRunRepository → analysis_runs`, with canonical provenance hashing and lifecycle events when dependencies are supplied.
 2. **Trading API V2 evidence path:** `WorkspaceService.snapshot → AnalysisFabric → EngineRuntime → EngineOutput → evidence projection`, with revision/as-of propagation and transient runtime health, but no established `AnalysisRunRecord` persistence in that route.
 
-This is a material source architecture finding and must be preserved explicitly during migration. CFIP must not collapse these paths without deciding whether they are intended to remain separate, converge behind one authoritative execution boundary, or be treated as legacy/current-path divergence.
+This is a material source architecture finding and must be preserved explicitly during migration. CFIP must not collapse these paths without deciding whether they are intended to remain separate, legacy/current-path divergence, or expected to converge behind one authoritative execution boundary.
 
-## 13. Revised D4 closure checklist
+## 11. D4 residual closure checklist
 
 - [x] 15 runtime registrations identified.
 - [x] 14 namespace directories distinguished from runtime count.
@@ -175,13 +151,22 @@ This is a material source architecture finding and must be preserved explicitly 
 - [x] canonical parameter/input/engine hash production identified.
 - [x] durable analysis lifecycle event emission identified at application-service boundary.
 - [x] V2 trading evidence route traced as a separate execution path.
+- [x] replay/provenance/dataset-integrity schemas identified.
 - [ ] complete V1↔V2 cross-registration/relationship trace.
 - [ ] determine whether the V2 trading path is intentionally separate, legacy, or expected to converge.
+- [ ] prove production dependency wiring for durable analysis persistence.
 - [ ] complete source snapshot/PIT reconstruction trace.
+- [ ] locate executable replay-case loading and replay ordering path.
 - [ ] complete replay/live/backtest equivalence trace.
 - [ ] complete per-engine golden/regression fixture census.
 - [ ] complete engine execution telemetry/event persistence trace.
 - [ ] complete engine-like implementation census outside the current runtime tuple.
 - [ ] reconcile all findings into final D4 + D7 + D11 closure evidence.
+
+## 12. Migration decision
+
+D4 is **strongly evidenced at the executable engine/runtime/test and durable-contract levels but remains OPEN at production wiring, PIT/replay reconstruction, registration reconciliation and operational-history levels**.
+
+No target implementation or parity status is advanced by this document. The purpose is to prevent the common migration error of equating deterministic unit tests or database schemas with complete production behavioral parity.
 
 No CFIP runtime implementation or parity status is advanced by this document.
