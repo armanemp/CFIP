@@ -13,7 +13,7 @@ Gate 0 converts the CForex source study into implementation-grade evidence. CFor
 | Area | Required evidence | Status |
 |---|---|---|
 | API/WS | exhaustive routes/channels, contracts, auth, entitlements, callers, side effects, tests | **ADVANCED — exhaustive catalog still open** |
-| Events | producers, consumers, subjects, schemas, ordering, idempotency, retry, replay, retention | IN PROGRESS |
+| Events | producers, consumers, subjects, schemas, ordering, idempotency, retry, replay, retention | **ADVANCED — executable envelope/outbox/runtime topology verified; exhaustive family census still open** |
 | Data | entity/table/column ownership and cross-context access | IN PROGRESS |
 | Engines | implementation, deterministic contract, PIT fixture, provenance, tests, replay compatibility | IN PROGRESS |
 | Workers | entrypoints, jobs, subscriptions, producers, checkpoints, retries, scaling, health | **ADVANCED — entrypoints and major runtime behavior verified; lifecycle closure still open** |
@@ -30,6 +30,16 @@ Gate 0 converts the CForex source study into implementation-grade evidence. CFor
 The D1 API/WS pass has verified the broad API composition surface and a substantial portion of `/v1/trading` directly from executable CForex source. Verified trading contracts include demo candle lifecycle, realtime WebSocket, canonical observation ingestion, deterministic engine registry/evidence, watchlist, workspace, terminal context, MTF, decision/live-decision, technical analysis, decision explanation, market state, notifications, intelligence supervisor/overview/graph, calibration evaluation, provider reliability and learning analytics. Router wiring also proves the presence of risk, safety, entry guidance, execution intelligence/lifecycle, broker registry, execution quality, learning, self-diagnosis/self-healing and governed competition components.
 
 This is evidence advancement, not closure. The remainder of the trading router and every mounted API module still require exhaustive endpoint-level extraction including request/response/error contracts, authentication/workspace/entitlement rules, UI callers, event side effects and tests.
+
+### D2 — Events
+
+The executable contract pass now directly verifies `fi_contracts.events.EventEnvelope` with strict fields for event identity, type/version, UTC occurrence time, producer, correlation/causation and payload. The durable event contract verifies deduplication, lifecycle status (`pending/processing/published/failed/dead`), attempts, availability/publication timestamps and lock ownership/expiry.
+
+The canonical event vocabulary spans market observations/timelines, analysis lifecycle, engine execution, signals, strategy/backtest, AI/agent activity, incidents/security/health, replay/provenance, learning/evaluation/drift, intelligence memory/graph/attribution, provider/model governance, self-evolution and realtime lifecycle/backpressure/health.
+
+The worker runtime directly verifies PostgreSQL durable application-event outbox → NATS JetStream event publication, a separate canonical-observation outbox → NATS path, durable realtime consumption, a separate ClickHouse canonical-observation consumer, bounded dispatch loops and graceful shutdown. The detailed evidence is recorded in `docs/evidence/CFIP-EVENT-EVIDENCE.md`.
+
+This remains an **advanced evidence pass, not closure**. The exhaustive event-family census must still map every producer, consumer, subject, schema/version, partition key, ordering guarantee, idempotency rule, retry/quarantine behavior, replayability, retention, security classification and telemetry contract to executable source/tests.
 
 ### D5 — Runtime/workers
 
