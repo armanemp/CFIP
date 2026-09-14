@@ -163,10 +163,14 @@ A production path must have an architectural owner, source/capability mapping, c
 
 ## 9. Current physical state
 
-Architecture-contract materialization is now visible in GitHub. The repository contains meaningful `README.md` ownership/boundary contracts for all top-level target areas, all seven application roots, all 33 bounded contexts, all 14 engine namespaces, shared packages, inbound/outbound adapter families, data areas, frontend areas, infrastructure areas, test categories and script categories.
+Architecture-contract materialization is now visible in GitHub. The repository contains meaningful `README.md` ownership/boundary contracts for all top-level target areas, all seven application roots, all **34** bounded contexts, all 14 engine namespaces, shared packages, inbound/outbound adapter families, data areas, frontend areas, infrastructure areas, test categories and script categories.
 
 These files are **not runtime implementations**. They explicitly preserve the Gate 0 lock and identify source mapping, ownership, invariants and target responsibility. Production modules remain unmaterialized until their evidence and gate authorize implementation.
 
 ## 10. Tree health invariant
 
 The tree is healthy only when every production file has one owner; every CForex capability maps to one target location; every target capability maps back to source evidence or an explicit platform concern; no duplicate authoritative implementation exists; persistence ownership is explicit; contracts are versioned/discoverable; tests map to capabilities; operational scripts are deterministic; documentation cannot contradict the canonical Gate 0 register; and deployment topology can evolve without turning every bounded context into a microservice.
+
+## 11. Inventory correction
+
+The explicit canonical target tree contains **34** bounded-context directories. Earlier progress material that described the same explicit list as 33 was a counting error. The directory list is authoritative; current canonical inventories must use 34. This correction reconciles the documented count with the already-materialized structure and does not introduce a new capability.
