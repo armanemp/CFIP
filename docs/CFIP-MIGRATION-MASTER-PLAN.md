@@ -21,7 +21,7 @@ The source repository `armanemp/CForex` remains the behavioral source of truth u
 
 - PIT correctness, provenance, lineage, revisions and causal ordering.
 - Live, replay and backtest semantic compatibility.
-- One authoritative analysis consensus boundary.
+- One authoritative analysis-consensus boundary.
 - Account-aware risk and position sizing.
 - Deterministic analytical engines for identical inputs/parameters/versions.
 - Versioned, idempotent, observable and replayable events.
@@ -104,6 +104,10 @@ Then implement the sole authoritative `AnalysisConsensusService` boundary.
 
 Every engine requires source evidence, typed contracts, golden fixtures, PIT semantics, provenance and replay compatibility.
 
+The analysis infrastructure must use one canonical `(engine_id, version)` identity model. A catalog/contract registry may remain separate from the runtime executor as a concern boundary, but neither may become an independent source of truth. Runtime descriptors must be validated against the canonical contract before activation. See `docs/adr/ADR-001-ANALYSIS-CATALOG-AND-RUNTIME-EXECUTION-PLANE.md`.
+
+Add a release-gated engine projection audit covering descriptor/version/capability/dependency/determinism/timeframe/warmup/latency/provenance/replay requirements.
+
 ## 7. Phase 4 — Research, replay and decisions
 
 Implement:
@@ -133,6 +137,8 @@ Implement Research Intelligence as:
 Implement Learning/Evaluation with temporal separation, leakage controls, attribution, calibration, drift, artifact versioning and governed promotion.
 
 Implement Platform Intelligence as a governed evidence/knowledge layer rather than unrestricted self-modification.
+
+AI/agent security must be evaluated against current OWASP Agentic AI guidance in addition to conventional application security. Tool access, identity, memory, oversight, persistence and autonomous-action boundaries are explicit threat surfaces and must have testable controls.
 
 ## 9. Phase 6 — Product surface
 
@@ -180,6 +186,8 @@ Operational hardening includes:
 - deployment rollback;
 - dependency/supply-chain controls;
 - security posture and incident evidence.
+
+Observability must prefer stable OpenTelemetry semantic conventions over bespoke names where equivalent conventions exist, with sensitive AI content opt-in rather than default capture.
 
 ## 11. Phase 8 — Whole-system parity
 
@@ -232,6 +240,8 @@ Every milestone must pass:
 10. migration/rollback validation;
 11. performance/load budget checks;
 12. source/parity evidence update.
+
+For analytical and AI-assisted capabilities, release evidence must also include reproducibility/provenance checks, engine-catalog/runtime consistency checks, telemetry semantics validation, and agent/tool authorization tests where applicable.
 
 ## 14. Working rule
 
