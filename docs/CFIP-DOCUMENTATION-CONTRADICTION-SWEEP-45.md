@@ -2,7 +2,7 @@
 
 **Source:** `armanemp/CForex` `main` v0.9.154 @ `900882154cab3b9b74d0543b9bbf72a708a08134`  
 **Target baseline:** `armanemp/CFIP` `main` @ `bff23df4d38a22f43cb777151da314174f0b5cf6`  
-**Target final:** `armanemp/CFIP` `main` @ `9af9ef0da7f32ed86c6f85f4e39b3c9e0f4dc833`  
+**Target final:** `armanemp/CFIP` `main` @ `f62aca2f4c39830a20ca5de6114bfe92b44a9bd1`  
 **Gate 0:** OPEN  
 **Runtime:** 0% / LOCKED
 
@@ -37,7 +37,7 @@ It now reads **CForex Intelligence Platform** and explicitly states that the `I`
 
 ## Architecture hardening disposition
 
-The global-scale validator was broadened to cover resource budgets, rate limits/quotas, explicit consistency semantics, schema/data evolution compatibility and RPO/RTO. It also fails closed when a supplied document path is missing.
+The global-scale validator was broadened to cover resource budgets, rate limits/quotas, explicit consistency semantics, schema/data evolution compatibility and RPO/RTO. It now uses semantic multi-term alternatives rather than broad single-keyword matches and fails closed when a supplied document path is missing.
 
 A dedicated Platform Intelligence validator was added to continuously protect the following target invariants: cross-cutting scope, domain-authority separation, governed tools, no direct SQL/infrastructure authority, governor/safety separation, independent verification, health guarding, rollback, bounded self-healing, provenance/freshness, research governance, uncertainty/abstention, temporal learning, multi-agent integrity, workload isolation, audit reconstruction and OpenTelemetry-first telemetry.
 
