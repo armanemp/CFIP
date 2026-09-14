@@ -97,7 +97,7 @@ jobs:
         run: python tools/architecture/validate_dependency_direction.py --help >/dev/null
 
       - name: Verify PIT and replay contract tool
-        run: python tools/architecture/validate_pit_replay_contracts.py docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md docs/evidence/CFIP-SOURCE-CLOSURE-TRACEABILITY-RULES.md
+        run: python tools/architecture/validate_pit_replay_contracts.py docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md docs/capabilities/CFIP-D3-PIT-REPLAY-EVIDENCE-CONTRACT.md
 
       - name: Verify global-scale architecture contract
         run: python tools/architecture/validate_global_scale_contracts.py docs/CFIP-CONTINUATION-PROMPT.md docs/CFIP-ARCHITECTURE-GUIDE.md docs/CFIP-MIGRATION-CONTROL-INDEX.md docs/adr/ADR-005-PLATFORM-INTELLIGENCE-AND-AUTONOMOUS-OPERATION.md
