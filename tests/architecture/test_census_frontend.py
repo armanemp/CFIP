@@ -18,7 +18,7 @@ class FrontendCensusTests(unittest.TestCase):
             (root / "workspace" / "page.tsx").write_text("'use client'\nexport default function Page() { return null }\n", encoding="utf-8")
             (root / "workspace" / "layout.tsx").write_text("export default function Layout({children}: any) { return children }\n", encoding="utf-8")
             (root / "workspace" / "loading.tsx").write_text("export default function Loading() { return null }\n", encoding="utf-8")
-            (root / "workspace" / "chart.tsx").write_text("import { useMemo } from 'react'\nconst pair = 'EURUSD'\n", encoding="utf-8")
+            (root / "workspace" / "chart.tsx").write_text("import { useMemo } from 'react'\nconst pair = 'EURUSD'\nconst value = useMemo(() => pair, [pair])\n", encoding="utf-8")
             result = module["census"](root)
             self.assertEqual(result["file_count"], 4)
             self.assertEqual(result["route_count"], 1)
