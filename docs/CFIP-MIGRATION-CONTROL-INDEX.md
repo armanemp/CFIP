@@ -15,24 +15,27 @@ Read these documents in this order at the start of every migration continuation:
 0. `docs/CFIP-KEY-CONTINUATION-PROMPT.md` — short continuation entrypoint.
 1. `docs/CFIP-CONTINUATION-PROMPT.md` — authoritative operating contract.
 2. `docs/CFIP-MIGRATION-CONTROL-INDEX.md` — this control index and current gate.
-3. `docs/CFIP-MIGRATION-MASTER-PLAN.md` — sequencing and release gates.
-4. `docs/CFIP-ARCHITECTURE-GUIDE.md` — target architecture and invariants.
-5. `docs/capabilities/source-study-integration.md` — source-study/evidence workflow.
-6. `docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md` — canonical Gate 0 evidence register.
-7. `docs/capabilities/CFIP-CAPABILITY-REGISTRY.md` — capability ownership.
-8. `docs/capabilities/source-evidence-matrix.md` — source evidence.
-9. `docs/capabilities/parity-matrix.md` — target implementation/parity status.
-10. `docs/CFIP-SOURCE-TREE.md` — target tree and ownership grammar.
-11. `docs/adr/ADR-001-ANALYSIS-CATALOG-AND-RUNTIME-EXECUTION-PLANE.md` — canonical analysis identity/execution-plane decision.
-12. `docs/adr/ADR-002-REALTIME-EVENT-TIME-AND-BACKPRESSURE-SEMANTICS.md` — canonical realtime event-time/backpressure decision.
-13. `docs/adr/ADR-003-OBSERVABILITY-AND-AGENT-CONTROL-SEMANTICS.md` — standard-first telemetry and agent-control decision.
-14. `docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md` — dataset identity, PIT, replay and reproducibility decision.
-15. `docs/adr/ADR-005-PLATFORM-INTELLIGENCE-AND-AUTONOMOUS-OPERATION.md` — platform-wide intelligence, autonomous engineering/trading/research and governed operation.
-16. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
-17. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
-18. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
-19. `docs/capabilities/CFIP-PLATFORM-INTELLIGENCE-COVERAGE-MATRIX.md` — mandatory capability-wide intelligence integration contract.
-20. Latest progress report and latest contradiction sweep.
+3. `docs/contracts/CFIP-CONTINUATION-CONTRACT-AMENDMENT-47.md` — removes documentation-first sequencing and requires parallel documentation/evidence/engineering.
+4. `docs/CFIP-MIGRATION-MASTER-PLAN.md` — sequencing and release gates.
+5. `docs/CFIP-ARCHITECTURE-GUIDE.md` — target architecture and invariants.
+6. `docs/capabilities/source-study-integration.md` — source-study/evidence workflow.
+7. `docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md` — canonical Gate 0 evidence register.
+8. `docs/capabilities/CFIP-CAPABILITY-REGISTRY.md` — capability ownership.
+9. `docs/capabilities/source-evidence-matrix.md` — source evidence.
+10. `docs/capabilities/parity-matrix.md` — target implementation/parity status.
+11. `docs/CFIP-SOURCE-TREE.md` — target tree and ownership grammar.
+12. `docs/adr/ADR-001-ANALYSIS-CATALOG-AND-RUNTIME-EXECUTION-PLANE.md` — canonical analysis identity/execution-plane decision.
+13. `docs/adr/ADR-002-REALTIME-EVENT-TIME-AND-BACKPRESSURE-SEMANTICS.md` — canonical realtime event-time/backpressure decision.
+14. `docs/adr/ADR-003-OBSERVABILITY-AND-AGENT-CONTROL-SEMANTICS.md` — standard-first telemetry and agent-control decision.
+15. `docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md` — dataset identity, PIT, replay and reproducibility decision.
+16. `docs/adr/ADR-005-PLATFORM-INTELLIGENCE-AND-AUTONOMOUS-OPERATION.md` — platform-wide intelligence, autonomous engineering/trading/research and governed operation.
+17. `docs/capabilities/CFIP-D3-PIT-REPLAY-EVIDENCE-CONTRACT.md` — canonical D3 PIT/replay evidence boundary.
+18. `docs/capabilities/CFIP-PLATFORM-INTELLIGENCE-COVERAGE-MATRIX.md` — mandatory capability-wide intelligence integration contract.
+19. `docs/architecture/CFIP-STANDARDS-REVIEW-47.md` — current standards review for telemetry and agent control.
+20. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
+21. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
+22. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
+23. Latest progress report and latest contradiction sweep.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -86,6 +89,7 @@ The current CForex release truth records **101 required release gates with 100 P
 - No premature microservice fragmentation.
 - Target schema changes belong to one canonical migration owner; during the mutable pre-Gate-1 phase, corrections to an existing logical migration modify that original migration rather than creating duplicate corrective migrations.
 - Every registered capability has an explicit Platform Intelligence integration boundary; intelligence is cross-cutting and never a second domain authority.
+- Current external standards are reviewed as evidence inputs; no standard review may silently turn into a mandatory vendor/framework dependency.
 
 ## 6. Migration gates
 
@@ -199,6 +203,8 @@ At every continuation:
 14. perform a current standards check for material improvements without introducing novelty-only dependencies;
 15. verify that every capability remains covered by the Platform Intelligence matrix and that no intelligence hook bypasses domain authority;
 16. report exact changes, verification, progress and blockers.
+
+Documentation and safe Gate-0-compatible engineering are parallel tracks. The previous documentation-first sequencing restriction is removed by Amendment 47; neither documentation completeness nor engineering work may be used as an excuse to postpone the other when the work can be progressed safely and independently.
 
 No silent deletion, history rewrite, capability retirement or architecture divergence is allowed. Intentional divergence requires an ADR and preserved source evidence.
 
