@@ -6,6 +6,7 @@ on:
       - 'contexts/**'
       - 'docs/**'
       - 'migrations/**'
+      - 'data/migrations/**'
       - 'tools/architecture/**'
       - 'tests/architecture/**'
       - '.github/workflows/architecture-contracts.yml'
@@ -16,6 +17,7 @@ on:
       - 'contexts/**'
       - 'docs/**'
       - 'migrations/**'
+      - 'data/migrations/**'
       - 'tools/architecture/**'
       - 'tests/architecture/**'
       - '.github/workflows/architecture-contracts.yml'
@@ -39,3 +41,15 @@ jobs:
 
       - name: Verify source-closure tooling
         run: python -m unittest discover -s tests/architecture -p 'test_*.py'
+
+      - name: Validate target migration graph when materialized
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -d migrations ]]; then
+            python tools/architecture/validate_migration_graph.py --migrations-root migrations --format markdown --output /tmp/target-migration-graph.md
+          elif [[ -d data/migrations ]]; then
+            python tools/architecture/validate_migration_graph.py --migrations-root data/migrations --format markdown --output /tmp/target-migration-graph.md
+          else
+            echo 'No target migration runtime tree is materialized; Gate 0 remains locked.'
+          fi
