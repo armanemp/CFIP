@@ -12,8 +12,10 @@ This continuation re-checked the current CForex and CFIP branch heads, re-read t
 
 ## 2. Baselines verified
 
-- CFIP `main`: `bae164e3a3c1de17d477d972522ce5975fa859b3`.
 - CForex `main`: `900882154cab3b9b74d0543b9bbf72a708a08134` (v0.9.154).
+- CFIP `main` at start: `bae164e3a3c1de17d477d972522ce5975fa859b3`.
+- CFIP `main` after this batch: `f89b3daf1d0c8e193874ea4573d88172fb39168c`.
+- The new commit is a fast-forward descendant of the verified starting CFIP commit.
 - No source history rewrite or migration-history deletion was performed.
 
 ## 3. Controlled workflow re-read
