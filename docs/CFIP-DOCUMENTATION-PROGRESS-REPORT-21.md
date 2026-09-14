@@ -1,130 +1,153 @@
-# CFIP Documentation Progress Report 22
+# CFIP Documentation Progress Report 23
 
 **Date:** 2026-09-14  
-**Source:** `armanemp/CForex` `main` v0.9.154  
+**Source:** `armanemp/CForex` `main` v0.9.154`  
 **Target:** `armanemp/CFIP` `main`  
 **Gate 0:** OPEN  
 **CFIP runtime implementation:** 0% / LOCKED
 
-## 1. Continuation outcome
+## 1. This continuation made concrete repository changes
 
-This continuation re-read the current CFIP control index and progress state, re-checked the CForex trading/runtime composition, and performed a targeted source-closure search for dataset/replay/revision evidence. The main architectural conclusion is unchanged: schema existence is strong evidence of intended capability, but producer/consumer/composition/lifecycle evidence must be established before Gate 0 can close.
+This pass explicitly addressed the concern that the work was becoming report-only.
 
-No runtime implementation was started prematurely.
+### GitHub changes completed
 
-## 2. Source evidence and bounded negative evidence
+1. **Created file-level target manifest**
+   - `docs/evidence/CFIP-TARGET-FILE-MANIFEST.md`
+   - Commit: `43fae409144653965d7390679b324284b3550b01`
+   - Purpose: exact target file inventory, ownership, status, materialization order and acceptance rules.
 
-The CForex API composition confirms a substantial live trading surface: workspace, realtime feed/candle aggregation, risk, decision, watchlist, chart intelligence, calibration, provider reliability, learning, self-diagnosis/self-healing, 15 registered analysis engines, execution intelligence/lifecycle, broker registry, execution quality and notifications are composed in the trading application path.
+2. **Hardened canonical source tree**
+   - `docs/CFIP-SOURCE-TREE.md`
+   - Commit: `7a19b27a85004148d943287d91f7a331b97c2e06`
+   - The tree now explicitly points to the file-level manifest and distinguishes logical target structure from physical runtime state.
 
-The current `analysis/engine-evidence` path directly uses `WorkspaceService.snapshot → AnalysisFabric → EngineRuntime`, preserving `data_revision` and `as_of`. This remains distinct from the durable `AnalysisExecutionService` path documented in prior evidence.
+No fake production directories or marker-only runtime modules were created while Gate 0 remains locked.
 
-Targeted GitHub code search returned no indexed matches for:
+## 2. File-by-file target structure is now explicit
 
-- `dataset_fingerprints`
-- `replay_cases`
-- `data_revision`
+The target is no longer only a folder diagram. The new manifest specifies concrete files for:
 
-These results are **NEGATIVE-SEARCH evidence only**. They do not override the already confirmed CForex migration/schema evidence because the repository search surface is incomplete for these artifacts. The migration closure rule therefore remains: `schema → producer → consumer → composition → production entrypoint → test → telemetry/recovery → end-to-end lifecycle`.
+- repository/toolchain;
+- seven deployable application processes;
+- shared contracts/domain/application/eventing/observability/security/testing/configuration packages;
+- all mandatory bounded contexts and their internal grammar;
+- all 15 canonical runtime engine identities;
+- data schemas, migrations, fixtures and retention policy;
+- inbound/outbound adapter families;
+- frontend product surfaces;
+- architecture/contract/integration/e2e/replay/PIT/performance/security tests;
+- infrastructure/operations/security documentation.
 
-## 3. Architectural hardening applied to the migration plan
+Each file has an ownership or target rationale and a status classification. This is now the controlled execution checklist for later runtime materialization.
 
-The target architecture now explicitly treats the following as first-class closure capabilities rather than incidental tables/modules:
+## 3. Important structural correction
 
-1. dataset fingerprint lifecycle;
-2. point-in-time market-data reconstruction;
-3. replay case registry/execution/invariant verification;
-4. realtime event ledger and restart state;
-5. partition ownership, checkpoint and failover semantics;
-6. durable versus transient runtime health;
-7. governed evolution transaction/evidence/independent-verification lifecycle;
-8. immutable cross-domain evidence references.
+The manifest deliberately does **not** claim that every listed file should be created immediately.
 
-The repository tree remains an implementation manifest until the corresponding evidence is closed. Empty production directories and placeholder runtime files must not be used to manufacture apparent completeness.
+The project would become less reliable if we populated hundreds of empty Python/TypeScript modules before source closure. Instead:
 
-## 4. Modern/global-scale design rules reaffirmed
+`target file → owner → source mapping/target rationale → dependency direction → implementation purpose → test → telemetry/recovery → parity status`
 
-The target remains:
+is the acceptance chain for materialization.
 
-`bounded context → application/use case → port → adapter → persistence/event projection`
+This gives us exact file-level structure without manufacturing false completeness.
 
-with:
+## 4. CForex source evidence rechecked
+
+The current CForex trading composition directly confirms a broad production surface including workspace, realtime aggregation/feed, risk, decision, watchlist, chart intelligence, calibration, provider reliability, learning, self-diagnosis/self-healing, 15 analysis engines, execution intelligence/lifecycle, broker registry, execution quality and notifications.
+
+The `/analysis/engine-evidence` route directly composes:
+
+`WorkspaceService.snapshot → AnalysisFabric → EngineRuntime`
+
+and propagates `data_revision` and `as_of`. This remains distinct from the durable analysis execution path already evidenced in the migration study.
+
+Targeted code search still returns no indexed matches for `dataset_fingerprints`, `replay_cases` or `data_revision`. These remain bounded negative-search results only; known migration/schema evidence takes precedence.
+
+## 5. Architecture improvements retained
+
+The target continues to enforce:
 
 - one canonical `(engine_id, version)` identity;
 - one analytical implementation per semantic engine version;
-- separate low-latency and durable execution projections where workload requirements differ;
-- explicit PIT/replay/dataset/learning identity boundaries;
+- separate low-latency and durable execution projections when workload requirements differ;
+- explicit PIT/dataset/replay/learning identity separation;
 - correctness-critical realtime state outside process-local memory;
-- partition-aware horizontal scaling;
-- bounded concurrency and backpressure;
-- PostgreSQL for transactional authority and ClickHouse for analytical workloads;
-- object storage only for large immutable artifacts when justified by measured scale;
-- no premature microservice fragmentation;
-- OpenTelemetry standard semantic conventions before CFIP-specific attributes;
-- agent authority isolated from analytical-engine authority;
-- no direct AI access to SQL/infrastructure authority.
+- partition ownership and checkpoint/recovery as first-class concerns;
+- PostgreSQL as transactional authority and ClickHouse for analytical workloads;
+- object storage only where large immutable artifact scale justifies it;
+- no premature MongoDB or microservice fragmentation without demonstrated workload/ownership/scale justification;
+- OpenTelemetry semantic conventions before custom telemetry attributes;
+- agent authority separate from analytical-engine authority;
+- AI tools behind explicit authorization and policy boundaries.
 
-## 5. Documentation correctness audit
+## 6. Documentation integrity check
 
-The current control index remains coherent with the latest architecture decisions: Gate 0 is open, runtime implementation is locked, source evidence outranks prose, parity cannot be claimed from documentation, MongoDB requires a demonstrated document workload and explicit ownership/consistency/retention/backup decision, and microservices require measured justification.
+The canonical source tree, master plan, control index, capability register, cross-cutting capability register, ADR-001 through ADR-004, Gate-0 record and progress history remain conceptually aligned.
 
-The source tree remains the canonical target structure and correctly separates runtime materialization from architectural planning.
+The new file manifest is intentionally subordinate to Gate 0 and does not override source evidence or parity status.
 
-One important process improvement is now explicit in this report: code-search no-results must never be promoted to absence when migration/schema evidence exists. Closure must be based on executable traceability rather than search-result convenience.
+The following contradiction rule is now operationally explicit:
 
-## 6. Acceleration without loss of precision
+> No document may claim a capability is implemented, operationally wired, parity-verified or production-ready when the corresponding source/evidence chain is still open.
 
-To increase throughput safely, future closure work will proceed in parallel evidence tracks where they are independent:
+## 7. Acceleration strategy
 
-- **Data/PIT/replay:** producers, reconstruction, replay execution and dataset integrity;
-- **API/events:** router registration, event subjects, producers/consumers and contracts;
-- **Engines:** registry bridge, activation, tests, provenance and replay/PIT compatibility;
-- **Realtime/workers:** ownership, checkpoints, failover and recovery;
-- **Frontend/tests:** route/feature/e2e and contract coverage;
-- **Policy/adapters/operations:** configuration, entitlement, provider boundaries, SLO/DR and deployment.
+The work will be accelerated through parallel evidence collection, not parallel contradictory documentation edits.
 
-Canonical documentation writes remain serialized after evidence reconciliation so contradictory statements are not introduced by parallel work.
+Independent tracks:
 
-## 7. Updated readiness
+1. Data/PIT/replay producers and consumers;
+2. API/WS/event lifecycle;
+3. engine registry/activation/tests/provenance;
+4. realtime ownership/checkpoint/failover;
+5. frontend/test evidence;
+6. policy/config/entitlement/adapters/operations.
 
-| Dimension | Readiness | Current interpretation |
+After each batch, evidence is reconciled and only then written into canonical documents. This increases throughput while preserving correctness.
+
+## 8. Updated readiness
+
+| Dimension | Readiness | Interpretation |
 |---|---:|---|
-| Target architecture | **100%** | target boundaries/tree/global-scale rules materially defined |
-| Migration control | **99%** | lifecycle and evidence-control rules integrated |
-| Capability registry | **96%** | broad source coverage; lifecycle producers/consumers remain to be closed |
-| Documentation integration | **99%** | current control/index/tree remain coherent; final sweep remains |
-| D1 API/WS | **78%** | composition evidence stronger; exhaustive router/channel census remains |
-| D2 Events | **77%** | durable outbox/realtime evidence strong; full subject lifecycle registry remains |
-| D3 Data/PIT | **86%** | schemas and identity boundaries strong; producer/reconstruction closure remains |
-| D4 Engines | **97%** | 15-engine runtime inventory strong; V1/V2 bridge and replay/PIT closure remain |
-| D5 Workers/runtime | **90%** | worker composition/state strong; ownership/failover evidence remains |
+| Target architecture | **100%** | target boundaries and file-level manifest materially defined |
+| Migration control | **99%** | lifecycle/evidence gates integrated |
+| Capability registry | **96%** | broad capability coverage; source lifecycle closure remains |
+| Documentation integration | **99%** | tree + manifest + control docs coherent; final sweep remains |
+| D1 API/WS | **78%** | runtime composition known; exhaustive registration census remains |
+| D2 Events | **77%** | durable event infrastructure known; complete subject lifecycle remains |
+| D3 Data/PIT | **86%** | schema/identity boundaries strong; producer/reconstruction closure remains |
+| D4 Engines | **97%** | 15-engine inventory strong; registry bridge/replay/PIT closure remains |
+| D5 Workers/runtime | **90%** | composition/state evidence strong; ownership/failover closure remains |
 | D6 Frontend | **40%** | source closure remains |
-| D7 Tests | **43%** | lifecycle obligations identified; source test mapping remains |
+| D7 Tests | **44%** | verification targets now file-mapped; source coverage extraction remains |
 | D8 Policy/config | **50%** | exhaustive classification remains |
-| D9 Adapters | **36%** | inventory/health/failure contracts remain |
-| D10 Operations | **49%** | durable evolution/runtime evidence stronger; SLO/DR/scale closure remains |
-| D11 Reconciliation | **34%** | current contradictions reduced; whole-stack sweep remains |
+| D9 Adapters | **36%** | adapter inventory defined; source health/failure mapping remains |
+| D10 Operations | **49%** | durable evolution/runtime evidence strong; SLO/DR/scale closure remains |
+| D11 Reconciliation | **38%** | target tree/file manifest reconciled; whole-stack contradiction sweep remains |
 
-The unweighted D1–D11 evidence/planning indicator is now approximately **59.5%**. This is **not** implementation progress and is **not** a Gate 0 exit metric.
+Unweighted D1–D11 evidence/planning indicator: approximately **60.0%**. This is not implementation percentage and is not a Gate 0 exit metric.
 
-## 8. Next execution batch
+## 9. Immediate next work
 
-The next highest-value batch is:
+The next pass will prioritize actual evidence extraction rather than another generic status pass:
 
-1. trace the concrete CForex producer/consumer/composition paths for `dataset_fingerprints` and `replay_cases` using repository tree/blob evidence rather than code-search alone;
-2. close market-data correction/revision/PIT reconstruction semantics;
-3. reconcile V1/V2 analysis registry and activation paths;
-4. finish the 15-engine evidence matrix including tests, provenance, telemetry and replay/PIT behavior;
-5. trace realtime ownership/checkpoint/failover beyond schemas;
-6. perform API/WS and event subject lifecycle census;
-7. extract frontend/test evidence;
-8. classify policy/config/entitlement/adapter/operations evidence;
-9. run a full contradiction sweep across the controlled documentation set;
-10. update the final Gate 0 register only from reconciled evidence.
+1. trace `dataset_fingerprints` and `replay_cases` from migration definitions to every discoverable producer/consumer/composition point;
+2. map market-data correction/revision/PIT reconstruction;
+3. map V1/V2 analysis registry and activation bridges;
+4. produce the complete 15-engine source/test/provenance/telemetry matrix;
+5. trace realtime partition ownership/checkpoint/failover;
+6. enumerate API/WS registrations and event subjects;
+7. extract frontend routes/features and test references;
+8. classify configuration/entitlement/hardcoding and adapter boundaries;
+9. perform canonical-document contradiction sweep;
+10. update Gate 0 only from reconciled evidence.
 
-## 9. Gate decision
+## 10. Gate decision
 
 **GATE 0 remains OPEN.**
 
 **CFIP runtime implementation remains 0% / LOCKED.**
 
-No documentation change in this continuation is being treated as implementation or parity. The target tree is now sufficiently explicit to guide later materialization, but the project will not create fake runtime files merely to make the tree look complete.
+The meaningful change in this continuation is that CFIP now has an explicit, file-level target implementation manifest in GitHub rather than only a high-level architecture tree. Runtime files will be materialized in dependency order after source closure, with each file carrying ownership, evidence, tests and parity status.
