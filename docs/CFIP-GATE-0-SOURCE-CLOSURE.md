@@ -16,7 +16,7 @@ Gate 0 converts the CForex source study into implementation-grade evidence. CFor
 | Events | producers, consumers, subjects, schemas, ordering, idempotency, retry, replay, retention | IN PROGRESS |
 | Data | entity/table/column ownership and cross-context access | IN PROGRESS |
 | Engines | implementation, deterministic contract, PIT fixture, provenance, tests, replay compatibility | IN PROGRESS |
-| Workers | entrypoints, jobs, subscriptions, producers, checkpoints, retries, scaling, health | IN PROGRESS |
+| Workers | entrypoints, jobs, subscriptions, producers, checkpoints, retries, scaling, health | **ADVANCED — entrypoints and major runtime behavior verified; lifecycle closure still open** |
 | Frontend | routes/components/hooks/API/realtime/auth/state/i18n/a11y/telemetry/tests | IN PROGRESS |
 | Tests | capability mapping plus negative/security/PIT/replay coverage | IN PROGRESS |
 | Policy | invariant/config/runtime setting/tenant setting/entitlement/flag/governed policy classification | IN PROGRESS |
@@ -25,9 +25,24 @@ Gate 0 converts the CForex source study into implementation-grade evidence. CFor
 
 ## Current evidence advancement
 
-The D1 API/WS pass has now verified the broad API composition surface and a substantial portion of `/v1/trading` directly from executable CForex source. Verified trading contracts include demo candle lifecycle, realtime WebSocket, canonical observation ingestion, deterministic engine registry/evidence, watchlist, workspace, terminal context, MTF, decision/live-decision, technical analysis, decision explanation, market state, notifications, intelligence supervisor/overview/graph, calibration evaluation, provider reliability and learning analytics. The router wiring also proves the presence of risk, safety, entry guidance, execution intelligence/lifecycle, broker registry, execution quality, learning, self-diagnosis/self-healing and governed competition components.
+### D1 — API/WS
 
-This is an **evidence advancement, not closure**. The remainder of the trading router and every mounted API module still require exhaustive endpoint-level extraction including request/response/error contracts, authentication/workspace/entitlement rules, UI callers, event side effects and tests.
+The D1 API/WS pass has verified the broad API composition surface and a substantial portion of `/v1/trading` directly from executable CForex source. Verified trading contracts include demo candle lifecycle, realtime WebSocket, canonical observation ingestion, deterministic engine registry/evidence, watchlist, workspace, terminal context, MTF, decision/live-decision, technical analysis, decision explanation, market state, notifications, intelligence supervisor/overview/graph, calibration evaluation, provider reliability and learning analytics. Router wiring also proves the presence of risk, safety, entry guidance, execution intelligence/lifecycle, broker registry, execution quality, learning, self-diagnosis/self-healing and governed competition components.
+
+This is evidence advancement, not closure. The remainder of the trading router and every mounted API module still require exhaustive endpoint-level extraction including request/response/error contracts, authentication/workspace/entitlement rules, UI callers, event side effects and tests.
+
+### D5 — Runtime/workers
+
+The executable source pass now directly verifies the major runtime entrypoints:
+
+- `apps/worker/src/fi_worker/main.py`: PostgreSQL + NATS JetStream + ClickHouse initialization, durable application-event outbox dispatch, canonical-observation outbox dispatch, ClickHouse projection, realtime intelligence orchestration, signal lifecycle/provenance, bounded dispatch loops and graceful shutdown.
+- `apps/learning_worker/src/fi_learning_worker/main.py`: periodic journal-outcome collection, deterministic data-revision fingerprinting, evidence references, governed learning gate, lesson persistence, atomic state publication and failure-isolated continuation.
+- `apps/autonomy_worker/src/fi_autonomy_worker/main.py`: independent governed intelligence lanes, bounded script execution, circuit breakers, atomic lane telemetry, fail-closed malformed safety state, independent verification/post-promotion guard lanes and explicit production/model mutation guards.
+- `apps/api/src/fi_api/realtime.py`: authenticated application WebSocket path with snapshot-plus-incremental delivery, subscription authorization/registry, validation, unsubscribe handling and bounded failure responses.
+
+The detailed evidence is recorded in `docs/evidence/CFIP-RUNTIME-WORKER-EVIDENCE.md`.
+
+This remains an **advanced evidence pass, not closure**. Exact job-to-event mappings, checkpoint/watermark/lease semantics, retry/quarantine behavior, resource/scaling contracts, deployment manifests, worker health telemetry and complete worker-to-test/capability traceability remain open.
 
 ## Established facts
 
