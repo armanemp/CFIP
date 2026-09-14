@@ -39,21 +39,35 @@ jobs:
       - name: Validate architecture contracts
         run: python tools/architecture/validate_target_contracts.py
 
-      - name: Verify source-closure tooling
-        shell: bash
-        run: |
-          set -euo pipefail
-          failures=0
-          for test_file in tests/architecture/test_*.py; do
-            echo "===== $test_file ====="
-            if ! python -m unittest "$test_file" -v; then
-              failures=$((failures + 1))
-            fi
-          done
-          if [[ "$failures" -ne 0 ]]; then
-            echo "Architecture test modules failed: $failures"
-            exit 1
-          fi
+      - name: Test API and WebSocket census
+        run: python -m unittest tests/architecture/test_census_api_ws.py -v
+
+      - name: Test event graph census
+        run: python -m unittest tests/architecture/test_census_event_graph.py -v
+
+      - name: Test frontend census
+        run: python -m unittest tests/architecture/test_census_frontend.py -v
+
+      - name: Test policy/configuration census
+        run: python -m unittest tests/architecture/test_census_policy_config.py -v
+
+      - name: Test engine registry reconciliation
+        run: python -m unittest tests/architecture/test_reconcile_engine_registry.py -v
+
+      - name: Test dependency direction
+        run: python -m unittest tests/architecture/test_validate_dependency_direction.py -v
+
+      - name: Test global-scale contracts
+        run: python -m unittest tests/architecture/test_validate_global_scale_contracts.py -v
+
+      - name: Test migration graph
+        run: python -m unittest tests/architecture/test_validate_migration_graph.py -v
+
+      - name: Test PIT and replay contracts
+        run: python -m unittest tests/architecture/test_validate_pit_replay_contracts.py -v
+
+      - name: Test worker lifecycle
+        run: python -m unittest tests/architecture/test_validate_worker_lifecycle.py -v
 
       - name: Validate target migration graph when materialized
         shell: bash
@@ -67,20 +81,11 @@ jobs:
             echo 'No target migration runtime tree is materialized; Gate 0 remains locked.'
           fi
 
-      - name: Verify worker lifecycle tool contract
-        run: python -m unittest tests/architecture/test_validate_worker_lifecycle.py
-
       - name: Verify dependency direction tool contract
-        run: python -m unittest tests/architecture/test_validate_dependency_direction.py
+        run: python tools/architecture/validate_dependency_direction.py --help >/dev/null
 
       - name: Verify PIT and replay contract tool
         run: python tools/architecture/validate_pit_replay_contracts.py docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md docs/evidence/CFIP-SOURCE-CLOSURE-TRACEABILITY-RULES.md
 
       - name: Verify global-scale architecture contract
         run: python tools/architecture/validate_global_scale_contracts.py docs/CFIP-CONTINUATION-PROMPT.md docs/evidence/CFIP-TARGET-FILE-MANIFEST.md
-
-      - name: Verify recursive frontend census tool
-        run: python -m unittest tests/architecture/test_census_frontend.py
-
-      - name: Verify policy/configuration census tool
-        run: python -m unittest tests/architecture/test_census_policy_config.py
