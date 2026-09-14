@@ -92,7 +92,7 @@ def parse_file(path: Path, root: Path) -> Migration:
         _strings(values.get("branch_labels")),
         _strings(values.get("depends_on")),
         _logical_objects(tree),
-        "OK",
+        "OK" if revision else "ERROR",
         tuple(notes),
     )
 
@@ -108,6 +108,9 @@ def scan(root: Path) -> list[Migration]:
 def validate(migrations: list[Migration]) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
+    for item in migrations:
+        if item.parse_status == "ERROR":
+            errors.append(f"invalid migration metadata {item.path}: {', '.join(item.notes) or 'parse failure'}")
     usable = [item for item in migrations if item.parse_status == "OK" and item.revision]
     revisions: dict[str, list[Migration]] = {}
     for item in usable:
