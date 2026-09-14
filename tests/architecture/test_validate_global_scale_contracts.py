@@ -28,6 +28,18 @@ class GlobalScaleContractTests(unittest.TestCase):
         """
         self.assertEqual(MODULE.validate(text), [])
 
+    def test_canonical_prompt_load_wording_is_accepted(self) -> None:
+        text = """
+        stateless horizontally scalable APIs; partitionable workers/streams;
+        deterministic idempotent consumers; explicit backpressure;
+        PostgreSQL indexing/partitioning/retention; ClickHouse analytical workload isolation;
+        asynchronous workload isolation; regional latency/data-residency strategy;
+        capacity/SLO measurements; tested recovery/rollback;
+        partition ownership/checkpoints; queue depth, consumer lag, watermark lag;
+        representative load methodology.
+        """
+        self.assertEqual(MODULE.validate(text), [])
+
     def test_missing_obligation_is_reported(self) -> None:
         missing = MODULE.validate("stateless horizontally scalable APIs")
         self.assertIn("partitionable_workers", missing)
