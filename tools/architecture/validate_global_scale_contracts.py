@@ -11,52 +11,43 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-# Each obligation has a stable key and one or more accepted phrasings.  The
-# validator is intentionally contract-oriented rather than tied to one prose
-# document so that architecture wording can evolve without weakening the
-# obligation itself.
-REQUIRED_CONTRACTS: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("stateless_api", ("stateless horizontally scalable APIs", "stateless")),
-    ("partitionable_workers", ("partitionable workers/streams", "partitionable workers", "partition")),
-    ("idempotent_consumers", ("deterministic idempotent consumers", "idempotent consumers", "idempotent")),
-    ("backpressure", ("explicit backpressure", "backpressure")),
-    ("postgresql_scale", ("PostgreSQL indexing/partitioning/retention", "PostgreSQL")),
-    ("clickhouse_isolation", ("ClickHouse analytical workload isolation", "ClickHouse")),
-    ("async_isolation", ("asynchronous workload isolation", "asynchronous")),
-    ("regional_strategy", ("regional latency/data-residency strategy", "data-residency")),
-    ("capacity_slo", ("capacity/SLO measurements", "capacity/SLO", "SLO")),
-    ("recovery_rollback", ("tested recovery/rollback", "recovery", "rollback")),
-    ("checkpoint_ownership", ("partition ownership/checkpoints", "checkpoint")),
-    ("realtime_telemetry", ("queue depth, lag, watermark lag", "watermark lag", "consumer lag")),
-    ("load_methodology", ("representative load/capacity methodology", "representative load methodology", "load/capacity")),
-    ("resource_budgets", ("resource budgets", "resource-budget", "bounded concurrency")),
-    ("rate_limits", ("rate limits, quotas", "rate limits", "quotas")),
-    ("consistency_semantics", ("consistency semantics", "strong, causal, eventual", "eventual")),
-    ("schema_evolution", ("schema/data evolution compatibility", "schema evolution", "data evolution")),
-    ("rpo_rto", ("RPO/RTO", "recovery point objective", "recovery time objective")),
+# Each obligation contains alternatives; every term in an alternative must be
+# present. This is stronger than accepting one broad keyword such as
+# ``PostgreSQL`` and prevents unrelated prose from satisfying the contract.
+REQUIRED_CONTRACTS: tuple[tuple[str, tuple[tuple[str, ...], ...]], ...] = (
+    ("stateless_api", (("stateless", "horizontally scalable", "api"),)),
+    ("partitionable_workers", (("partitionable workers",), ("partitionable", "workers/streams"))),
+    ("idempotent_consumers", (("deterministic idempotent consumers",), ("idempotent", "consumers"))),
+    ("backpressure", (("explicit backpressure",),)),
+    ("postgresql_scale", (("PostgreSQL indexing/partitioning/retention",), ("PostgreSQL", "partitioning", "retention"))),
+    ("clickhouse_isolation", (("ClickHouse analytical workload isolation",), ("ClickHouse", "workload isolation"))),
+    ("async_isolation", (("asynchronous workload isolation",), ("asynchronous", "workload isolation"))),
+    ("regional_strategy", (("regional latency/data-residency strategy",), ("regional", "data-residency"))),
+    ("capacity_slo", (("capacity/SLO measurements",), ("capacity/SLO",), ("capacity", "SLO"))),
+    ("recovery_rollback", (("tested recovery/rollback",), ("recovery", "rollback"))),
+    ("checkpoint_ownership", (("partition ownership/checkpoints",), ("partition ownership", "checkpoint"))),
+    ("realtime_telemetry", (("queue depth, lag, watermark lag",), ("queue depth", "watermark lag"))),
+    ("load_methodology", (("representative load/capacity methodology",), ("representative load methodology",), ("load/capacity",))),
+    ("resource_budgets", (("resource budgets",), ("bounded concurrency",))),
+    ("rate_limits", (("rate limits, quotas",), ("rate limits", "quotas"), ("rate limits",))),
+    ("consistency_semantics", (("consistency semantics",), ("strong, causal, eventual",), ("strong", "causal", "eventual"))),
+    ("schema_evolution", (("schema/data evolution compatibility",), ("schema evolution", "compatibility"), ("data evolution", "compatibility"))),
+    ("rpo_rto", (("RPO/RTO",), ("recovery point objective", "recovery time objective"))),
 )
 
 
 def validate(text: str) -> list[str]:
-    """Return missing architecture obligations from a text corpus.
-
-    This public function remains intentionally small so unit tests can validate
-    the contract independently of repository layout and CI invocation.
-    """
+    """Return missing architecture obligations from a text corpus."""
     normalized = " ".join(text.lower().split())
     missing: list[str] = []
-    for key, needles in REQUIRED_CONTRACTS:
-        if not any(needle.lower() in normalized for needle in needles):
+    for key, alternatives in REQUIRED_CONTRACTS:
+        if not any(all(term.lower() in normalized for term in alternative) for alternative in alternatives):
             missing.append(key)
     return missing
 
 
 def validate_document_set(paths: list[Path]) -> list[str]:
-    """Validate a concrete repository document set and report missing files.
-
-    File existence is checked separately from content so a broken CI path or a
-    renamed canonical document cannot silently become a passing empty corpus.
-    """
+    """Validate a concrete repository document set and report missing files."""
     missing_files = [str(path) for path in paths if not path.is_file()]
     if missing_files:
         return [f"missing_file:{path}" for path in missing_files]
