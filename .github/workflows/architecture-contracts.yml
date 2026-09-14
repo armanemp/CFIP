@@ -7,6 +7,7 @@ on:
       - 'docs/**'
       - 'migrations/**'
       - 'tools/architecture/**'
+      - 'tests/architecture/**'
       - '.github/workflows/architecture-contracts.yml'
   push:
     branches:
@@ -16,6 +17,7 @@ on:
       - 'docs/**'
       - 'migrations/**'
       - 'tools/architecture/**'
+      - 'tests/architecture/**'
       - '.github/workflows/architecture-contracts.yml'
 
 permissions:
@@ -34,3 +36,6 @@ jobs:
 
       - name: Validate architecture contracts
         run: python tools/architecture/validate_target_contracts.py
+
+      - name: Verify source-closure tooling
+        run: python -m unittest discover -s tests/architecture -p 'test_*.py'
