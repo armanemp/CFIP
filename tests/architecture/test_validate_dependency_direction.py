@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import importlib.util
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
@@ -8,8 +10,9 @@ TOOL = Path(__file__).resolve().parents[2] / "tools" / "architecture" / "validat
 spec = importlib.util.spec_from_file_location("validate_dependency_direction", TOOL)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)
-assert spec.loader
+sys.modules[spec.name] = module
 spec.loader.exec_module(module)
+
 
 class DependencyDirectionTests(unittest.TestCase):
     def test_domain_must_not_import_infrastructure(self) -> None:
@@ -29,6 +32,7 @@ class DependencyDirectionTests(unittest.TestCase):
             path.parent.mkdir(parents=True)
             path.write_text("from contracts import Event\n", encoding="utf-8")
             self.assertEqual([], module.scan(root))
+
 
 if __name__ == "__main__":
     unittest.main()
