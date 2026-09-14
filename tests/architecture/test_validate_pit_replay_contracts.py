@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import importlib.util
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
@@ -8,8 +10,9 @@ TOOL = Path(__file__).resolve().parents[2] / "tools" / "architecture" / "validat
 spec = importlib.util.spec_from_file_location("validate_pit_replay_contracts", TOOL)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)
-assert spec.loader
+sys.modules[spec.name] = module
 spec.loader.exec_module(module)
+
 
 class PitReplayTests(unittest.TestCase):
     def test_complete_contract_terms_pass(self) -> None:
@@ -23,6 +26,7 @@ class PitReplayTests(unittest.TestCase):
             path = Path(directory) / "evidence.md"
             path.write_text("dataset_fingerprints", encoding="utf-8")
             self.assertTrue(module.validate([path]))
+
 
 if __name__ == "__main__":
     unittest.main()
