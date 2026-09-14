@@ -33,6 +33,11 @@ When evidence conflicts, stop target implementation and reconcile the higher-con
 | `packages/` | application, contracts, domain, infrastructure, shared | CFIP retains these concerns but makes context ownership more explicit. |
 | `engines/` | 14 top-level engine namespaces: technical, structure, liquidity, FVG, order block, regime, MTF, confluence, contradiction, intelligence score, scoring, signal, strategy, backtest | Namespace inventory is discovery evidence only; executable implementation and runtime registration are separate inventories. |
 | `apps/api/src/fi_api/trading.py` engine construction | `EngineRuntime` is constructed with 15 runtime instances: Momentum, Volatility, BacktestReplay, Confluence, Contradiction, FVG, IntelligenceScore, Liquidity, MTF, OrderBlock, Regime, Scoring, Signal, Strategy, Structure | CFIP must preserve runtime registration as a first-class contract and must not equate directory count with runtime capability count. |
+| `packages/application/src/fi_application/analysis_engine/runtime.py` | Runtime registers by `(engine_id, version)`, rejects duplicates, supports exact/latest descriptor lookup, enforces latency budgets, records bounded latency/failure/timeout metrics and derives health status | CFIP needs an explicit execution-runtime boundary separate from domain registration and durable run persistence; timeout and health semantics are contractual. |
+| `packages/application/src/fi_application/analysis_engine/builtin.py` | `technical.momentum@1.0.0` and `technical.volatility@1.0.0` are concrete runtime-only deterministic engines with explicit descriptors, warmup/timeframe/latency and revision-linked evidence | Runtime-only engines must be included in the migration capability census even though no top-level `engines/` directory represents them. |
+| `packages/application/src/fi_application/analysis_engine/fabric.py` | Shared-context concurrent execution; explicit `FAIL_CLOSED` handling; `RETURN_PARTIAL`/`SKIP` remain descriptor policies; normalized evidence projection | CFIP analysis orchestration must preserve explicit failure policy and must not silently discard failed fail-closed engines. |
+| `tests/unit/analysis_engine/test_engine_runtime.py` | Direct tests for deterministic momentum/provenance, health accounting, timeout counting and latency health thresholds | Runtime behavior has direct executable verification that must be carried into the target test/parity plan. |
+| `tests/unit/analysis_engine/test_fabric_failure_policy.py` | Direct fail-closed negative test | Failure semantics are part of the capability contract, not optional operational behavior. |
 
 ## Verified API evidence pass — D1
 
@@ -87,13 +92,15 @@ Detailed evidence: `docs/evidence/CFIP-DATA-OWNERSHIP-EVIDENCE.md`.
 
 ## Verified engine evidence pass — D4
 
-The source engine contract has two observed descriptor generations: historical `EngineDescriptor` and production `EngineDescriptorV2`. V2 explicitly models timeframes, dependencies, warmup, latency budget, failure policy, deterministic behavior and capability ID. `EngineExecutionContext` carries instrument, timeframe, `data_revision`, observations and `as_of`; `EngineOutput` carries bounded direction/score/confidence, evidence, provenance and degraded status; `EngineHealthSnapshot` carries execution/failure/timeout/latency/failure-rate health.
+The source has directly verified coexistence of the historical `EngineDescriptor` and production `EngineDescriptorV2`. V2 models timeframes, dependencies, warmup, latency budget, failure policy, deterministic behavior and capability ID. `EngineExecutionContext` carries instrument, timeframe, `data_revision`, observations and `as_of`; `EngineOutput` carries bounded direction/score/confidence, evidence, provenance and degraded status; `EngineHealthSnapshot` carries execution/failure/timeout/latency/failure-rate health.
 
-The source runtime constructs 15 engines, including two runtime-only components (`MomentumEngine`, `VolatilityEngine`) that are not represented by top-level `engines/` directories. `GET /v1/trading/analysis/engines` exposes the runtime engine IDs, descriptors and health. `GET /v1/trading/analysis/engine-evidence` executes the registered runtime IDs against one causal workspace timeline and returns outputs/evidence with the same data revision and correlation context.
+The API runtime constructs 15 engines, including runtime-only `MomentumEngine` and `VolatilityEngine`. `EngineRuntime` registers by `(engine_id, version)`, rejects duplicate registrations, enforces descriptor latency budgets and records bounded in-memory health metrics. `AnalysisFabric` executes engines concurrently under a shared causal context and enforces `FAIL_CLOSED` rather than silently dropping a failed engine. Direct tests verify deterministic momentum/provenance, timeout accounting, health thresholds and fail-closed behavior.
+
+`GET /v1/trading/analysis/engines` exposes the runtime engine IDs/descriptors/health. `GET /v1/trading/analysis/engine-evidence` executes the registered runtime IDs against one causal workspace timeline and returns outputs/evidence with the same data revision and correlation context.
 
 Detailed evidence: `docs/evidence/CFIP-ENGINE-EVIDENCE.md`.
 
-**D4 status: advanced, not closed.** Runtime-only engine contracts, V1/V2 authority, exact registration, fixtures/tests, PIT/replay equivalence, failure semantics and telemetry still require direct evidence.
+**D4 status: advanced, materially closer to closure, but not closed.** Remaining work is engine-wide registration/fixture/PIT/replay/telemetry/reconciliation evidence.
 
 ## Known evidence gaps to resolve before parity closure
 
@@ -102,7 +109,7 @@ Detailed evidence: `docs/evidence/CFIP-ENGINE-EVIDENCE.md`.
 - Complete entity/table/column → bounded-context ownership map through the source head.
 - Complete ORM/repository cross-context read/write map.
 - Complete frontend route/component → capability/API mapping.
-- Complete engine implementation → contract → runtime registration → test mapping.
+- Complete engine implementation → contract → runtime registration → test mapping, including runtime-only engines.
 - Complete worker/scheduler/subscription topology.
 - Complete test-to-capability matrix, including negative/security/PIT/replay tests.
 - Complete configuration/feature-flag/entitlement policy inventory.
