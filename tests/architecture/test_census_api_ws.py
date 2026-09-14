@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
@@ -10,6 +11,7 @@ TOOL = Path(__file__).resolve().parents[2] / "tools" / "architecture" / "census_
 spec = importlib.util.spec_from_file_location("census_api_ws", TOOL)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = module
 spec.loader.exec_module(module)
 
 
