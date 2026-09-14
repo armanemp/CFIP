@@ -213,7 +213,10 @@ Current tools include:
 - `tools/architecture/validate_worker_lifecycle.py`
 - `tools/architecture/validate_dependency_direction.py`
 - `tools/architecture/validate_pit_replay_contracts.py`
+- `tools/architecture/census_frontend.py`
+- `tools/architecture/census_policy_config.py`
 - `tools/architecture/validate_global_scale_contracts.py`
+- `tools/architecture/validate_migration_control_consistency.py`
 
 These are evidence accelerators, not automatic parity proof. Architecture CI remains consolidated in `.github/workflows/architecture-contracts.yml`.
 
