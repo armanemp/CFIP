@@ -105,7 +105,47 @@ CFIP must therefore distinguish:
 
 They are not interchangeable records.
 
-## 9. D4 residual closure checklist
+## 9. New execution/PIT/replay trace — v0.9.154 checkpoint
+
+A targeted source trace was performed from the API engine-evidence entry point through snapshot creation and into the executable engine runtime.
+
+### 9.1 Observed path
+
+The verified `/v1/trading/analysis/engine-evidence` route in `apps/api/src/fi_api/trading.py` performs this sequence:
+
+`request → WorkspaceService.snapshot(instrument,timeframe,bars) → WorkspaceSnapshot.candles → observations tuple → snapshot.revision + snapshot.as_of → correlation_id → AnalysisFabric.run(...) → EngineExecutionContext → EngineRuntime.execute(...) → EngineOutput → AnalysisFabric.evidence(...) → API response`
+
+The workspace snapshot is immutable for a UTC-minute cache key and is generated from a deterministic synthetic/replay feed. `WorkspaceSnapshot.revision` is a truncated SHA-256 derived from instrument, timeframe, snapshot end time and bar count. The route passes that revision unchanged into every engine context and returns the same revision at the API boundary.
+
+This is useful evidence for causal revision propagation, but it is **not** evidence of durable market-dataset reconstruction. The workspace implementation is explicitly a demo/replay workspace and its revision identifies the generated snapshot inputs; it does not itself prove reconstruction from an authoritative persisted historical market store.
+
+### 9.2 Durable analysis contract is not the observed runtime path
+
+`packages/contracts/src/fi_contracts/analysis/execution.py` defines `AnalysisRequest`, `AnalysisProvenance`, `AnalysisResult` and `AnalysisRunRecord`. `AnalysisRequest` contains `run_id`, engine identity/version, `input_snapshot`, arbitrary `parameters`, `data_revision`, request/correlation/causation metadata. `AnalysisProvenance` requires input references, dependency versions, parameter hash, input hash and engine hash. `AnalysisRunRecord` explicitly describes a durable request/result record.
+
+However, the targeted source trace did **not** establish an application service, repository, database writer or route that converts the inspected `/analysis/engine-evidence` execution into an `AnalysisRunRecord`. Therefore the correct migration finding is:
+
+> the durable execution model is contractually defined, but its complete producer/persistence/replay implementation is not yet proven by the inspected execution path.
+
+CFIP must preserve this as an evidence gap rather than treating the contract as proof of an implemented durable workflow.
+
+### 9.3 Fingerprint boundary remains unresolved
+
+The source contract requires three SHA-256-sized fingerprints (`parameter_hash`, `input_hash`, `engine_hash`), but the targeted source trace did not locate their producer in the inspected runtime/fabric/workspace path. No target implementation should infer hashing canonicalization rules, serialization rules, engine-source hashing rules or dependency-lock inclusion until the remaining source census proves them.
+
+### 9.4 Replay/backtest distinction
+
+`BacktestReplayEngine` is a registered V2 runtime engine. Its executable behavior is deterministic one-step return-sign persistence: it forms adjacent return pairs, computes hit rate and maps that hit rate to a bounded score. Its own evidence references `timeline:{data_revision}` and carries the same revision as provenance.
+
+This proves an executable backtest/replay **analysis engine**, but it does not prove that the entire platform replay system can reconstruct a historical point-in-time dataset, reproduce all provider revisions, replay event ordering, or establish live/backtest semantic equivalence. Those are separate migration capabilities.
+
+### 9.5 Registration census result
+
+The targeted runtime tree contains only four files in `packages/application/src/fi_application/analysis_engine/`: `__init__.py`, `builtin.py`, `fabric.py` and `runtime.py`. The API composition root is the observed executable registration site for the 15 V2 runtime engines. The separate domain `EngineRegistry` is a V1 descriptor registry and no V1→V2 synchronization path was established by this trace.
+
+This narrows the unresolved registration problem: it is not an unknown collection of hidden runtime registrations inside the analysis-engine package; the remaining question is whether another application/domain path populates the V1 registry and whether any consumer bridges it to runtime execution elsewhere in the repository.
+
+## 10. D4 residual closure checklist
 
 The following are now explicitly narrowed rather than left as generic gaps:
 
@@ -117,18 +157,23 @@ The following are now explicitly narrowed rather than left as generic gaps:
 - [x] direct runtime/health/timeout tests identified.
 - [x] direct fabric failure-policy test identified.
 - [x] stronger FVG causal/PIT-boundary evidence identified.
+- [x] API engine-evidence → workspace snapshot → revision → fabric → runtime → output path traced.
+- [x] workspace revision generation semantics identified.
+- [x] backtest.replay executable rule identified.
+- [x] durable analysis contract fields identified.
 - [ ] complete V1↔V2 cross-registration trace.
 - [ ] complete parameter-schema and fingerprint implementation trace.
-- [ ] complete source snapshot/PIT reconstruction trace.
-- [ ] complete replay/live/backtest equivalence trace.
+- [ ] complete authoritative source snapshot/PIT reconstruction trace.
+- [ ] complete replay platform/event-order reconstruction trace.
+- [ ] complete live/replay/backtest equivalence trace.
 - [ ] complete durable analysis-run persistence trace.
 - [ ] complete per-engine golden/regression fixture census.
 - [ ] complete engine execution telemetry/event persistence trace.
 - [ ] complete engine-like implementation census outside the current runtime tuple.
 - [ ] reconcile all findings into final D4 + D7 + D11 closure evidence.
 
-## 10. Migration decision
+## 11. Migration decision
 
-D4 is now **strongly evidenced at the executable engine/runtime/test level but remains OPEN at the reproducibility/PIT/replay/registration-reconciliation level**.
+D4 is now **strongly evidenced at the executable engine/runtime/test level and partially traced through snapshot/revision/backtest boundaries, but remains OPEN at durable reproducibility/PIT/replay/registration-reconciliation level**.
 
-No target implementation or parity status is advanced by this document. The purpose is to prevent the common migration error of equating deterministic unit tests with full behavioral parity.
+No target implementation or parity status is advanced by this document. The purpose is to prevent the common migration error of equating deterministic unit tests or durable contract definitions with full behavioral parity.
