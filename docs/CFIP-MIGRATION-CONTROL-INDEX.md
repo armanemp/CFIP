@@ -17,6 +17,7 @@ Read these documents in this order at the start of every migration continuation:
 7. `docs/capabilities/source-evidence-matrix.md` — source evidence.
 8. `docs/capabilities/parity-matrix.md` — target implementation/parity status.
 9. `docs/CFIP-SOURCE-TREE.md` — target tree and ownership grammar.
+10. `docs/adr/ADR-001-ANALYSIS-CATALOG-AND-RUNTIME-EXECUTION-PLANE.md` — canonical analysis identity/execution-plane decision.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -82,7 +83,7 @@ Implement identity/workspace, market reference, provider registry, canonical mar
 
 ### Gate 3 — Analytical kernel
 
-Implement deterministic technical/structure/liquidity/FVG/order-block/regime/MTF/confluence/contradiction/scoring/signal engines and the sole authoritative consensus service.
+Implement deterministic technical/structure/liquidity/FVG/order-block/regime/MTF/confluence/contradiction/scoring/signal engines and the sole authoritative consensus service. Use one canonical `(engine_id, version)` identity model with validated runtime projections; see ADR-001.
 
 ### Gate 4 — Decision and simulation
 
@@ -173,4 +174,4 @@ Documentation, source inspection, evidence extraction, reconciliation and govern
 
 ## 13. Integrated project rule
 
-The architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree and canonical Gate 0 register form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
+The architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
