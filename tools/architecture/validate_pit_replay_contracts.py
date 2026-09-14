@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Validate PIT/replay evidence contracts without executing runtime code.
+"""Validate the canonical D3 PIT/replay evidence contract.
 
-The validator accepts canonical schema terms and their documented architectural
-aliases so target ADRs are not forced to mirror source database column names.
-It detects missing contract evidence but does not claim executable PIT/replay
-correctness.
+This validator detects missing architectural evidence terms. It is deliberately
+fail-closed for the contract surface but never claims that term presence proves
+runtime PIT reconstruction, replay execution, determinism or semantic parity.
 """
 from __future__ import annotations
 
@@ -17,19 +16,34 @@ REQUIRED_CONCEPTS = {
         ("dataset_fingerprints", "dataset identity", "dataset fingerprint"),
         ("dataset version", "content hash", "content integrity"),
     ),
+    "source_revision": (
+        ("source/provider revision", "provider revision", "source revision"),
+        ("revision identity", "data revision", "market-data revision"),
+    ),
     "pit_integrity": (
         ("point_in_time_verified", "point-in-time verification", "pit verification"),
-        ("data revision", "market-data revision", "historical reconstruction"),
-        ("observed", "observation boundary", "available"),
+        ("observed", "observation boundary", "availability boundary"),
+        ("cutoff", "pit cutoff", "point-in-time cutoff"),
+        ("deterministic reconstruction", "pit reconstruction", "historical reconstruction"),
     ),
     "replay_identity": (
         ("replay_cases", "replay case identity", "replay case"),
         ("expected invariants", "verification outcome", "invariants"),
         ("engine versions", "engine identity and version", "engine version"),
     ),
-    "provenance": (
+    "lifecycle": (
+        ("producer", "producers"),
+        ("consumer", "consumers", "replay loader"),
+        ("artifact", "artifacts"),
+    ),
+    "integrity_and_leakage": (
+        ("integrity verification", "content integrity", "fingerprint"),
+        ("leakage controls", "temporal leakage", "look-ahead"),
+    ),
+    "provenance_and_audit": (
         ("provenance_nodes", "provenance references", "provenance"),
         ("provenance_edges", "provenance references", "provenance"),
+        ("audit evidence", "audit trail", "verification evidence"),
     ),
 }
 
@@ -39,10 +53,11 @@ def _contains_any(text: str, alternatives: tuple[str, ...]) -> bool:
 
 
 def validate(paths: list[Path]) -> list[str]:
+    readable = [path for path in paths if path.is_file()]
+    if not readable:
+        return ["MISSING_INPUT: no readable contract/evidence files were supplied"]
     text = "\n".join(
-        path.read_text(encoding="utf-8", errors="ignore")
-        for path in paths
-        if path.is_file()
+        path.read_text(encoding="utf-8", errors="ignore") for path in readable
     ).lower()
     findings: list[str] = []
     for name, groups in REQUIRED_CONCEPTS.items():
@@ -59,11 +74,11 @@ def main() -> int:
     args = parser.parse_args()
     findings = validate(args.paths)
     payload = {
-        "schema_version": 2,
+        "schema_version": 3,
         "findings": findings,
         "closure_rule": (
             "contract-term presence does not prove authoritative PIT reconstruction, "
-            "replay execution or semantic equivalence"
+            "replay execution, deterministic equivalence, leakage safety or parity"
         ),
     }
     text = json.dumps(payload, indent=2, sort_keys=True) + "\n"
