@@ -66,6 +66,9 @@ jobs:
       - name: Test global-scale contracts
         run: python -m unittest tests/architecture/test_validate_global_scale_contracts.py -v
 
+      - name: Test platform-intelligence contracts
+        run: python -m unittest tests/architecture/test_validate_platform_intelligence_contracts.py -v
+
       - name: Test migration graph
         run: python -m unittest tests/architecture/test_validate_migration_graph.py -v
 
@@ -94,4 +97,7 @@ jobs:
         run: python tools/architecture/validate_pit_replay_contracts.py docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md docs/evidence/CFIP-SOURCE-CLOSURE-TRACEABILITY-RULES.md
 
       - name: Verify global-scale architecture contract
-        run: python tools/architecture/validate_global_scale_contracts.py docs/CFIP-CONTINUATION-PROMPT.md docs/evidence/CFIP-TARGET-FILE-MANIFEST.md
+        run: python tools/architecture/validate_global_scale_contracts.py docs/CFIP-CONTINUATION-PROMPT.md docs/CFIP-ARCHITECTURE-GUIDE.md docs/CFIP-MIGRATION-CONTROL-INDEX.md docs/adr/ADR-005-PLATFORM-INTELLIGENCE-AND-AUTONOMOUS-OPERATION.md
+
+      - name: Verify platform-intelligence architecture contract
+        run: python tools/architecture/validate_platform_intelligence_contracts.py docs/CFIP-CONTINUATION-PROMPT.md docs/CFIP-ARCHITECTURE-GUIDE.md docs/CFIP-MIGRATION-CONTROL-INDEX.md docs/adr/ADR-005-PLATFORM-INTELLIGENCE-AND-AUTONOMOUS-OPERATION.md
