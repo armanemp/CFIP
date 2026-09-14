@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
@@ -10,6 +11,7 @@ TOOL = ROOT / "tools" / "architecture" / "census_frontend.py"
 spec = importlib.util.spec_from_file_location("census_frontend", TOOL)
 assert spec and spec.loader
 module = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = module
 spec.loader.exec_module(module)
 
 
