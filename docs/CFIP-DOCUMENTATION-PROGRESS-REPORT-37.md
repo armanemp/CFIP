@@ -4,119 +4,144 @@
 **Source:** `armanemp/CForex` `main` v0.9.154  
 **Target:** `armanemp/CFIP` `main`  
 **Gate 0:** **OPEN**  
-**CFIP runtime:** **0% / LOCKED**
+**CFIP production runtime:** **0% / LOCKED**
 
 ## 1. Executive result
 
-Batch 37 extends the executable source-closure track with worker lifecycle verification. The goal is to increase closure speed without lowering evidence quality: source scans remain static and conservative, while canonical status is updated only after evidence reconciliation.
+Batch 37 extends the executable source-closure track with dependency-direction and PIT/replay contract validation, while substantially hardening the canonical continuation contract. This is real Gate-0-compatible engineering: validators, tests, CI integration and controlled documentation were changed on GitHub. No CFIP production business runtime was introduced.
 
-## 2. Actual engineering
+## 2. Actual engineering changes
 
-Added:
+### 2.1 Dependency-direction validator
 
-- `tools/architecture/validate_worker_lifecycle.py`
-- `tests/architecture/test_validate_worker_lifecycle.py`
-- `docs/evidence/CFIP-SOURCE-CLOSURE-WORKER-LIFECYCLE.md`
-- `docs/CFIP-CONTINUATION-PROMPT.md`
+Added `tools/architecture/validate_dependency_direction.py` and `tests/architecture/test_validate_dependency_direction.py`.
 
-Updated:
+The validator statically detects prohibited inward dependencies from architectural layers such as domain/contracts into infrastructure, adapters, API or worker layers. It uses the Python standard library and never imports CFIP production runtime.
 
-- `.github/workflows/architecture-contracts.yml`
-- `docs/evidence/CFIP-TARGET-FILE-MANIFEST.md`
+This is intentionally conservative: static imports do not prove complete runtime isolation, plugin loading behavior or package-level dependency closure.
 
-The worker validator detects conservative signals for entrypoint, shutdown, health/readiness and error boundaries. It explicitly does not claim deployment, partition ownership, checkpoint durability, recovery, scaling or SLO compliance.
+### 2.2 PIT/replay contract validator
 
-## 3. Continuation handoff improvement
+Added `tools/architecture/validate_pit_replay_contracts.py` and `tests/architecture/test_validate_pit_replay_contracts.py`.
 
-`docs/CFIP-CONTINUATION-PROMPT.md` is now a compact operating contract for continuing this work in a new chat. It captures the non-negotiable migration rules, current baseline, verification discipline and required reporting format so continuation does not depend on an incomplete conversational context.
+The validator checks the canonical evidence contract for:
 
-## 4. Documentation integrity
+- dataset identity;
+- point-in-time integrity;
+- replay-case identity/invariants;
+- provenance graph.
 
-Current canonical inventory remains:
+It explicitly does not claim authoritative PIT reconstruction, replay execution or live/replay semantic equivalence.
 
-- **34 bounded contexts**;
-- **14 top-level engine namespaces**;
-- **15 concrete runtime engine classes**;
-- Gate 0 **OPEN**;
-- CFIP runtime **0% / LOCKED**.
+### 2.3 CI expansion
 
-No new contradiction was intentionally introduced. Historical reports remain historical snapshots.
+Updated the single `.github/workflows/architecture-contracts.yml` workflow to run:
 
-## 5. Progress table
+- target architecture validation;
+- architecture-tool tests;
+- target migration graph validation when materialized;
+- worker lifecycle verification;
+- dependency-direction verification;
+- PIT/replay contract verification.
 
-| Domain | Closure | Status |
+No duplicate CI workflow was introduced.
+
+### 2.4 Continuation operating contract
+
+`docs/CFIP-CONTINUATION-PROMPT.md` was substantially expanded. It now contains mandatory first actions, evidence precedence, D1–D11 definitions, architecture invariants, global-scale/performance rules, observability/agent-control rules, source-study method, active tooling, execution loop, verification discipline, completion criteria and reporting requirements.
+
+The document is now the canonical long-form handoff contract for continuing the project in another chat.
+
+### 2.5 Canonical manifest
+
+`docs/evidence/CFIP-TARGET-FILE-MANIFEST.md` was reconciled so the new validators and test/CI layer are part of the official architecture-verification inventory.
+
+## 3. Source inspection performed
+
+The current CForex API composition root was re-read during this batch. It confirms a broad executable source surface spanning authentication/authorization, realtime, admin/intelligence, trading, integrations, public intelligence, research, billing, workspaces, PostgreSQL, ClickHouse and integration health/readiness. fileciteturn700file0
+
+The canonical migration control index was also re-read. It continues to define CForex as executable behavioral truth, preserve the capability-contract migration chain and keep Gate 0 ahead of Gate 1 runtime implementation. fileciteturn695file0
+
+## 4. Verification state — important accuracy note
+
+The new files and CI definitions are physically present in GitHub. GitHub currently reports **no workflow runs and no commit statuses for the latest HEAD**, so this batch does **not** claim that CI is green.
+
+Likewise, the validators have not been claimed as fully executed against a complete local CForex checkout in this batch. Their tests are defined and wired; source-wide execution remains the next evidence step.
+
+## 5. Overall migration progress
+
+These are **source-closure / architecture-readiness estimates**, not runtime implementation percentages.
+
+| Domain | Progress | State |
 |---|---:|---|
-| Source inventory & architecture | 91% | Advanced |
-| API / WebSocket | 78% | Advanced+ / Open |
-| Event topology | 72% | Advanced+ / Open |
-| Data / schema / PIT | 70% | Advanced+ / Open |
-| Analysis engines | 78% | Advanced+ / Open |
-| Workers / realtime | 79% | Advanced+ / Open |
-| Frontend | 61% | Advanced / Open |
-| Policy / configuration | 79% | Advanced+ / Open |
-| External adapters | 62% | Advanced / Open |
-| Observability / governance | 74% | Advanced / Open |
-| Operations / global scale | 55% | In Progress+ |
-| Cross-matrix reconciliation | 58% | In Progress+ |
-| **Overall source-closure / architecture readiness** | **~71%** | **OPEN** |
+| Source inventory & architecture | 92% | ADVANCED |
+| API / WebSocket | 78% | ADVANCED+ / OPEN |
+| Event topology | 73% | ADVANCED+ / OPEN |
+| Data / schema / PIT | 73% | ADVANCED+ / OPEN |
+| Analysis engines | 79% | ADVANCED+ / OPEN |
+| Workers / realtime | 79% | ADVANCED+ / OPEN |
+| Frontend | 62% | ADVANCED / OPEN |
+| Policy / configuration | 79% | ADVANCED+ / OPEN |
+| External adapters | 63% | ADVANCED / OPEN |
+| Observability / governance | 76% | ADVANCED / OPEN |
+| Operations / global scale | 56% | IN PROGRESS+ / OPEN |
+| Cross-matrix reconciliation | 61% | IN PROGRESS+ / OPEN |
+| **Overall source-closure / architecture readiness** | **~72%** | **OPEN** |
 
-These are evidence/architecture percentages, not runtime implementation percentages.
+The increase reflects stronger executable closure tooling and canonical governance, not production runtime implementation.
 
-## 6. Gate-0 detailed table
+## 6. Gate-0 D1–D11 progress
 
 | Dimension | Progress | Status | Remaining closure |
 |---|---:|---|---|
 | D1 API/WS | 78% | ADVANCED+ / OPEN | exhaustive route→caller→service→auth→entitlement→event→test graph |
-| D2 Events | 72% | ADVANCED+ / OPEN | producer→outbox→subject→consumer→ordering/idempotency→retry/replay |
-| D3 Data/PIT | 70% | ADVANCED+ / OPEN | authoritative PIT reconstruction + executable replay |
-| D4 Engines | 78% | ADVANCED+ / OPEN | registration/version/test/fixture/PIT/replay reconciliation |
-| D5 Workers | 79% | ADVANCED+ / OPEN | actual source execution + partition/lease/checkpoint/recovery/deployment/scale |
-| D6 Frontend | 61% | ADVANCED / OPEN | recursive route/component/hook/state/API/realtime/test census |
-| D7 Tests | 74% | ADVANCED+ / OPEN | capability-level negative/security/recovery/end-to-end closure |
+| D2 Events | 73% | ADVANCED+ / OPEN | producer/outbox/subject/consumer/order/idempotency/retry/replay graph |
+| D3 Data/PIT | 73% | ADVANCED+ / OPEN | authoritative market-data reconstruction + executable PIT/replay |
+| D4 Engines | 79% | ADVANCED+ / OPEN | 15-engine registry/version/test/fixture/PIT/replay closure |
+| D5 Workers | 79% | ADVANCED+ / OPEN | partition/lease/checkpoint/recovery/deployment/scale evidence |
+| D6 Frontend | 62% | ADVANCED / OPEN | recursive route/component/hook/state/API/realtime/test census |
+| D7 Tests | 76% | ADVANCED+ / OPEN | capability-level E2E/negative/security/recovery/performance closure |
 | D8 Policy/config | 79% | ADVANCED+ / OPEN | exhaustive hardcode/config/flag/entitlement classification |
-| D9 Adapters | 62% | ADVANCED / OPEN | provider/broker/model/research/identity/billing/storage lifecycle closure |
-| D10 Operations | 55% | IN PROGRESS+ / OPEN | SLO/capacity/retention/DR/residency/recovery evidence |
-| D11 Reconciliation | 58% | IN PROGRESS+ / OPEN | complete cross-matrix consistency and stale-document disposition |
+| D9 Adapters | 63% | ADVANCED / OPEN | provider/broker/model/research/identity/billing/storage closure |
+| D10 Operations | 56% | IN PROGRESS+ / OPEN | SLO/capacity/retention/DR/residency/recovery evidence |
+| D11 Reconciliation | 61% | IN PROGRESS+ / OPEN | full canonical cross-matrix consistency |
 
-## 7. Verification status
+## 7. Current blockers
 
-The repository now contains executable verification tooling for:
+1. Execute all source-closure tools against the complete CForex checkout.
+2. Complete API caller/service/auth/entitlement/test graph.
+3. Complete event producer/outbox/subject/consumer/order/idempotency/retry/replay graph.
+4. Prove authoritative PIT market-data reconstruction and replay execution.
+5. Close live/replay/backtest semantic equivalence evidence.
+6. Close worker partition/lease/checkpoint/recovery/deployment/scale evidence.
+7. Complete recursive frontend census.
+8. Complete hardcode/config/flag/entitlement classification.
+9. Complete external adapter lifecycle/health/security/test evidence.
+10. Complete SLO/capacity/retention/DR/residency/recovery evidence.
+11. Obtain actual CI execution evidence for the latest HEAD.
 
-1. target architecture contracts;
-2. API/WebSocket source census;
-3. event topology source census;
-4. migration graph validation;
-5. engine registry/test reconciliation;
-6. worker lifecycle signals.
+## 8. Fast-but-safe execution strategy
 
-Architecture-tool tests are wired into the consolidated architecture CI workflow. The latest main branch has not been claimed green without an observed workflow result.
+Run independent source tracks in parallel where technically safe:
 
-## 8. Speed and quality strategy
+- **Track A:** API/WS + frontend census.
+- **Track B:** events + worker lifecycle + dependency graph.
+- **Track C:** migrations + PIT/replay + dataset lineage.
+- **Track D:** engines + registry + fixtures + production composition.
+- **Track E:** policy/config + adapters + operations/scale.
 
-The workflow now uses parallelizable evidence tracks and one serialized canonical reconciliation layer. New tools are standard-library-first to minimize dependency overhead. CI remains one bounded workflow rather than a growing collection of duplicated gates.
+Then serialize only the canonical reconciliation layer so matrices cannot contradict each other.
 
-The next speed gain should come from running these tools against the complete CForex source checkout and generating deterministic evidence artifacts, not from producing more narrative documents.
-
-## 9. Next engineering wave
-
-1. Execute all current census/reconciliation tools against CForex and reconcile their output.
-2. Add PIT/replay evidence validator around migrations `0008` and `0012` and related source composition.
-3. Add target dependency-direction validator for the 34-context graph and shared packages.
-4. Complete frontend recursive census.
-5. Complete policy/config/hardcode classification.
-6. Complete external-adapter lifecycle/health/test census.
-7. Complete operations/SLO/DR/retention/residency evidence.
-8. Reconcile capability, parity, source-evidence and target-manifest matrices.
-9. Run contradiction sweep and only then decide whether Gate 0 closure criteria are met.
-
-## 10. Acceptance
+## 9. Acceptance
 
 **Batch 37: PASS WITH OPEN GATE-0 EVIDENCE GAPS**
 
 - Actual engineering: **YES**
-- Worker lifecycle verification: **YES**
-- Architecture CI extended: **YES**
-- Manifest updated: **YES**
-- Continuation handoff prompt added: **YES**
+- Dependency-direction validator: **YES**
+- PIT/replay contract validator: **YES**
+- Architecture-tool tests: **YES (definitions and CI wiring; remote execution pending)**
+- CI consolidation: **YES**
+- Continuation operating contract: **SUBSTANTIALLY HARDENED**
+- Manifest reconciliation: **YES**
 - Gate 0 closed: **NO**
 - CFIP runtime implemented: **NO / LOCKED**
