@@ -23,7 +23,7 @@ REQUIRED_CONTRACTS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("recovery_rollback", ("tested recovery/rollback", "rollback")),
     ("checkpoint_ownership", ("partition ownership/checkpoints", "checkpoint")),
     ("realtime_telemetry", ("queue depth, lag, watermark lag", "watermark lag")),
-    ("load_methodology", ("representative load/capacity methodology", "load/capacity")),
+    ("load_methodology", ("representative load/capacity methodology", "representative load methodology", "load/capacity")),
 )
 
 
