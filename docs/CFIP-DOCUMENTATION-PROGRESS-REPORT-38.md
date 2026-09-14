@@ -8,15 +8,15 @@
 
 ## Executive result
 
-**BATCH 38 — ENGINEERING PASS WITH VERIFICATION RUN IN PROGRESS AT COMMIT TIME.**
+**BATCH 38 — PASS.**
 
-This batch did not merely add documentation. It investigated the actual GitHub Actions failure from the previous architecture gate, isolated two classes of defects, and corrected them in the repository.
+This batch did not merely add documentation. It investigated the actual GitHub Actions failure from the previous architecture gate, isolated two classes of defects, corrected them in the repository, and observed a successful architecture workflow on the resulting HEAD.
 
 ## Defects found and fixed
 
 ### 1. Dynamic test-module loading defect
 
-The architecture tests dynamically load validator modules. Several tests did not register the dynamically created module in `sys.modules`, which can break Python `dataclasses` during module execution. The affected tests were corrected to register the module before executing it.
+The architecture tests dynamically load validator modules. Several tests did not register the dynamically created module in `sys.modules`, which can break Python `dataclasses` during module execution. The affected tests were corrected to register the module before execution.
 
 ### 2. PIT/replay contract validator was too schema-column-specific
 
@@ -26,11 +26,9 @@ The validator now accepts canonical source terms and documented architectural al
 
 ## Verification evidence
 
-Before the fixes, the latest architecture workflow failed specifically at the PIT/replay contract step after the complete architecture-tool test suite had passed.
+The GitHub Actions architecture workflow for the final batch HEAD `cc84aa67abdb63ce34a506d807e60cd7682f34a4` completed with **success**. Its job observed success for target architecture validation, the complete architecture-tool test suite, target migration graph validation, worker lifecycle validation, dependency-direction validation, and the PIT/replay contract validator.
 
-After the dynamic-test loading fixes, the architecture test suite, target architecture validation, migration graph validation, worker lifecycle validation, and dependency-direction validation were observed as successful in GitHub Actions. The PIT/replay step was then corrected to recognize the target ADR's canonical domain terminology.
-
-The next GitHub Actions run is the authoritative verification of the final corrected HEAD. No green result is claimed until that run is observed as completed successfully.
+This is executable verification of the verification layer itself. It is not source-closure or production-runtime evidence.
 
 ## Architecture integrity
 
@@ -53,4 +51,4 @@ The highest-value next work remains execution of the census tools against the ac
 
 ## Decision
 
-Batch 38 is a **real engineering remediation batch**. Final CI status must be rechecked after the last corrective commit before the batch is promoted from `IN PROGRESS` to `PASS`.
+**Batch 38: PASS.** Gate 0 remains OPEN by design until source closure evidence is genuinely complete.
