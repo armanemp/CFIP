@@ -18,7 +18,7 @@
 
 ## External standards findings
 
-OpenTelemetry currently lists Semantic Conventions 1.44.0. CFIP remains OTel-first and provider-neutral. OWASP released the Agent Control Standard on 2026-09-01, emphasizing inspectable, traceable, instrumentable agents and enforceable runtime controls; this reinforces CFIP's existing governed-agent architecture rather than requiring a new runtime dependency. citeturn0search1turn0search0
+OpenTelemetry currently lists Semantic Conventions 1.44.0. CFIP remains OTel-first and provider-neutral. OWASP released the Agent Control Standard on 2026-09-01, emphasizing inspectable, traceable, instrumentable agents and enforceable runtime controls; this reinforces CFIP's existing governed-agent architecture rather than requiring a new runtime dependency.
 
 ## Progress
 
