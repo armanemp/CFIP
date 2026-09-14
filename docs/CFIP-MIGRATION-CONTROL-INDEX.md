@@ -22,6 +22,8 @@ Read these documents in this order at the start of every migration continuation:
 12. `docs/adr/ADR-003-OBSERVABILITY-AND-AGENT-CONTROL-SEMANTICS.md` — standard-first telemetry and agent-control decision.
 13. `docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md` — dataset identity, PIT, replay and reproducibility decision.
 14. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
+15. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
+16. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -73,6 +75,7 @@ The current CForex release truth records **101 required release gates with 100 P
 - Dataset identity, PIT market-data identity, replay-case identity and learning revision identity remain distinct and explicitly linked.
 - Git is the canonical VCS; the Evolution Control Plane is governance/evidence above Git.
 - No premature microservice fragmentation.
+- Target schema changes belong to one canonical migration owner; during the mutable pre-Gate-1 phase, corrections to an existing logical migration modify that original migration rather than creating duplicate corrective migrations.
 
 ## 6. Migration gates
 
@@ -84,13 +87,13 @@ The canonical Gate 0 register is `docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md`. It 
 
 Create the target contracts, context boundaries, dependency tests, configuration model, test harness, observability foundation, persistence ports and event/outbox primitives.
 
-### Gate 2 — Data and identity
+### Gate 2 — Identity/data
 
 Implement identity/workspace, market reference, provider registry, canonical market-data pipeline, lineage/PIT, outbox and realtime foundations.
 
 ### Gate 3 — Analytical kernel
 
-Implement deterministic technical/structure/liquidity/FVG/order-block/regime/MTF/confluence/contradiction/scoring/signal engines and the sole authoritative consensus service. Use one canonical `(engine_id, version)` identity model with validated runtime projections; see ADR-001.
+Implement deterministic engines and the sole authoritative consensus service. Use one canonical `(engine_id, version)` identity model with validated runtime projections; see ADR-001.
 
 ### Gate 4 — Decision and simulation
 
@@ -132,6 +135,7 @@ No stage may be skipped. A capability can only advance when its required evidenc
 - Object storage is used for large immutable artifacts when justified.
 - Telemetry is observational; it must not become an implicit correctness database.
 - Dataset/replay artifacts are immutable evidence objects; transactional metadata and large immutable artifacts may use separate storage boundaries when scale requires it.
+- Migration/schema ownership remains canonical; related corrections are made at the owning migration rather than duplicated across patch files during the mutable target phase.
 
 ## 9. Global-scale requirements
 
@@ -172,13 +176,14 @@ At every continuation:
 3. read this index and the master plan/integration guide;
 4. read the canonical Gate 0 register;
 5. identify the active gate and evidence gaps;
-6. make the smallest coherent set of changes that advances the gate;
-7. verify architecture, tests, security, contracts and operational behavior;
-8. update evidence and capability status;
-9. re-read the resulting repository state from GitHub;
-10. never claim parity without executable comparison evidence;
-11. perform a contradiction sweep across the controlled documentation stack;
-12. perform a current standards check for material improvements without introducing novelty-only dependencies.
+6. inspect canonical migration ownership before any schema change;
+7. make the smallest coherent set of changes that advances the gate;
+8. verify architecture, tests, security, contracts and operational behavior;
+9. update evidence and capability status;
+10. re-read the resulting repository state from GitHub;
+11. never claim parity without executable comparison evidence;
+12. perform a contradiction sweep across the controlled documentation stack;
+13. perform a current standards check for material improvements without introducing novelty-only dependencies.
 
 No silent deletion, history rewrite, capability retirement or architecture divergence is allowed. Intentional divergence requires an ADR and preserved source evidence.
 
@@ -199,3 +204,9 @@ Migration-tree inspection is authoritative evidence for schema existence when di
 `schema → producer → consumer → composition → production entrypoint → test → telemetry/recovery → end-to-end lifecycle`.
 
 The new execution-lifecycle addendum records the current stronger evidence for analysis runs, replay cases, dataset fingerprints, realtime runtime events/state and governed evolution records.
+
+## 15. Migration hygiene rule
+
+For the current mutable CFIP target migration set, a schema correction or completion that belongs to an existing logical migration must be applied by editing that original migration. A new corrective migration must not be created for the same logical change. This rule prevents duplicate ownership and keeps schema history aligned with the canonical evidence graph. A genuinely new schema evolution remains separately identifiable by scope and evidence.
+
+CForex source migrations remain immutable source evidence and are never rewritten as part of CFIP migration work.
