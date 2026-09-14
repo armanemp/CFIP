@@ -88,13 +88,37 @@ Agentic capabilities must now be traced with the same execution-wiring disciplin
 
 This requirement is documentation-only until Gate 0 closes.
 
-## 4. Progress interpretation
+## 4. Current progress dashboard
+
+The latest evidence dashboard remains:
+
+| Dimension | Readiness | Current interpretation |
+|---|---:|---|
+| Target architecture | **100%** | established; continuously refined by evidence/standards review |
+| Migration control framework | **99%** | execution-wiring and agent-control evidence now explicit |
+| Capability registry | **96%** | advanced |
+| Documentation integration | **99%** | advanced; cross-document consistency maintained |
+| D1 API/WS | **75%** | composition boundary confirmed; exhaustive endpoint registry open |
+| D2 Events | **69%** | advanced; lifecycle/consumer closure open |
+| D3 Data ownership/PIT | **73%** | advanced; producer/reconstruction/retention closure open |
+| D4 Engines | **96%** | strong; wiring/replay/fixtures/telemetry closure open |
+| D5 Workers/runtime | **73%** | execution workload isolation and lifecycle mapping advanced |
+| D6 Frontend | **40%** | in progress |
+| D7 Tests | **37%** | in progress; production-path coverage open |
+| D8 Policy/config | **47%** | in progress |
+| D9 Adapters | **35%** | in progress |
+| D10 Operations | **33%** | in progress; durable telemetry/recovery mapping open |
+| D11 Reconciliation | **15%** | execution-path reconciliation now explicit |
+
+Unweighted D1-D11 planning indicator remains approximately **53.8%**. This is an evidence/planning indicator only; it is **not** implementation progress and is not a Gate 0 exit criterion.
+
+## 5. Progress interpretation
 
 No CFIP runtime implementation was added by this pass. External standards research changes target requirements and evidence criteria only.
 
 Gate 0 remains OPEN and runtime implementation remains **0% / LOCKED**.
 
-## 5. Next work
+## 6. Next work
 
 Continue source-first closure in the following order:
 
