@@ -36,6 +36,9 @@ When evidence conflicts, stop target implementation and reconcile the higher-con
 | `packages/application/src/fi_application/analysis_engine/runtime.py` | Runtime registers by `(engine_id, version)`, rejects duplicates, supports exact/latest descriptor lookup, enforces latency budgets, records bounded latency/failure/timeout metrics and derives health status | CFIP needs an explicit execution-runtime boundary separate from domain registration and durable run persistence; timeout and health semantics are contractual. |
 | `packages/application/src/fi_application/analysis_engine/builtin.py` | `technical.momentum@1.0.0` and `technical.volatility@1.0.0` are concrete runtime-only deterministic engines with explicit descriptors, warmup/timeframe/latency and revision-linked evidence | Runtime-only engines must be included in the migration capability census even though no top-level `engines/` directory represents them. |
 | `packages/application/src/fi_application/analysis_engine/fabric.py` | Shared-context concurrent execution; explicit `FAIL_CLOSED` handling; `RETURN_PARTIAL`/`SKIP` remain descriptor policies; normalized evidence projection | CFIP analysis orchestration must preserve explicit failure policy and must not silently discard failed fail-closed engines. |
+| `packages/contracts/src/fi_contracts/analysis/execution.py` | Durable execution contracts carry `run_id`, input snapshot, parameters, `data_revision`, correlation/causation, input references, dependency versions and parameter/input/engine hashes | CFIP must treat durable analysis reproducibility as a distinct contract from transient V2 runtime execution; the hash-production and persistence paths require source closure evidence. |
+| `packages/application/src/fi_application/trading/workspace.py` | Demo/replay workspace snapshots are UTC-minute cached, deterministic, carry `as_of` and a SHA-256-derived revision, and expose candles to the analysis engine evidence route | Revision propagation is source-evidenced, but this demo snapshot must not be mistaken for authoritative persisted PIT reconstruction. |
+| `engines/backtest/src/fi_engine_backtest/engine.py` | `backtest.replay@1.1.0` deterministically evaluates one-step return-sign persistence using only prior return history and emits revision-linked evidence | Engine-level backtest evidence exists, but full platform replay/live/backtest equivalence remains a separate closure requirement. |
 | `tests/unit/analysis_engine/test_engine_runtime.py` | Direct tests for deterministic momentum/provenance, health accounting, timeout counting and latency health thresholds | Runtime behavior has direct executable verification that must be carried into the target test/parity plan. |
 | `tests/unit/analysis_engine/test_fabric_failure_policy.py` | Direct fail-closed negative test | Failure semantics are part of the capability contract, not optional operational behavior. |
 
@@ -98,9 +101,11 @@ The API runtime constructs 15 engines, including runtime-only `MomentumEngine` a
 
 `GET /v1/trading/analysis/engines` exposes the runtime engine IDs/descriptors/health. `GET /v1/trading/analysis/engine-evidence` executes the registered runtime IDs against one causal workspace timeline and returns outputs/evidence with the same data revision and correlation context.
 
-Detailed evidence: `docs/evidence/CFIP-ENGINE-EVIDENCE.md`.
+The additional execution trace establishes the concrete route-to-runtime chain as `request → WorkspaceService.snapshot → WorkspaceSnapshot.revision/as_of → observations → AnalysisFabric → EngineExecutionContext → EngineRuntime → EngineOutput → evidence projection`. The source durable analysis contract is present, but the inspected path does not establish the producer/persistence bridge into `AnalysisRunRecord`. The workspace revision is deterministic and revision-linked, but is not authoritative persisted PIT reconstruction. `backtest.replay@1.1.0` is an executable engine-level replay rule, not proof of full platform replay/live/backtest equivalence.
 
-**D4 status: advanced, materially closer to closure, but not closed.** Remaining work is engine-wide registration/fixture/PIT/replay/telemetry/reconciliation evidence.
+Detailed evidence: `docs/evidence/CFIP-ENGINE-EVIDENCE.md` and `docs/evidence/CFIP-ENGINE-TEST-REGISTRATION-RECONCILIATION.md`.
+
+**D4 status: advanced, materially closer to closure, but not closed.** Registration/PIT/fingerprint/durable-run/replay-equivalence/golden-fixture/telemetry reconciliation remains open.
 
 ## Known evidence gaps to resolve before parity closure
 
@@ -110,9 +115,13 @@ Detailed evidence: `docs/evidence/CFIP-ENGINE-EVIDENCE.md`.
 - Complete ORM/repository cross-context read/write map.
 - Complete frontend route/component → capability/API mapping.
 - Complete engine implementation → contract → runtime registration → test mapping, including runtime-only engines.
-- Complete worker/scheduler/subscription topology.
-- Complete test-to-capability matrix, including negative/security/PIT/replay tests.
-- Complete configuration/feature-flag/entitlement policy inventory.
+- Complete V1↔V2 engine registry cross-registration path.
+- Complete durable `AnalysisRunRecord` producer/persistence/recovery path.
+- Complete parameter/input/engine fingerprint producer and canonicalization rules.
+- Complete authoritative source snapshot/PIT reconstruction and replay dataset loading.
+- Complete replay event-order, live/replay/backtest semantic-equivalence evidence.
+- Complete test-to-capability matrix, including negative/security/PIT/replay tests and per-engine golden/regression fixtures.
+- Complete engine execution telemetry/event persistence and operational health-history mapping.
 - Complete hardcode/policy classification.
 - Complete external provider/broker/model/research adapter inventory.
 - Complete operational SLO, retention, partitioning and recovery requirements.
