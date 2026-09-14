@@ -5,7 +5,7 @@
 **Source:** `armanemp/CForex` `main` v0.9.154  
 **Source HEAD:** `900882154cab3b9b74d0543b9bbf72a708a08134`  
 **Batch-45 baseline target HEAD:** `bff23df4d38a22f43cb777151da314174f0b5cf6`  
-**Current target HEAD:** `1116203b0a89752e5cd259a897acac4261f587d8`  
+**Current target HEAD:** `4c09fbaafc8abc90d19b0bd9d0c7a70aa8b693f9`  
 **Gate 0:** OPEN  
 **CFIP production runtime:** 0% / LOCKED
 
@@ -15,7 +15,7 @@ Batch 45 continued Gate-0-compatible engineering and found a real product-identi
 
 The batch also strengthened architecture verification in two areas that are critical to the global-scale/intelligence goal:
 
-1. the global-scale contract validator now checks a broader set of obligations and fails closed when a supplied canonical document path does not exist;
+1. the global-scale contract validator now checks a broader set of obligations, uses semantic multi-term alternatives rather than single broad keywords, and fails closed when a supplied canonical document path does not exist;
 2. a dedicated Platform Intelligence contract validator and test suite now verify the cross-cutting intelligence boundary, governed tools, safety-governor separation, independent verification, rollback, bounded self-healing, provenance, research governance, learning/calibration, multi-agent integrity, resource isolation, audit reconstruction and OpenTelemetry-first telemetry.
 
 The architecture CI workflow now executes both validators against the canonical architecture/control documents.
@@ -34,6 +34,7 @@ No CFIP production business runtime was implemented, preserving the Gate-0 lock.
 - `tools/architecture/validate_global_scale_contracts.py`
   - expanded the contract inventory from 13 to 18 obligations;
   - added resource budgets, rate limits/quotas, explicit consistency semantics, schema/data evolution compatibility and RPO/RTO;
+  - replaced broad keyword acceptance with semantic multi-term alternatives;
   - added document-set validation so missing canonical inputs cannot produce a false PASS.
 
 - `tests/architecture/test_validate_global_scale_contracts.py`
@@ -65,12 +66,12 @@ Global-scale validation was similarly strengthened so architecture claims includ
 ### GitHub verification
 
 - All changed files were committed directly to `main`.
-- The final target HEAD was re-read from GitHub as `1116203b0a89752e5cd259a897acac4261f587d8`.
+- The final target HEAD for the engineering changes was re-read from GitHub as `4c09fbaafc8abc90d19b0bd9d0c7a70aa8b693f9` before this progress document was reconciled.
 - The source HEAD remains `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- The GitHub combined-status lookup returned no status entries for the final HEAD at report time.
-- The GitHub workflow-run lookup returned no workflow run for the final HEAD at report time.
+- The GitHub combined-status lookup returned no status entries for the engineering HEAD at report time.
+- The GitHub workflow-run lookup returned no workflow run for the engineering HEAD at report time.
 
-Therefore **CI PASS is not claimed** for the final HEAD. This is intentional evidence discipline.
+Therefore **CI PASS is not claimed**. This is intentional evidence discipline.
 
 ### Static verification
 
@@ -121,7 +122,7 @@ These are source-closure/evidence-readiness measures, not CFIP runtime implement
 3. **D1/D2 remain exhaustive-census gaps:** broad composition evidence exists, but closure requires complete lifecycle mapping.
 4. **D5/D10 require real scale/recovery evidence:** architecture contracts are not capacity proof.
 5. **D6 remains materially incomplete:** the frontend workflow graph needs exhaustive route/component/state/API/realtime/auth/i18n/accessibility/test evidence.
-6. **CI verification is pending for HEAD `1116203b0a89752e5cd259a897acac4261f587d8`.**
+6. **CI verification is pending for the final engineering HEAD `4c09fbaafc8abc90d19b0bd9d0c7a70aa8b693f9`.**
 
 ## 8. Next highest-value parallel tracks
 
