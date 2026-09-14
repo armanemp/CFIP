@@ -39,6 +39,12 @@ jobs:
       - name: Validate architecture contracts
         run: python tools/architecture/validate_target_contracts.py
 
+      - name: Test migration control consistency
+        run: python -m unittest tests/architecture/test_validate_migration_control_consistency.py -v
+
+      - name: Validate migration control consistency
+        run: python tools/architecture/validate_migration_control_consistency.py
+
       - name: Test API and WebSocket census
         run: python -m unittest tests/architecture/test_census_api_ws.py -v
 
