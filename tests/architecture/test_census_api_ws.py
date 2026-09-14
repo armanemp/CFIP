@@ -20,7 +20,7 @@ class ApiWebSocketCensusTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "routes.py").write_text(
-                """from fastapi import APIRouter, Depends, WebSocket\nrouter = APIRouter(prefix='/v1')\n@router.get('/orders')\nasync def orders(user=Depends(get_user)):\n    await publisher.publish('order')\n    return {}\n@router.websocket('/stream')\nasync def stream(websocket: WebSocket):\n    await websocket.accept()\n\n""",
+                """from fastapi import APIRouter, Depends, WebSocket\nrouter = APIRouter(prefix='/v1')\n@router.get('/orders')\nasync def orders(user=Depends(get_user)):\n    await event_publisher.publish('order')\n    return {}\n@router.websocket('/stream')\nasync def stream(websocket: WebSocket):\n    await websocket.accept()\n\n""",
                 encoding="utf-8",
             )
             (root / "main.py").write_text(
