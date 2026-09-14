@@ -1,0 +1,36 @@
+name: Architecture Contracts
+
+on:
+  pull_request:
+    paths:
+      - 'contexts/**'
+      - 'docs/**'
+      - 'migrations/**'
+      - 'tools/architecture/**'
+      - '.github/workflows/architecture-contracts.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'contexts/**'
+      - 'docs/**'
+      - 'migrations/**'
+      - 'tools/architecture/**'
+      - '.github/workflows/architecture-contracts.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  architecture-contracts:
+    name: Validate target architecture contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Validate architecture contracts
+        run: python tools/architecture/validate_target_contracts.py
