@@ -21,10 +21,20 @@ def test_unknown_capability_is_rejected() -> None:
     assert "unknown_capabilities:CAP-NOT-REGISTERED" in findings
 
 
-def test_required_hooks_are_enforced() -> None:
+def test_universal_hooks_are_enforced() -> None:
     matrix = MATRIX.read_text(encoding="utf-8").replace(
         "| CAP-IDENTITY | identity/security intelligence | observe, context, audit, safety |",
-        "| CAP-IDENTITY | identity/security intelligence | observe, context, audit |",
+        "| CAP-IDENTITY | identity/security intelligence | context, safety |",
     )
     findings = validate(REGISTRY.read_text(encoding="utf-8"), matrix)
-    assert "CAP-IDENTITY:missing_required_hook:safety" in findings
+    assert "CAP-IDENTITY:missing_required_hook:observe" in findings
+    assert "CAP-IDENTITY:missing_required_hook:audit" in findings
+
+
+def test_domain_specific_hook_omission_is_allowed() -> None:
+    matrix = MATRIX.read_text(encoding="utf-8").replace(
+        "| CAP-MARKET-REFERENCE | symbol/instrument/timeframe intelligence | observe, context, audit |",
+        "| CAP-MARKET-REFERENCE | symbol/instrument/timeframe intelligence | observe, context, audit |",
+    )
+    findings = validate(REGISTRY.read_text(encoding="utf-8"), matrix)
+    assert findings == []
