@@ -6,7 +6,7 @@
 
 ## Purpose
 
-This manifest turns the canonical target tree into a file-level implementation plan and now distinguishes **architecture contracts already materialized** from runtime artifacts still gated. It is not a substitute for source evidence and does not authorize production implementation.
+This manifest turns the canonical target tree into a file-level implementation plan and distinguishes **architecture contracts already materialized** from runtime artifacts still gated. It is not a substitute for source evidence and does not authorize production implementation.
 
 ## Status vocabulary
 
@@ -25,7 +25,7 @@ The following architecture-contract layer is now present on `main`:
 | Area | Physical state | Runtime state |
 |---|---|---|
 | `apps/` | `ARCH-CONTRACT` | `LOCKED` |
-| `contexts/` | `ARCH-CONTRACT` for all 33 contexts | `LOCKED` |
+| `contexts/` | `ARCH-CONTRACT` for all 34 contexts | `LOCKED` |
 | `packages/` | `ARCH-CONTRACT` for all 8 shared packages | `LOCKED` |
 | `adapters/` | `ARCH-CONTRACT` for inbound/outbound families | `LOCKED` |
 | `engines/` | `ARCH-CONTRACT` for all 14 namespaces / 15 runtime classes | `LOCKED` |
@@ -78,7 +78,7 @@ The mandatory target contexts are:
 
 `identity`, `organization`, `workspace`, `market_reference`, `market_data`, `data_lineage`, `realtime`, `chart_workspace`, `technical_analysis`, `market_structure`, `liquidity`, `fair_value_gap`, `order_block`, `market_regime`, `multi_timeframe`, `confluence`, `contradiction`, `intelligence_consensus`, `signals`, `strategy_research`, `backtest`, `replay`, `risk`, `decision`, `journal`, `execution_boundary`, `research_intelligence`, `learning_evaluation`, `platform_intelligence`, `ai_gateway`, `entitlements`, `governance`, `observability`, `operations`.
 
-All 33 context `README.md` contracts are now physically materialized. Internal `domain/application/infrastructure/tests` runtime files remain gated.
+All **34** context `README.md` contracts are now physically materialized. Internal `domain/application/infrastructure/tests` runtime files remain gated.
 
 ## 6. Analysis engine files
 
@@ -144,3 +144,7 @@ A target runtime file may move from `PLANNED` to implementation only when it has
 `owner + source mapping/target rationale + contract + implementation purpose + dependency direction + tests + telemetry/recovery requirements + migration/parity status`.
 
 Architecture-contract files may be materialized earlier because they carry no executable production behavior and explicitly preserve Gate 0.
+
+## 14. Inventory correction
+
+The explicit context list in this manifest contains **34** directories. Earlier progress material that reported 33 was a counting error. This is a documentation reconciliation only; no new context was added in this correction.
