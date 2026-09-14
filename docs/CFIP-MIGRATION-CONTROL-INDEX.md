@@ -1,0 +1,187 @@
+# CFIP Migration Control Index
+
+**Source:** `armanemp/CForex` `main` v0.9.154  
+**Target:** `armanemp/CFIP` `main`  
+**Purpose:** single front door for architecture, source evidence, migration sequencing, parity and release control.
+
+## 1. Canonical document order
+
+Read these documents in this order at the start of every migration continuation:
+
+1. `docs/CFIP-MIGRATION-CONTROL-INDEX.md` — this control index and current gate.
+2. `docs/CFIP-MIGRATION-MASTER-PLAN.md` — sequencing and release gates.
+3. `docs/CFIP-ARCHITECTURE-GUIDE.md` — target architecture and invariants.
+4. `docs/capabilities/source-study-integration.md` — source-study/evidence workflow.
+5. `docs/capabilities/CFIP-CAPABILITY-REGISTRY.md` — capability ownership.
+6. `docs/capabilities/source-evidence-matrix.md` — source evidence.
+7. `docs/capabilities/parity-matrix.md` — target implementation/parity status.
+8. `docs/CFIP-SOURCE-TREE.md` — target tree and ownership grammar.
+
+The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
+
+## 2. Mission
+
+CFIP is a controlled reimplementation of CForex, not a file-copy rewrite. The target must preserve meaningful behavior, contracts, correctness and operational guarantees while improving boundaries, scalability, testability and maintainability.
+
+The atomic unit is a **capability contract**:
+
+`source evidence → capability → behavioral contract → domain → use case → port → adapter → data/event/API/UI contract → tests → parity evidence → production readiness`
+
+A similarly named target file never constitutes migration evidence.
+
+## 3. Evidence precedence
+
+When evidence conflicts:
+
+1. executable implementation and tests;
+2. migrations, schemas and machine-readable contracts;
+3. runtime composition and adapters;
+4. CI/configuration/scripts;
+5. architecture/state documents;
+6. release prose/history.
+
+The source-study ZIP is an evidence accelerator and index; it does not override executable CForex evidence.
+
+## 4. Current source truth checkpoint
+
+The current CForex baseline is **v0.9.154 / main**. The source runtime establishes a broader surface than trading alone: authentication/authorization, identity/workspaces, realtime, admin settings/autonomy/intelligence, trading, integrations, public intelligence, browser performance, research, billing, journals/workspaces, health/readiness, analytics capabilities, model-provider boundaries and security posture. The API composition root also constructs PostgreSQL/ClickHouse-backed services, usage/entitlement boundaries and realtime subscription infrastructure.
+
+The current CForex release truth records **101 required release gates with 100 PASS / 1 FAIL**, where the sole failing gate is `dependency_lock` because `uv.lock` is absent. Runtime process smoke is recorded as passing for API and all three workers. This source-side state must not be silently reinterpreted as CFIP readiness.
+
+## 5. Non-negotiable target invariants
+
+- PIT correctness, provenance, lineage, revisions and causal ordering.
+- Live, replay and backtest semantic compatibility.
+- One authoritative analysis-consensus boundary.
+- Account-aware risk and position sizing.
+- Deterministic analytical engines for identical inputs, parameters and versions.
+- Versioned, idempotent, observable and replayable events.
+- Durable outbox before durable event fan-out.
+- AI access only through governed application tools; no direct SQL/infrastructure authority.
+- Learning produces governed artifacts and cannot silently mutate production behavior.
+- Runtime autonomy cannot modify its own governor, safety controls or evidence history.
+- Provider capabilities, entitlements, feature flags and runtime/product policies are configurable where appropriate.
+- i18n, RTL/LTR, accessibility, security, performance and observability are first-class architecture requirements.
+- Git is the canonical VCS; the Evolution Control Plane is governance/evidence above Git.
+- No premature microservice fragmentation.
+
+## 6. Migration gates
+
+### Gate 0 — Source closure
+
+Close the following evidence records before declaring the source inventory frozen:
+
+| Evidence area | Required artifact | Closure condition |
+|---|---|---|
+| API | exhaustive HTTP/WS catalog | every route/channel has owner, contract, auth, tests and side effects mapped |
+| Events | producer/consumer/topic/schema map | every durable event family has lifecycle semantics |
+| Data | entity/table/column ownership | every authoritative entity has exactly one owner |
+| Engines | implementation/contract/test matrix | every executable engine has deterministic evidence |
+| Workers | runtime topology | entrypoints, jobs, subscriptions, producers and scaling mapped |
+| Frontend | route/component/hook map | every meaningful interaction maps to capability and API/realtime behavior |
+| Tests | capability/test matrix | positive, negative, security, PIT and replay coverage identified |
+| Policy | config/flag/entitlement inventory | hardcoded policy separated from legitimate invariants |
+| Adapters | provider/broker/model/research inventory | boundaries, credentials, capabilities and failure behavior mapped |
+| Operations | SLO/retention/recovery requirements | runtime obligations are explicit |
+
+### Gate 1 — Foundation
+
+Create the target contracts, context boundaries, dependency tests, configuration model, test harness, observability foundation, persistence ports and event/outbox primitives.
+
+### Gate 2 — Data and identity
+
+Implement identity/workspace, market reference, provider registry, canonical market-data pipeline, lineage/PIT, outbox and realtime foundations.
+
+### Gate 3 — Analytical kernel
+
+Implement deterministic technical/structure/liquidity/FVG/order-block/regime/MTF/confluence/contradiction/scoring/signal engines and the sole authoritative consensus service.
+
+### Gate 4 — Decision and simulation
+
+Implement strategy research, replay, backtest, decision, risk, position sizing, entry guidance, journal, attribution and the fail-closed execution boundary.
+
+### Gate 5 — AI/research/learning
+
+Implement the AI Gateway, Research Intelligence Fabric, learning/evaluation, calibration/drift and governed Platform Intelligence.
+
+### Gate 6 — Product surface
+
+Implement chart/workspace semantics, professional frontend, realtime UX, analysis evidence, signals, research/replay/backtest, journal, AI UX, admin/governance, billing/entitlements, notifications, i18n/RTL/LTR, accessibility and SEO/public-private boundaries.
+
+### Gate 7 — Governance and operations
+
+Implement governed evolution, checkpoints, isolated verification, independent verification, promotion, health guard, rollback, SLOs, scaling, retention, backup/restore, DR and operational security.
+
+### Gate 8 — Whole-system parity
+
+Compare CForex and CFIP under controlled evidence across calculations, API behavior, events, PIT reconstruction, replay/backtest, risk/sizing, auth/entitlements, realtime, UI workflows, telemetry and audit evidence.
+
+## 7. Capability lifecycle
+
+`MAPPED → CONTRACTED → IMPLEMENTED → VERIFIED → PARITY-VERIFIED → PRODUCTION-READY`
+
+No stage may be skipped. A capability can only advance when its required evidence exists.
+
+## 8. Architectural ownership rules
+
+- Bounded contexts own domain behavior and invariants.
+- Application handlers orchestrate use cases and call ports.
+- Adapters implement ports and isolate technology/vendor concerns.
+- Persistence models are not shared across bounded contexts.
+- Analytical engines do not own persistence.
+- API/WebSocket layers are inbound adapters, not domain services.
+- Frontend rendering does not own market semantics.
+- Redis is never the authoritative source of unique business state.
+- MongoDB is not introduced without a demonstrated document workload and explicit ownership/consistency/retention/backup decision.
+- Object storage is used for large immutable artifacts when justified.
+
+## 9. Global-scale requirements
+
+Global scale is established through evidence, not directory count:
+
+- stateless horizontally scalable API processes;
+- partitionable workers and event streams;
+- deterministic idempotent consumers;
+- bounded caches and explicit backpressure;
+- PostgreSQL indexing/partitioning/retention strategy;
+- analytical workload isolation in ClickHouse;
+- asynchronous processing and workload isolation;
+- regional/latency and data-residency strategy when required;
+- OpenTelemetry/SLO evidence;
+- tested recovery and rollback.
+
+Microservices are introduced only when measured scale, fault isolation, ownership or security requires them.
+
+## 10. Research and intelligence rules
+
+Research is untrusted external input until source identity, rights, freshness, extraction quality and provenance are established. Research cannot directly mutate production behavior.
+
+Learning is temporal and leakage-aware. Evaluation, attribution, calibration and drift are evidence-producing stages. Candidates require governed promotion.
+
+AI agents operate through explicit tools and policy. Sensitive prompt/tool content is not captured in telemetry by default. Autonomous changes require checkpoint, evidence, risk classification, isolation, verification, release gates and rollback capability.
+
+## 11. Release/continuation protocol
+
+At every continuation:
+
+1. inspect current CForex state;
+2. inspect current CFIP state;
+3. read this index and the master plan/integration guide;
+4. identify the active gate and evidence gaps;
+5. make the smallest coherent set of changes that advances the gate;
+6. verify architecture, tests, security, contracts and operational behavior;
+7. update evidence and capability status;
+8. re-read the resulting repository state from GitHub;
+9. never claim parity without executable comparison evidence.
+
+No silent deletion, history rewrite, capability retirement or architecture divergence is allowed. Intentional divergence requires an ADR and preserved source evidence.
+
+## 12. Definition of project start
+
+The project is considered ready to move from documentation into implementation when Gate 0 has enough executable evidence to prevent material capability loss and Gate 1 foundation contracts can be implemented without guessing ownership or semantics.
+
+The implementation start point is therefore **not** “copy CForex into CFIP”. It is the first verified vertical slice through the complete target chain:
+
+`contract → domain → use case → adapter → persistence/event → API/realtime → tests → observability`
+
+Subsequent capabilities follow the same chain and are promoted only through the lifecycle above.
