@@ -55,7 +55,7 @@ No lifecycle stage may be skipped.
 | D1 | API/WS | exhaustive route/channel registry, request/response/error, auth, workspace, entitlement, audit, callers, side effects, tests | ADVANCED | exhaustive registry |
 | D2 | Events | vocabulary, envelope, producers, consumers, subjects, schemas, ordering, idempotency, retry, quarantine, replay, retention, security | ADVANCED | lifecycle-complete registry |
 | D3 | Data | entity/table/column ownership, FK/access rules, projections, retention, PIT/revision, deletion, backup | ADVANCED | authoritative ownership closure |
-| D4 | Engines | implementation, inputs/outputs, deterministic params, PIT fingerprint, provenance, failures, fixtures, tests, replay | IN PROGRESS | every executable engine evidenced |
+| D4 | Engines | implementation, inputs/outputs, deterministic params, PIT fingerprint, provenance, failures, fixtures, tests, replay | **ADVANCED — materially closer to closure** | every executable engine evidenced |
 | D5 | Workers | entrypoints, jobs, subscriptions, producers, consumers, checkpoints, leases, retries, scaling, health, deployment | ADVANCED | lifecycle-complete mapping |
 | D6 | Frontend | route/component/hook/API/realtime/auth/state/loading/error/empty/i18n/a11y/telemetry/tests | IN PROGRESS | user workflow closure |
 | D7 | Tests | capability-to-test matrix, negative/security/PIT/replay/regression evidence | IN PROGRESS | coverage gaps explicit and owned |
@@ -68,363 +68,143 @@ No lifecycle stage may be skipped.
 
 The source API is broader than trading. Evidence must cover identity, billing, workspaces, realtime, administration, settings, autonomy, intelligence notifications/proposals, trading, integrations, public intelligence, browser performance, research, journals, health/readiness, security posture, model-provider status and related composition-root surfaces.
 
-For every HTTP route record:
+For every HTTP route record method/path, owning module/context, request/response schema, status/error semantics, authentication/principal requirements, workspace scope, entitlement/usage requirements, audit requirements, callers, event side effects, idempotency and tests. For every WebSocket channel record equivalent subscription/authentication/snapshot/incremental/error/reconnect/order semantics.
 
-- method and path;
-- owning module/context;
-- request schema;
-- response schema;
-- status codes;
-- error semantics;
-- authentication/principal requirements;
-- workspace scope;
-- entitlement/usage requirements;
-- audit requirements;
-- UI/API callers;
-- event side effects;
-- idempotency requirements;
-- tests;
-- compatibility/deprecation status.
-
-For every WebSocket channel record the equivalent subscription/authentication/snapshot/incremental/error/reconnect/order semantics.
-
-Gate 0 cannot close from router existence alone.
+D1 remains open until the exhaustive registry is complete.
 
 ## 7. D2 — Event closure
 
-### 7.1 Source envelope
+The executable source defines a strict `EventEnvelope` with event identity, type/version, UTC occurrence time, producer, correlation/causation and payload. Durable event state includes deduplication, lifecycle status, attempts, availability/publication timestamps and lock ownership/expiry.
 
-The executable CForex contract defines a strict `EventEnvelope` with:
+The discovered vocabulary spans market/data, analysis, engine execution, signals, strategy/backtest, AI/agents, incidents/security/health, replay/provenance, learning/evaluation/drift, intelligence memory/graph/attribution, provider/model governance, self-evolution and realtime lifecycle/backpressure/health.
 
-- `event_id`;
-- `event_type`;
-- integer `version`;
-- UTC `occurred_at`;
-- `producer`;
-- `correlation_id`;
-- optional `causation_id`;
-- typed `payload`;
-- rejection of unknown envelope fields.
+The worker runtime directly verifies PostgreSQL durable application-event outbox → NATS JetStream, a separate canonical-observation outbox → NATS path, durable realtime consumption, ClickHouse projection, bounded dispatch and graceful shutdown.
 
-### 7.2 Discovered source vocabulary
-
-Market/data:
-
-- `market.observation.canonical`
-- `market.timeline.updated`
-
-Analysis:
-
-- `analysis.run.requested`
-- `analysis.run.validating`
-- `analysis.run.queued`
-- `analysis.run.started`
-- `analysis.run.completed`
-- `analysis.run.failed`
-- `analysis.run.cancelled`
-- `analysis.run.timeout`
-- `analysis.run.invalidated`
-- `engine.execution.started`
-- `engine.execution.completed`
-
-Signal/strategy/simulation:
-
-- `signal.generated`
-- `signal.invalidated`
-- `strategy.run.requested`
-- `backtest.completed`
-- `signal.created`
-- `replay.case.registered`
-- `replay.case.completed`
-
-AI/agents/governance/security:
-
-- `ai.analysis.requested`
-- `agent.proposal.created`
-- `agent.proposal.approved`
-- `agent.repair.completed`
-- `incident.detected`
-- `incident.resolved`
-- `security.policy.violation`
-- `system.health.changed`
-- `self_evolution.diagnosed`
-- `self_evolution.verified`
-- `ci.artifact.ingested`
-- `ai.policy.violation`
-- `provider.capability.reviewed`
-- `model.competition.decided`
-- `platform.capability.reviewed`
-
-Provenance/learning/intelligence:
-
-- `provenance.node.recorded`
-- `provenance.edge.recorded`
-- `learning.record.created`
-- `training.example.created`
-- `intelligence.contradiction.detected`
-- `intelligence.score.computed`
-- `learning.feedback.recorded`
-- `ai.evidence.retrieved`
-- `ai.intelligence.requested`
-- `ai.intelligence.decided`
-- `ai.intelligence.completed`
-- `ai.evaluation.completed`
-- `ai.drift.detected`
-- `intelligence.chain.started`
-- `intelligence.chain.completed`
-- `intelligence.memory.recorded`
-- `intelligence.memory.retrieved`
-- `intelligence.graph.node.recorded`
-- `intelligence.graph.edge.recorded`
-- `intelligence.attribution.computed`
-
-Evaluation/PIT/drift:
-
-- `evaluation.started`
-- `evaluation.completed`
-- `evaluation.walk_forward.completed`
-- `signal.outcome.attributed`
-- `drift.baseline.recorded`
-- `data.point_in_time.violation`
-- `platform.drift.detected`
-- `dataset.fingerprint.recorded`
-
-Realtime:
-
-- `realtime.runtime.event`
-- `realtime.watermark.advanced`
-- `realtime.backpressure.dropped`
-- `realtime.provider.health.changed`
-- `realtime.candle.updated`
-- `realtime.candle.closed`
-- `realtime.zone.lifecycle.changed`
-- `realtime.alert.emitted`
-
-### 7.3 Mandatory lifecycle evidence
-
-Each migrated event requires producer, consumer, subject/stream, schema version, compatibility policy, partition key, ordering guarantee, idempotency key/behavior, retry policy, poison/quarantine behavior, replayability, retention, security classification, correlation/causation, telemetry and contract tests.
-
-The source vocabulary currently contains a repeated `signal.invalidated` declaration and both `signal.generated` and `signal.created`. This is intentionally unresolved until producer/test evidence determines whether these are aliases, distinct lifecycle events or a source defect.
+D2 remains open pending exhaustive producer/consumer/subject/schema/version/ordering/idempotency/retry/quarantine/replay/retention/security/telemetry mapping.
 
 ## 8. D3 — Data ownership closure
 
-Target ownership baseline:
+Target ownership baseline remains PostgreSQL for transactional/system-of-record/control-plane state and durable outboxes, ClickHouse for high-volume analytical/time-series projections, Redis for cache/ephemeral coordination, NATS JetStream for transport, object storage for justified immutable artifacts and MongoDB only after demonstrated workload and explicit ownership/consistency/retention/backup decisions.
 
-- PostgreSQL: transactional/system-of-record/control plane/durable outbox;
-- ClickHouse: high-volume analytical/time-series projections;
-- Redis: cache and ephemeral coordination only;
-- NATS JetStream: durable transport, not business ownership;
-- object storage: justified large immutable artifacts;
-- MongoDB: only after demonstrated document workload and explicit ownership/consistency/retention/backup decision.
+The inspected migration chain through `0012` provides substantial evidence for market reference, identity/workspaces/providers, market data/outboxes/leases, analysis runs, AI/agent durability, scoped settings, replay/provenance, intelligence/learning, CI/corpus evidence, evaluation/outcomes/drift and dataset/memory integrity.
 
-For each authoritative entity, record:
-
-- owner context;
-- table/collection;
-- columns/fields;
-- primary/unique keys;
-- foreign keys;
-- cross-context access;
-- write authority;
-- read projection rules;
-- retention;
-- partitioning;
-- PIT/revision semantics;
-- deletion/anonymization;
-- backup/restore;
-- freshness expectations;
-- cache authority.
-
-No shared database table may become an implicit cross-context domain API.
+D3 remains open pending later migration/ORM/repository/projection/retention/deletion/backup/residency/cross-context evidence.
 
 ## 9. D4 — Engine closure
 
-Every executable analytical engine must have:
+### 9.1 Runtime inventory
 
-1. stable capability identity;
-2. explicit input/output contract;
-3. deterministic parameter serialization;
-4. PIT dataset fingerprint;
-5. engine/version descriptor;
-6. dependency declaration;
-7. validation and failure semantics;
-8. provenance/evidence references;
-9. regression fixtures and contract tests;
-10. replay/backtest compatibility;
-11. observability contract;
-12. promotion/release-gate registration when independently versioned.
+The source API composition constructs 15 runtime engine instances:
 
-`engines/*` directory identity alone is never evidence of an independent implementation. Canonical production logic must be traced to executable implementation and tests.
+- `MomentumEngine`
+- `VolatilityEngine`
+- `BacktestReplayEngine`
+- `ConfluenceEngine`
+- `ContradictionEngine`
+- `FvgEngine`
+- `IntelligenceScoreEngine`
+- `LiquidityEngine`
+- `MtfEngine`
+- `OrderBlockEngine`
+- `RegimeEngine`
+- `ScoringEngine`
+- `SignalEngine`
+- `StrategyEngine`
+- `StructureEngine`
+
+This is distinct from the 14 top-level `engines/` namespaces. `MomentumEngine` and `VolatilityEngine` are directly implemented in `packages/application/src/fi_application/analysis_engine/builtin.py`; the remaining runtime engines are imported from dedicated `fi_engine_*` packages. The `technical` namespace reference implementation is not part of this runtime tuple.
+
+### 9.2 Runtime behavior
+
+`EngineRuntime` registers engines by `(engine_id, version)`, rejects duplicate registrations, supports exact/latest descriptor lookup, enforces the descriptor latency budget with `asyncio.wait_for`, counts failures/timeouts, records a bounded 256-sample latency history and derives health status/score from failure rate and p95 latency.
+
+This runtime health state is in-memory at the inspected boundary. No persistence or event emission is established by `EngineRuntime` itself.
+
+### 9.3 Runtime-only engines
+
+`technical.momentum@1.0.0` has 20-bar warmup, 50 ms latency budget, OHLCV input/output contracts, 1m/5m/15m/1h/4h/1d timeframes and revision-linked evidence. It computes bounded normalized return over up to 20 closes and degrades on insufficient observations.
+
+`technical.volatility@1.0.0` has 20-bar warmup, 50 ms latency budget, OHLCV input/output contracts, 5m/15m/1h/4h/1d timeframes and revision-linked evidence. It compares the current high-low/close range with prior-range mean and degrades when no valid range exists.
+
+### 9.4 Failure policy
+
+`EngineDescriptorV2` explicitly supports `FAIL_CLOSED`, `RETURN_PARTIAL` and `SKIP`. `AnalysisFabric` executes engines concurrently under a shared causal context and raises for failed `FAIL_CLOSED` engines instead of silently dropping them. A direct negative test verifies this behavior.
+
+### 9.5 V1/V2 contract coexistence
+
+Historical `EngineDescriptor` and durable analysis contracts preserve engine identity/version, input snapshots, parameters, `data_revision`, dependency versions, parameter/input/engine hashes and terminal execution state. `EngineDescriptorV2` adds operational runtime fields including timeframes, warmup, latency budget, failure policy, deterministic flag and capability ID. V1 and V2 must therefore be reconciled rather than assumed to be a simple replacement chain.
+
+### 9.6 Direct test evidence
+
+`tests/unit/analysis_engine/test_engine_runtime.py` verifies deterministic momentum/provenance, successful volatility health accounting, timeout counting and health thresholds. `tests/unit/analysis_engine/test_fabric_failure_policy.py` verifies fail-closed behavior.
+
+### 9.7 Remaining D4 gaps
+
+D4 is advanced but not closed. Remaining evidence includes:
+
+1. exact source mapping for all 15 runtime engines;
+2. complete registration-path census;
+3. V1/V2 authoritative-use mapping;
+4. per-engine parameter schema/serialization/fingerprint evidence;
+5. dependency and upstream-data mapping;
+6. PIT dataset/snapshot reconstruction evidence;
+7. replay/backtest equivalence and stateful behavior;
+8. execution events/telemetry and persistent health projections;
+9. exact engine-to-test/fixture mapping for all engines;
+10. capability-registry/parity reconciliation;
+11. census of executable engine-like components outside the known namespaces/builtin module.
+
+Detailed evidence: `docs/evidence/CFIP-ENGINE-EVIDENCE.md`.
 
 ## 10. D5 — Worker/runtime closure
 
-For every worker lane/job record:
-
-- entrypoint;
-- schedule/trigger;
-- input source;
-- subscriptions;
-- event producers;
-- consumers;
-- concurrency;
-- partitioning;
-- checkpoint/watermark/lease;
-- idempotency;
-- retry/backoff;
-- poison/quarantine;
-- graceful shutdown;
-- health/readiness;
-- resource budget;
-- scaling model;
-- deployment configuration;
-- tests and capability links.
-
-Known executable source evidence includes the general worker, learning worker, autonomy worker and application realtime path. Closure still requires lifecycle-level mapping.
+Major entrypoints remain directly evidenced for the general worker, learning worker, autonomy worker and application realtime path. Lifecycle-complete job/event/checkpoint/lease/retry/scaling/deployment/health mapping remains open.
 
 ## 11. D6 — Frontend closure
 
-For every product workflow map:
+Every product workflow must ultimately map route → feature → capability → API/query/mutation → realtime → auth → workspace → entitlement → state → loading/error/empty → i18n → RTL/LTR → accessibility → performance → telemetry → tests. The chart/terminal must preserve timeframe semantics, candle lifecycle, analysis evidence, risk/decision/entry guidance, replay/backtest and governed intelligence.
 
-`route → feature → capability → API/query/mutation → realtime → auth → workspace → entitlement → state → loading/error/empty → i18n → RTL/LTR → accessibility → performance → telemetry → tests`
-
-The chart/terminal must preserve timeframe semantics, candle lifecycle, analysis evidence, workspace/watchlist, realtime, risk/decision/entry guidance, replay/backtest and governed intelligence workflows.
+D6 remains open.
 
 ## 12. D7 — Test closure
 
-Tests must map to capabilities and include, where applicable:
+Test closure requires capability mapping plus unit/domain, contract, integration, API/WS, persistence, event, idempotency, PIT/leakage, replay/backtest, security/authz, entitlement, frontend, failure/recovery and regression evidence where applicable.
 
-- unit/domain invariants;
-- contract/schema compatibility;
-- integration;
-- API/WS;
-- persistence;
-- event delivery;
-- idempotency;
-- PIT/leakage;
-- replay/backtest determinism;
-- security/authz;
-- entitlement;
-- frontend workflows;
-- failure/recovery;
-- regression fixtures.
-
-Missing coverage must be explicit and owned; absence of a test must never be interpreted as proof that behavior is irrelevant.
+D7 remains open.
 
 ## 13. D8 — Policy/config closure
 
-Every discovered configurable value must be classified as exactly one primary category:
+Every discovered configurable value must be classified as immutable domain invariant, deployment configuration, runtime operational configuration, tenant/workspace setting, entitlement, feature flag or governed policy. Hardcoded policy/settings must not be silently recreated in CFIP, while true domain invariants must not be externalized merely to eliminate constants.
 
-- immutable domain invariant;
-- deployment configuration;
-- runtime operational configuration;
-- tenant/workspace setting;
-- entitlement;
-- feature flag;
-- governed policy.
-
-Hardcoded values that are actually policy/settings must not be silently recreated in CFIP. Domain invariants must not be incorrectly externalized merely to remove constants.
+D8 remains open.
 
 ## 14. D9 — Adapter closure
 
-Inventory every external boundary:
+External market-data, broker/execution, model, research/search, identity/OAuth, billing, notification/integration and storage/transport boundaries require capability, credential, timeout, retry, rate-limit, failure, health, provenance, entitlement, security and test evidence.
 
-- market-data provider;
-- broker/execution provider;
-- model provider;
-- research/search provider;
-- identity/OAuth provider;
-- billing provider;
-- notification/integration provider;
-- storage/transport vendor boundary.
-
-For each record capabilities, credentials, timeout, retry, rate limit, failure mode, health/probe, provenance, entitlement, security classification and test strategy.
-
-Provider SDK details remain isolated behind ports/adapters.
+D9 remains open.
 
 ## 15. D10 — Operations closure
 
-Record evidence for:
+Operational evidence must cover SLO/SLI, latency/freshness budgets, event lag/backpressure, indexing/partitioning, retention/archive, cache limits, scaling/isolation, health/readiness, backup/restore, DR, rollback, regional/data-residency requirements, incident response and observability.
 
-- SLOs/SLIs;
-- latency and freshness budgets;
-- event lag/backpressure;
-- database indexes/partitioning;
-- retention and archival;
-- cache limits;
-- worker scaling;
-- workload isolation;
-- health/readiness;
-- backup/restore;
-- disaster recovery;
-- rollback;
-- data residency/region strategy when required;
-- security incident response;
-- observability and alerting.
-
-Global scale is established through measurable operational contracts, not microservice count.
+D10 remains open.
 
 ## 16. D11 — Reconciliation
 
-Before freeze, reconcile:
+Before freeze, reconcile capability registry ↔ source evidence ↔ parity matrix; API ↔ frontend callers; events ↔ producer/consumer maps; data ownership ↔ migrations/models; engines ↔ tests/fixtures; workers ↔ schedules/events/tests; policies ↔ settings/entitlements/flags; adapters ↔ configuration/health/tests; operations ↔ deployment/runtime evidence.
 
-- capability registry ↔ source evidence matrix;
-- source evidence ↔ parity matrix;
-- API catalog ↔ frontend callers;
-- event catalog ↔ producer/consumer maps;
-- data ownership ↔ migrations/models;
-- engines ↔ tests/fixtures;
-- workers ↔ schedules/events/tests;
-- policies ↔ settings/entitlements/flags;
-- adapters ↔ configuration/health/tests;
-- operations ↔ deployment/runtime evidence.
-
-Any contradiction must be resolved or explicitly recorded with an owner and an ADR. Duplicate documents must be consolidated or marked historical.
+D11 has not formally started and remains open.
 
 ## 17. Documentation Freeze criteria
 
-Gate 0 can enter final review only when:
+Gate 0 can enter final review only when all high-impact capabilities are mapped; API/WS evidence is exhaustive or bounded gaps have owners/impact; durable event lifecycle is documented; authoritative data ownership is complete; executable engines have deterministic/PIT/replay evidence; worker/frontend workflows are mapped; test gaps are explicit; policy/config/entitlement classification is complete; external adapters are inventoried; operational obligations are explicit; contradictions are resolved; intentional divergences have ADRs; the parity matrix contains evidence requirements for every capability; and the canonical documentation stack is internally consistent.
 
-- all high-impact capabilities are mapped;
-- API/WS evidence is exhaustive or every bounded gap has owner and impact;
-- durable event lifecycle is documented;
-- authoritative data ownership is complete;
-- executable engines have deterministic/PIT/replay evidence;
-- worker and frontend workflows are mapped;
-- test coverage and gaps are explicit;
-- policy/config/entitlement classification is complete;
-- external adapters are inventoried;
-- operational obligations are explicit;
-- contradictions are resolved;
-- intentional divergences have ADRs;
-- parity matrix contains evidence requirements for every capability;
-- canonical documentation stack is internally consistent.
-
-Documentation Freeze means the target can be implemented without material semantic guessing. It does **not** mean CFIP runtime functionality is already implemented.
+Documentation Freeze means the target can be implemented without material semantic guessing. It does not mean CFIP runtime functionality is already implemented.
 
 ## 18. Formal Gate 0 exit evidence
 
-The final Gate 0 decision must contain:
-
-1. source baseline identifier;
-2. target baseline identifier;
-3. evidence completion table;
-4. unresolved bounded risks;
-5. capability preservation statement;
-6. intentional divergence register;
-7. API/WS closure evidence;
-8. event closure evidence;
-9. data ownership evidence;
-10. engine evidence;
-11. worker evidence;
-12. frontend evidence;
-13. test evidence;
-14. policy/config evidence;
-15. adapter evidence;
-16. operations evidence;
-17. cross-document reconciliation result;
-18. explicit authorization to begin Gate 1.
-
-Without all 18 items, Gate 0 remains OPEN.
+The final Gate 0 decision must contain source and target baselines, evidence completion table, unresolved bounded risks, capability preservation statement, intentional divergence register, D1–D10 closure evidence, D11 reconciliation result and explicit authorization to begin Gate 1. Without all required evidence, Gate 0 remains OPEN.
 
 ## 19. Gate 1 hand-off
 
@@ -436,17 +216,7 @@ The slice must be independently verifiable, reversible and traceable to source e
 
 ## 20. Continuation protocol
 
-Every continuation starts by:
-
-1. reading the current migration control index;
-2. reading this canonical Gate 0 register;
-3. inspecting current CForex state;
-4. inspecting current CFIP state;
-5. identifying the highest-value open evidence gap;
-6. making the smallest coherent documentation/evidence change;
-7. verifying the resulting repository state;
-8. updating progress;
-9. re-reading the resulting GitHub state before reporting.
+Every continuation starts by reading the current migration control index and canonical Gate 0 register, inspecting current CForex and CFIP state, identifying the highest-value open evidence gap, making the smallest coherent documentation/evidence change, verifying it, updating progress and re-reading the resulting GitHub state before reporting.
 
 No source capability may be silently dropped. No target capability may be marked production-ready without parity evidence.
 
@@ -454,8 +224,8 @@ No source capability may be silently dropped. No target capability may be marked
 
 **GATE 0: OPEN**
 
-**Reason:** D1–D11 still contain material evidence gaps. D2 source event discovery has advanced substantially, but event lifecycle closure is not complete. D3–D10 also require remaining executable evidence and D11 reconciliation.
+**Reason:** D1–D11 still contain material evidence gaps. D4 has advanced through direct runtime, runtime-only engine, failure-policy, V1/V2 and test evidence, but engine-wide PIT/replay/fixture/registration/telemetry/reconciliation closure is not complete.
 
 **CFIP implementation:** **0% by design.**
 
-**Next objective:** finish evidence closure, reconcile all canonical documents, perform Documentation Freeze review, then formally close Gate 0 before any Gate 1 runtime implementation.
+**Next objective:** continue evidence closure across D4 and the remaining highest-risk dimensions, then reconcile the documentation stack, perform Documentation Freeze review and formally close Gate 0 before Gate 1 runtime implementation.
