@@ -42,7 +42,7 @@ class GlobalScaleContractTests(unittest.TestCase):
         capacity/SLO measurements; tested recovery/rollback;
         partition ownership/checkpoints; queue depth, consumer lag, watermark lag;
         representative load methodology; resource budgets; rate limits; quotas;
-        strong, causal, eventual consistency semantics; schema evolution;
+        strong, causal, eventual consistency semantics; schema evolution compatibility;
         recovery point objective; recovery time objective.
         """
         self.assertEqual(MODULE.validate(text), [])
