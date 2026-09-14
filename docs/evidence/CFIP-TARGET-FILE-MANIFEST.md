@@ -67,9 +67,17 @@ The verification tooling is intentionally outside CFIP production runtime. It va
 - obvious duplicate logical corrective migration scopes are rejected if a target migrations tree exists;
 - prohibited legacy target names are absent from the physical tree.
 
-`.github/workflows/architecture-contracts.yml` runs this validator on relevant pull requests and on `main` changes to architecture, documentation, migrations or the validator itself.
+`tools/architecture/census_api_ws.py` is an executable source-closure extractor for CForex HTTP/WebSocket routes. It records route declarations, static router prefixes, dependency names, conservative side-effect hints and include-router edges while preserving unresolved states.
 
-This is a **real operational quality gate**, not a placeholder runtime module. It does not close Gate 0 and does not execute CFIP production code.
+`tools/architecture/census_event_graph.py` is an executable source-closure extractor for event topology. It records conservative producer/outbox/consumer/stream/subject evidence and same-file candidate edges. Cross-file composition, ordering, idempotency, retry/DLQ and replay semantics remain explicitly unresolved until executable evidence closes them.
+
+`tools/architecture/validate_migration_graph.py` validates static migration revision chains, parent/dependency references, duplicate revision IDs and logical-object reuse warnings. It does not claim live-schema or production-execution verification.
+
+`tools/architecture/reconcile_engine_registry.py` reconciles the expected 15 source engine classes against static class, registration and test evidence. It is deliberately conservative and does not claim semantic parity, PIT correctness or replay equivalence from names alone.
+
+`.github/workflows/architecture-contracts.yml` runs the architecture validator and standard-library architecture/source-closure tests. If a target migration runtime tree is later materialized, the same gate automatically validates its migration graph without creating a second workflow.
+
+These are **real operational quality gates**, not placeholder runtime modules. They do not close Gate 0 and do not execute CFIP production code.
 
 ## 4. Application process files
 
