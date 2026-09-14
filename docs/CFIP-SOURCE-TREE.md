@@ -1,20 +1,23 @@
 # CFIP Canonical Source Tree
 
-This is the **target source tree**, not a promise that every directory must exist on day one. Empty structural folders should not be committed merely to make a diagram look complete. A directory becomes real when it owns an implementation, contract, test, or documented architectural artifact.
+**Status:** canonical target structure; runtime materialization remains gated by Gate 0.
+
+This document defines both the logical target tree and the rules for materializing it. The current GitHub repository intentionally contains the migration-control/documentation system rather than runtime implementation. Empty production folders or placeholder modules must not be committed merely to make the diagram look complete.
+
+## 1. Canonical target tree
 
 ```text
 cfip/
+├── apps/                         # deployable process composition roots
+│   ├── api/
+│   ├── realtime/
+│   ├── market_data_worker/
+│   ├── analysis_worker/
+│   ├── learning_worker/
+│   ├── autonomy_worker/
+│   └── web/
 │
-├── apps/
-│   ├── api/                         # HTTP/API composition root
-│   ├── realtime/                    # realtime/WebSocket composition root
-│   ├── market_data_worker/          # ingestion and canonicalization workers
-│   ├── analysis_worker/             # analysis/event processing workers
-│   ├── learning_worker/             # evaluation/learning worker
-│   ├── autonomy_worker/             # governed engineering/autonomy worker
-│   └── web/                         # Next.js application
-│
-├── contexts/
+├── contexts/                     # bounded business contexts
 │   ├── identity/
 │   ├── organization/
 │   ├── workspace/
@@ -50,15 +53,15 @@ cfip/
 │   ├── observability/
 │   └── operations/
 │
-├── packages/
-│   ├── contracts/                   # versioned API/event/data schemas
-│   ├── domain_kernel/               # shared domain primitives only
-│   ├── application_kernel/          # use-case/application primitives
-│   ├── eventing/                    # event envelope/outbox abstractions
-│   ├── observability/               # telemetry abstractions
-│   ├── security/                    # security primitives/policies
-│   ├── testing/                     # reusable test infrastructure
-│   └── configuration/               # typed configuration infrastructure
+├── packages/                    # cross-context contracts/platform primitives
+│   ├── contracts/
+│   ├── domain_kernel/
+│   ├── application_kernel/
+│   ├── eventing/
+│   ├── observability/
+│   ├── security/
+│   ├── testing/
+│   └── configuration/
 │
 ├── adapters/
 │   ├── inbound/
@@ -95,64 +98,49 @@ cfip/
 │   └── backtest/
 │
 ├── data/
-│   ├── migrations/                  # authoritative schema migrations
-│   ├── seeds/                       # deterministic non-production seed data
-│   ├── schemas/                     # canonical data contracts
-│   ├── fixtures/                    # bounded test fixtures
-│   └── retention/                   # retention/partition policies
+│   ├── migrations/
+│   ├── schemas/
+│   ├── seeds/
+│   ├── fixtures/
+│   └── retention/
 │
 ├── frontend/
-│   ├── app/                         # route composition
-│   ├── features/                    # feature modules aligned to contexts
-│   ├── domain/                      # frontend domain types/semantics
-│   ├── infrastructure/              # API/realtime adapters
-│   ├── components/                  # reusable presentation primitives
-│   ├── chart/                       # renderer-neutral chart intelligence
-│   ├── i18n/                        # translation infrastructure
-│   ├── accessibility/               # a11y utilities and tests
-│   └── tests/                       # frontend integration/e2e tests
+│   ├── app/
+│   ├── features/
+│   ├── domain/
+│   ├── infrastructure/
+│   ├── components/
+│   ├── chart/
+│   ├── i18n/
+│   ├── accessibility/
+│   └── tests/
 │
 ├── infrastructure/
 │   ├── docker/
 │   ├── compose/
-│   ├── kubernetes/                  # added only when operationally justified
-│   ├── terraform/                   # added only when infrastructure-as-code is adopted
 │   ├── observability/
 │   └── security/
 │
 ├── tests/
-│   ├── architecture/               # dependency and boundary tests
-│   ├── contracts/                   # API/event/schema compatibility
+│   ├── architecture/
+│   ├── contracts/
 │   ├── integration/
 │   ├── e2e/
 │   ├── replay/
-│   ├── pit/                         # point-in-time correctness
+│   ├── pit/
 │   ├── performance/
 │   ├── security/
 │   └── fixtures/
 │
 ├── docs/
 │   ├── architecture/
-│   │   ├── CFIP-ARCHITECTURE-GUIDE.md
-│   │   ├── ADR/
-│   │   ├── context-map.md
-│   │   ├── dependency-rules.md
-│   │   └── runtime-topology.md
+│   ├── adr/
 │   ├── capabilities/
-│   │   ├── capability-registry.md
-│   │   ├── source-evidence-matrix.md
-│   │   └── parity-matrix.md
+│   ├── evidence/
 │   ├── contracts/
-│   │   ├── api-catalog.md
-│   │   ├── event-catalog.md
-│   │   └── data-ownership.md
 │   ├── operations/
-│   │   ├── deployment.md
-│   │   ├── runbooks/
-│   │   └── disaster-recovery.md
 │   ├── security/
-│   ├── research/
-│   └── decisions/
+│   └── research/
 │
 ├── scripts/
 │   ├── bootstrap/
@@ -171,7 +159,7 @@ cfip/
 ├── pyproject.toml
 ├── uv.lock
 ├── package.json
-├── pnpm-lock.yaml               # only if frontend workspace tooling requires it
+├── pnpm-lock.yaml
 ├── docker-compose.yml
 ├── .env.example
 ├── .python-version
@@ -182,9 +170,9 @@ cfip/
 └── README.md
 ```
 
-## Context-internal structure
+## 2. Context-internal structure
 
-Every backend bounded context should converge on the same grammar unless there is a documented reason not to:
+Every backend bounded context should converge on this grammar unless a documented architectural reason requires otherwise:
 
 ```text
 contexts/<context>/
@@ -211,11 +199,9 @@ contexts/<context>/
     └── contract/
 ```
 
-Technology adapters themselves remain outside the domain and application layers. A context may depend on an adapter through a port; it must not depend on the adapter implementation directly.
+Technology adapters remain outside domain/application layers. A context depends on technology through ports, never by importing vendor implementations directly.
 
-## Engine-internal structure
-
-Deterministic analytical engines should use:
+## 3. Engine structure
 
 ```text
 engines/<engine>/
@@ -227,9 +213,26 @@ engines/<engine>/
 └── tests/
 ```
 
-The runtime registry is the only executable discovery mechanism. A namespace existing in the repository does not make an engine executable.
+The canonical executable identity is `(engine_id, version)`. A directory is not an engine registration. Runtime, durable and replay execution paths must reuse the same semantic implementation rather than creating duplicate analytical authorities.
 
-## Frontend feature structure
+The source study currently identifies 15 concrete runtime engine classes while the repository has 14 top-level engine namespaces. The target must preserve the complete runtime inventory without assuming one-to-one namespace/class cardinality.
+
+## 4. Data/evidence structure
+
+The data layer must explicitly accommodate distinct identities for:
+
+- dataset artifact/version;
+- dataset fingerprint/content integrity;
+- PIT market-data revision/view;
+- replay-case identity and expected invariants;
+- replay verification result;
+- learning revision;
+- provenance nodes/edges;
+- immutable evidence references.
+
+These identifiers must not collapse into a generic revision field.
+
+## 5. Frontend structure
 
 ```text
 frontend/features/<feature>/
@@ -243,29 +246,71 @@ frontend/features/<feature>/
 └── tests/
 ```
 
-The frontend follows the same dependency inversion principle as the backend: presentation does not own transport details, and renderer-specific chart code does not own market semantics.
+Market/timeframe/candle/event semantics are owned by canonical domain contracts, not by chart rendering components.
 
-## Naming rules
+## 6. Verification structure
 
-- Python packages/modules: `snake_case`.
-- TypeScript modules: project-standard `camelCase`/`PascalCase` according to artifact type.
+Cross-context verification belongs under `tests/`; context-local tests stay with the owning context. The cross-context tree is:
+
+```text
+tests/
+├── architecture/
+├── contracts/
+├── integration/
+├── e2e/
+├── replay/
+├── pit/
+├── performance/
+├── security/
+└── fixtures/
+```
+
+Every important capability must map to verification evidence before implementation status can advance.
+
+## 7. Materialization policy
+
+The target tree is materialized incrementally in this order:
+
+1. repository governance and deterministic tooling;
+2. shared contracts and dependency-boundary verification;
+3. identity/workspace and market reference;
+4. market-data, lineage and PIT foundations;
+5. realtime/eventing foundations;
+6. analytical engine contracts and implementations;
+7. replay/backtest/decision/risk;
+8. research/learning/AI/platform intelligence;
+9. frontend/product surface;
+10. governance/autonomy and operations hardening.
+
+A production path must not be created solely to satisfy this diagram. It must have an architectural owner, source/capability mapping, contract or implementation purpose and verification plan. Empty directories are not committed.
+
+## 8. Repository-level rules
+
+- Python packages/modules use `snake_case`.
+- TypeScript uses project-standard `camelCase`/`PascalCase` according to artifact type.
 - Bounded contexts use stable domain names, not vendor names.
-- Provider adapters include provider identity only at the adapter boundary.
 - Contracts carry explicit versions.
-- Files should have one clear architectural owner.
-- Avoid generic `utils`, `helpers`, `misc`, `common` dumping grounds. Shared code must have a documented ownership reason.
+- Generated artifacts do not become source ownership by accident.
+- Generic `utils`, `helpers`, `misc` and `common` dumping grounds are prohibited without explicit ownership justification.
+- `uv.lock` and `pnpm-lock.yaml` are required once their corresponding runtime/toolchain is materialized; lockfiles are not optional production metadata.
+- Deployment-specific `kubernetes/` or `terraform/` trees are added only when operational evidence justifies them.
+- Microservice boundaries are introduced only for measured scale, fault isolation, ownership or security requirements.
 
-## Tree governance
+## 9. Current physical state
 
-The tree is considered healthy only when:
+The current CFIP repository intentionally materializes the migration-control/documentation system and does not claim that the target runtime tree already contains implementation. This is required by the canonical Gate 0 lock. The tree above is therefore the controlled implementation manifest, while actual production paths are created only when their Gate 0 evidence is sufficient.
 
-1. every production file has an owning context/package;
-2. dependencies obey the architecture graph;
-3. no duplicate implementation path exists for the same capability;
-4. persistence ownership is explicit;
-5. contracts are discoverable;
-6. tests follow the owning boundary;
-7. generated artifacts are excluded from source ownership unless intentionally committed;
+## 10. Tree health invariant
+
+The tree is healthy only when:
+
+1. every production file has one architectural owner;
+2. every CForex capability maps to one target location;
+3. every target capability maps back to source evidence or an explicit platform concern;
+4. no duplicate authoritative implementation exists;
+5. persistence ownership is explicit;
+6. contracts are versioned/discoverable;
+7. tests map to capabilities;
 8. operational scripts are deterministic;
-9. the capability registry can map every CForex capability to a CFIP location;
-10. the tree can evolve without converting every context into a microservice.
+9. documentation cannot contradict the canonical Gate 0 register;
+10. deployment topology can evolve without turning every bounded context into a microservice.
