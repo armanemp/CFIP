@@ -28,8 +28,7 @@ When evidence conflicts, stop target implementation and reconcile the higher-con
 | `packages/contracts/src/fi_contracts/events.py` | Strict `EventEnvelope` with event ID, type/version, UTC occurrence time, producer, correlation/causation and payload; broad canonical event vocabulary across market, analysis, signals, AI, learning, governance, replay and realtime | CFIP needs a versioned event contract registry and must preserve the broad event surface rather than reducing eventing to market-data transport. |
 | `packages/contracts/src/fi_contracts/eventing.py` | Immutable durable event record with dedupe key, pending/processing/published/failed/dead lifecycle, attempts, availability/publication timestamps and lock lease fields | Durable outbox semantics, idempotency, retries and lease/recovery behavior are migration contracts. |
 | `apps/worker/src/fi_worker/main.py` | Durable PostgreSQL application-event outbox → NATS JetStream; separate canonical-observation outbox → NATS; durable realtime consumer; separate ClickHouse consumer; bounded dispatch and graceful shutdown | CFIP must retain distinct application-event and canonical-market-data paths and make consumers/replay/scaling semantics explicit. |
-| `migrations/versions/0001..0023` | Durable schema evolution covering market reference, domain kernel, outbox, replay/provenance, intelligence/learning, evaluation, workspaces/billing and governed evolution | CFIP data ownership and migration map must trace every durable capability; migration numbers are evidence, not target filenames. |
-| `0023_governed_evolution_control_plane.py` | Change transactions, verification evidence, runtime health and rollback-related fields are durable | Governance becomes a first-class context with immutable/evidentiary lifecycle requirements. |
+| `migrations/versions/0001..0012` inspected | Market reference, identity/workspace/provider kernel, market outbox/leases, analysis runs, AI/agent durability, scoped settings, replay/provenance, intelligence/learning, corpus/CI evidence, evaluation/outcomes/drift and dataset/memory integrity | CFIP data ownership must preserve transactional authority, temporal/PIT evidence and governance state. Later migrations remain an explicit evidence-collection task. |
 | `apps/` | API, web, worker, learning worker, autonomy worker | CFIP deployment units remain separate from bounded-context ownership. |
 | `packages/` | application, contracts, domain, infrastructure, shared | CFIP retains these concerns but makes context ownership more explicit. |
 | `engines/` | technical, structure, liquidity, FVG, order block, regime, MTF, confluence, contradiction, scoring, signal, strategy, backtest | Engines remain deterministic analytical components and must not own persistence. |
@@ -65,9 +64,7 @@ The `/v1/trading` router is independently verified as a large capability surface
 | `/v1/trading/provider-reliability` | bounded provider-integrity scoring | verified |
 | `/v1/trading/learning/analytics` | outcome attribution/adaptive intelligence projection | verified; remainder of router still being enumerated |
 
-The same router constructs and wires technical analysis, MTF intelligence, risk, decision, chart intelligence, entry guidance, safety, trade intelligence, notifications, calibration, provider reliability, learning, self-diagnosis/self-healing, deterministic analysis-engine runtime, execution intelligence/lifecycle, broker registry and execution quality. Therefore the final D1 registry must continue through the remainder of `trading.py` and must include request/response/error/auth/workspace/entitlement/audit/UI/test/event metadata rather than stopping at the first set of routes.
-
-Security evidence already verified at this boundary includes production authentication, workspace membership enforcement for protected trading reads, fail-closed demo mutation authorization, internal realtime ingest token validation, and authenticated WebSocket behavior with an explicit development bypass only under development configuration.
+The same router constructs and wires technical analysis, MTF intelligence, risk, decision, chart intelligence, entry guidance, safety, trade intelligence, notifications, calibration, provider reliability, learning, self-diagnosis/self-healing, deterministic analysis-engine runtime, execution intelligence/lifecycle, broker registry and execution quality. Final D1 registry must continue through the remainder of `trading.py` and all mounted modules.
 
 ## Verified event evidence pass — D2
 
@@ -79,12 +76,21 @@ Detailed evidence: `docs/evidence/CFIP-EVENT-EVIDENCE.md`.
 
 **D2 status: advanced, not closed.** The exhaustive event census still requires every producer, consumer, subject, schema/version, partition key, ordering, idempotency, retry/quarantine, replay, retention, security and telemetry contract to be traced to executable source/tests.
 
+## Verified data ownership evidence pass — D3
+
+The source domain tree separates identity, instrument, market reference, market data, analysis, intelligence, lineage, AI/agentic and administrative concerns. The migration chain through `0012` provides executable evidence for transactional ownership, market-reference identity, canonical market observations, durable outboxes/leases, analysis execution, AI/agent governance, scoped settings, replay/provenance, intelligence/learning, corpus/CI evidence, evaluation/outcomes/drift and dataset/PIT/memory integrity.
+
+Detailed evidence: `docs/evidence/CFIP-DATA-OWNERSHIP-EVIDENCE.md`.
+
+**D3 status: advanced.** Authoritative ownership is substantially evidenced, but exhaustive later migration census, ORM/repository access, projections, retention/partitioning, deletion/anonymization, backup/restore, residency and complete cross-context access mapping remain open.
+
 ## Known evidence gaps to resolve before parity closure
 
 - Complete API endpoint catalog with owning capability/context, including the remainder of `trading.py` and all mounted router modules.
-- Complete frontend route/component → capability/API mapping.
 - Complete event producer/consumer/topic/schema/version map.
-- Complete entity/table/column → bounded-context ownership map.
+- Complete entity/table/column → bounded-context ownership map through the source head.
+- Complete ORM/repository cross-context read/write map.
+- Complete frontend route/component → capability/API mapping.
 - Complete engine implementation → contract → test mapping.
 - Complete worker/scheduler/subscription topology.
 - Complete test-to-capability matrix, including negative/security/PIT/replay tests.
@@ -93,4 +99,4 @@ Detailed evidence: `docs/evidence/CFIP-EVENT-EVIDENCE.md`.
 - Complete external provider/broker/model/research adapter inventory.
 - Complete operational SLO, retention, partitioning and recovery requirements.
 
-These gaps are intentionally tracked rather than inferred. D1 and D2 are materially advanced, but **Gate 0 remains open and no CFIP implementation status is advanced by these evidence passes**.
+These gaps are intentionally tracked rather than inferred. D1–D3 are materially advanced, but **Gate 0 remains open and no CFIP implementation status is advanced by these evidence passes**.
