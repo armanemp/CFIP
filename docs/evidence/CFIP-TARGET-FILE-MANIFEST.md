@@ -49,11 +49,14 @@ Active verification tools include:
 - `validate_worker_lifecycle.py` — worker entrypoint/shutdown/health/error-boundary evidence extraction.
 - `validate_dependency_direction.py` — target layer dependency-direction validation.
 - `validate_pit_replay_contracts.py` — PIT/replay evidence-contract validation.
+- `census_frontend.py` — recursive CForex frontend route/component/hook/import census.
+- `census_policy_config.py` — policy/configuration/hardcode/feature-flag evidence census.
 - `validate_global_scale_contracts.py` — global-scale architecture obligations covering statelessness, partitioning, idempotency, backpressure, data-store scaling, residency, SLO/capacity, recovery, checkpoints and telemetry.
+- `validate_migration_control_consistency.py` — canonical migration-control, Gate-0, tool-registration and CI wiring consistency validation.
 
 The tests under `tests/architecture/` exercise these tools without importing CFIP production runtime.
 
-`.github/workflows/architecture-contracts.yml` is the single consolidated architecture/source-closure gate. It runs the architecture validator, architecture-tool tests, migration graph validation when a target migration tree exists, worker lifecycle verification, dependency-direction verification, PIT/replay contract verification and global-scale contract verification.
+`.github/workflows/architecture-contracts.yml` is the single consolidated architecture/source-closure gate. It runs the architecture validator, migration-control consistency validation, architecture-tool tests, migration graph validation when a target migration tree exists, worker lifecycle verification, dependency-direction verification, PIT/replay contract verification and global-scale contract verification.
 
 These are **real operational quality gates**, not placeholder runtime modules. They do not close Gate 0 and do not execute CFIP production business behavior.
 
