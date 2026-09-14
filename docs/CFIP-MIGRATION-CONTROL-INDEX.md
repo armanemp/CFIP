@@ -12,7 +12,7 @@ Read these documents in this order at the start of every migration continuation:
 2. `docs/CFIP-MIGRATION-MASTER-PLAN.md` — sequencing and release gates.
 3. `docs/CFIP-ARCHITECTURE-GUIDE.md` — target architecture and invariants.
 4. `docs/capabilities/source-study-integration.md` — source-study/evidence workflow.
-5. `docs/CFIP-GATE-0-SOURCE-CLOSURE.md` — active Gate 0 evidence register.
+5. `docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md` — canonical Gate 0 evidence register.
 6. `docs/capabilities/CFIP-CAPABILITY-REGISTRY.md` — capability ownership.
 7. `docs/capabilities/source-evidence-matrix.md` — source evidence.
 8. `docs/capabilities/parity-matrix.md` — target implementation/parity status.
@@ -70,7 +70,7 @@ The current CForex release truth records **101 required release gates with 100 P
 
 ### Gate 0 — Source closure
 
-The active Gate 0 register is `docs/CFIP-GATE-0-SOURCE-CLOSURE.md`. It tracks API/WS, events, data ownership, engines, workers, frontend, tests, policy, adapters and operations evidence. These areas remain controlled closure work until their executable evidence is sufficient.
+The canonical Gate 0 register is `docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md`. It tracks API/WS, events, data ownership, engines, workers, frontend, tests, policy, adapters and operations evidence. These areas remain controlled closure work until their executable evidence is sufficient.
 
 ### Gate 1 — Foundation
 
@@ -155,7 +155,7 @@ At every continuation:
 1. inspect current CForex state;
 2. inspect current CFIP state;
 3. read this index and the master plan/integration guide;
-4. read the active Gate 0 register;
+4. read the canonical Gate 0 register;
 5. identify the active gate and evidence gaps;
 6. make the smallest coherent set of changes that advances the gate;
 7. verify architecture, tests, security, contracts and operational behavior;
@@ -167,14 +167,10 @@ No silent deletion, history rewrite, capability retirement or architecture diver
 
 ## 12. Definition of project start
 
-The project may now begin **controlled implementation work**, but Gate 0 remains open for evidence closure. Foundation work is permitted only where contracts are evidence-backed; unresolved source behavior must not be guessed.
+The project is **not yet authorized for Gate 1 runtime implementation**. Gate 0 remains open and its canonical final register explicitly locks CFIP runtime implementation at 0% until Documentation Freeze and formal Gate 0 closure.
 
-The first implementation slice is Gate 1 and must prove the complete target chain:
-
-`contract → domain → use case → port → adapter → persistence/event → API/realtime → tests → observability`
-
-Subsequent capabilities follow the same chain and are promoted only through the lifecycle above. Gate 0 evidence closure continues in parallel until its closure criteria are satisfied.
+Documentation, source inspection, evidence extraction, reconciliation and governance work may continue. Foundation implementation may begin only after the formal Gate 0 exit decision authorizes Gate 1.
 
 ## 13. Integrated project rule
 
-The architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree and Gate 0 register form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index is updated before implementation proceeds.
+The architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree and canonical Gate 0 register form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
