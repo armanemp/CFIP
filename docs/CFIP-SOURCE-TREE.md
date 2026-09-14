@@ -1,8 +1,8 @@
 # CFIP Canonical Source Tree
 
-**Status:** canonical target structure; runtime materialization remains gated by Gate 0.
+**Status:** canonical target structure; runtime implementation remains gated by Gate 0.
 
-This document defines the logical target tree and the rules for materializing it. The current GitHub repository intentionally contains the migration-control/documentation system rather than runtime implementation. Empty production folders or placeholder modules must not be committed merely to make the diagram look complete.
+This document defines the logical target tree and the rules for materializing it. Gate 0 now permits **architecture-contract materialization**: meaningful ownership/evidence files are physically present, while production runtime modules remain locked. Empty production folders and fake placeholder modules are prohibited.
 
 **File-level implementation contract:** `docs/evidence/CFIP-TARGET-FILE-MANIFEST.md` is the authoritative file-by-file materialization manifest. This tree defines ownership and boundaries; the manifest defines concrete target artifacts and acceptance status.
 
@@ -163,7 +163,9 @@ A production path must have an architectural owner, source/capability mapping, c
 
 ## 9. Current physical state
 
-The current CFIP repository intentionally materializes the migration-control/documentation system plus the new file-level target manifest. It does not claim that the target runtime tree already contains implementation. This is required by the canonical Gate 0 lock.
+Architecture-contract materialization is now visible in GitHub. The repository contains meaningful `README.md` ownership/boundary contracts for all top-level target areas, all seven application roots, all 33 bounded contexts, all 14 engine namespaces, shared packages, inbound/outbound adapter families, data areas, frontend areas, infrastructure areas, test categories and script categories.
+
+These files are **not runtime implementations**. They explicitly preserve the Gate 0 lock and identify source mapping, ownership, invariants and target responsibility. Production modules remain unmaterialized until their evidence and gate authorize implementation.
 
 ## 10. Tree health invariant
 
