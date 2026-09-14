@@ -18,6 +18,8 @@ Read these documents in this order at the start of every migration continuation:
 8. `docs/capabilities/parity-matrix.md` — target implementation/parity status.
 9. `docs/CFIP-SOURCE-TREE.md` — target tree and ownership grammar.
 10. `docs/adr/ADR-001-ANALYSIS-CATALOG-AND-RUNTIME-EXECUTION-PLANE.md` — canonical analysis identity/execution-plane decision.
+11. `docs/adr/ADR-002-REALTIME-EVENT-TIME-AND-BACKPRESSURE-SEMANTICS.md` — canonical realtime event-time/backpressure decision.
+12. `docs/adr/ADR-003-OBSERVABILITY-AND-AGENT-CONTROL-SEMANTICS.md` — standard-first telemetry and agent-control decision.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -64,6 +66,8 @@ The current CForex release truth records **101 required release gates with 100 P
 - Runtime autonomy cannot modify its own governor, safety controls or evidence history.
 - Provider capabilities, entitlements, feature flags and runtime/product policies are configurable where appropriate.
 - i18n, RTL/LTR, accessibility, security, performance and observability are first-class architecture requirements.
+- OpenTelemetry standard semantic conventions are preferred before CFIP-specific telemetry attributes.
+- Agent identity, capability, policy, authorized tool/action and post-action evidence remain separate from analytical-engine authority.
 - Git is the canonical VCS; the Evolution Control Plane is governance/evidence above Git.
 - No premature microservice fragmentation.
 
@@ -123,6 +127,7 @@ No stage may be skipped. A capability can only advance when its required evidenc
 - Redis is never the authoritative source of unique business state.
 - MongoDB is not introduced without a demonstrated document workload and explicit ownership/consistency/retention/backup decision.
 - Object storage is used for large immutable artifacts when justified.
+- Telemetry is observational; it must not become an implicit correctness database.
 
 ## 9. Global-scale requirements
 
@@ -137,7 +142,9 @@ Global scale is established through evidence, not directory count:
 - asynchronous processing and workload isolation;
 - regional/latency and data-residency strategy when required;
 - OpenTelemetry/SLO evidence;
-- tested recovery and rollback.
+- tested recovery and rollback;
+- partition ownership/checkpoint semantics for correctness-critical realtime state;
+- observable watermark, lag, lateness and backpressure behavior.
 
 Microservices are introduced only when measured scale, fault isolation, ownership or security requires them.
 
@@ -148,6 +155,8 @@ Research is untrusted external input until source identity, rights, freshness, e
 Learning is temporal and leakage-aware. Evaluation, attribution, calibration and drift are evidence-producing stages. Candidates require governed promotion.
 
 AI agents operate through explicit tools and policy. Sensitive prompt/tool content is not captured in telemetry by default. Autonomous changes require checkpoint, evidence, risk classification, isolation, verification, release gates and rollback capability.
+
+Agent authority is independent of analytical-engine authority; multi-agent actions must remain reconstructable across identities, coordination events and shared-state ownership.
 
 ## 11. Release/continuation protocol
 
@@ -162,7 +171,9 @@ At every continuation:
 7. verify architecture, tests, security, contracts and operational behavior;
 8. update evidence and capability status;
 9. re-read the resulting repository state from GitHub;
-10. never claim parity without executable comparison evidence.
+10. never claim parity without executable comparison evidence;
+11. perform a contradiction sweep across the controlled documentation stack;
+12. perform a current standards check for material improvements without introducing novelty-only dependencies.
 
 No silent deletion, history rewrite, capability retirement or architecture divergence is allowed. Intentional divergence requires an ADR and preserved source evidence.
 
