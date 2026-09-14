@@ -12,7 +12,7 @@ Gate 0 converts the CForex source study into implementation-grade evidence. CFor
 
 | Area | Required evidence | Status |
 |---|---|---|
-| API/WS | exhaustive routes/channels, contracts, auth, entitlements, callers, side effects, tests | IN PROGRESS |
+| API/WS | exhaustive routes/channels, contracts, auth, entitlements, callers, side effects, tests | **ADVANCED — exhaustive catalog still open** |
 | Events | producers, consumers, subjects, schemas, ordering, idempotency, retry, replay, retention | IN PROGRESS |
 | Data | entity/table/column ownership and cross-context access | IN PROGRESS |
 | Engines | implementation, deterministic contract, PIT fixture, provenance, tests, replay compatibility | IN PROGRESS |
@@ -22,6 +22,12 @@ Gate 0 converts the CForex source study into implementation-grade evidence. CFor
 | Policy | invariant/config/runtime setting/tenant setting/entitlement/flag/governed policy classification | IN PROGRESS |
 | Adapters | provider/broker/model/research boundaries, capabilities, credentials, failure behavior | IN PROGRESS |
 | Operations | SLO, retention, partitioning, recovery, rollback and DR requirements | IN PROGRESS |
+
+## Current evidence advancement
+
+The D1 API/WS pass has now verified the broad API composition surface and a substantial portion of `/v1/trading` directly from executable CForex source. Verified trading contracts include demo candle lifecycle, realtime WebSocket, canonical observation ingestion, deterministic engine registry/evidence, watchlist, workspace, terminal context, MTF, decision/live-decision, technical analysis, decision explanation, market state, notifications, intelligence supervisor/overview/graph, calibration evaluation, provider reliability and learning analytics. The router wiring also proves the presence of risk, safety, entry guidance, execution intelligence/lifecycle, broker registry, execution quality, learning, self-diagnosis/self-healing and governed competition components.
+
+This is an **evidence advancement, not closure**. The remainder of the trading router and every mounted API module still require exhaustive endpoint-level extraction including request/response/error contracts, authentication/workspace/entitlement rules, UI callers, event side effects and tests.
 
 ## Established facts
 
@@ -37,7 +43,7 @@ Gate 0 closes only when every high-impact capability has executable evidence, ev
 
 ## Implementation hand-off
 
-Foundation work may begin only for evidence-backed contracts. The first Gate 1 slice must prove the complete chain:
+**Implementation remains paused by project policy until documentation/evidence freeze.** Once Gate 0 is closed, foundation work may begin only for evidence-backed contracts. The first Gate 1 slice must prove the complete chain:
 
 `contract → domain → use case → port → adapter → persistence/event → API/realtime → tests → telemetry`
 
@@ -45,4 +51,4 @@ Unresolved source behavior must never be guessed. Intentional divergence require
 
 ## Continuation rule
 
-At every continuation: read the migration control index first, inspect both repositories, identify the active evidence gap or implementation slice, make the smallest coherent change, verify it, update evidence/status, and re-read GitHub state before reporting progress.
+At every continuation: read the migration control index first, inspect both repositories, identify the active evidence gap, make the smallest coherent documentation/evidence change, verify it, update evidence/status, and re-read GitHub state before reporting progress.
