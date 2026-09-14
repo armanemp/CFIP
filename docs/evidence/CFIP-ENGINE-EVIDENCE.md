@@ -63,8 +63,6 @@ The previous directory-only count must not be treated as the runtime engine coun
 
 ## 4. Executable runtime inventory — descriptor evidence
 
-The following table is now directly grounded in the current executable source. Paths identify the source implementation that owns the runtime class; descriptor values are taken from the executable class definitions or the previously directly inspected builtin implementations.
-
 | Runtime class | Engine ID | Version | Warmup | Latency budget | Capability | Source implementation |
 |---|---|---:|---:|---:|---|---|
 | `MomentumEngine` | `technical.momentum` | 1.0.0 | 20 | 50 ms | `technical_analysis` | `packages/application/src/fi_application/analysis_engine/builtin.py` |
@@ -83,7 +81,7 @@ The following table is now directly grounded in the current executable source. P
 | `StrategyEngine` | `strategy.baseline` | 1.1.0 | 10 | 60 ms | `strategy_baseline` | `engines/strategy/src/fi_engine_strategy/engine.py` |
 | `StructureEngine` | `structure.swing` | 1.1.0 | 7 | 60 ms | `structure_swing` | `engines/structure/src/fi_engine_structure/engine.py` |
 
-The current pass therefore closes the earlier ambiguity between the 14 namespace directories and the 15 runtime registrations at the descriptor/path level.
+The current pass closes the earlier ambiguity between the 14 namespace directories and the 15 runtime registrations at the descriptor/path level.
 
 ## 5. EngineRuntime execution semantics
 
@@ -279,3 +277,51 @@ This pass materially closes the previous ambiguity around runtime-only engines a
 D4 is therefore **advanced and materially closer to closure**, but it remains open until test/fixture mapping, registration-path reconciliation, PIT/replay equivalence, telemetry/health evidence and cross-document parity reconciliation are collected.
 
 No CFIP runtime implementation or parity status is advanced by this document.
+
+## 18. Corrected durable analysis persistence finding
+
+The source has concrete PostgreSQL durable analysis-run persistence; it is not merely a contractual model.
+
+- migration `0005_analysis_execution_runs.py` creates the `analysis_runs` table with UUID identity, engine ID/version, status, input snapshot JSONB, parameters JSONB, `data_revision`, request timestamp, correlation/causation IDs, result JSONB and timestamps, plus engine/status and correlation indexes;
+- `packages/infrastructure/src/fi_infrastructure/analysis.py` implements `SqlAlchemyAnalysisRunRepository` with idempotent `create`, row-locking `update` and `get`;
+- the repository reconstructs `AnalysisRequest`, `AnalysisResult` and `AnalysisRunRecord` from the durable row;
+- the repository commits durable state through the async SQLAlchemy session infrastructure.
+
+This establishes **durable analysis-run infrastructure at source**. It does not establish that every execution path uses the repository. In particular, the inspected `/v1/trading/analysis/engine-evidence` path is not yet proven to persist an `AnalysisRunRecord` automatically.
+
+## 19. Durable provenance versus persistence schema
+
+`AnalysisProvenance` requires `parameter_hash`, `input_hash`, `engine_hash`, dependency versions and input references. The `analysis_runs` schema stores the request fields and the serialized `AnalysisResult` in JSONB; it does not expose those hashes as dedicated indexed columns.
+
+The migration interpretation is therefore:
+
+1. provenance hashes remain a durable reproducibility contract;
+2. durable run persistence is concretely implemented;
+3. the current source schema does not prove separately indexed/queryable hash columns;
+4. hash production/canonicalization and population of `AnalysisResult.provenance` remain open evidence tasks.
+
+CFIP must neither invent dedicated hash columns without a target design decision nor omit the provenance-hash requirement.
+
+## 20. Revised D4 closure checklist
+
+- [x] 15 runtime registrations identified.
+- [x] 14 namespace directories distinguished from runtime count.
+- [x] 2 runtime-only builtin engines identified.
+- [x] 13 dedicated runtime engines mapped to executable classes.
+- [x] generic deterministic/provenance coverage identified for all 13 dedicated engines.
+- [x] direct runtime/health/timeout tests identified.
+- [x] direct fabric failure-policy test identified.
+- [x] stronger FVG causal/PIT-boundary evidence identified.
+- [x] durable `analysis_runs` schema identified.
+- [x] durable `SqlAlchemyAnalysisRunRepository` implementation identified.
+- [ ] exact producer/dependency wiring for durable analysis repository.
+- [ ] complete V1↔V2 cross-registration trace.
+- [ ] complete parameter-schema and fingerprint implementation trace.
+- [ ] complete source snapshot/PIT reconstruction trace.
+- [ ] complete replay/live/backtest equivalence trace.
+- [ ] complete per-engine golden/regression fixture census.
+- [ ] complete engine execution telemetry/event persistence trace.
+- [ ] complete engine-like implementation census outside the current runtime tuple.
+- [ ] reconcile all findings into final D4 + D7 + D11 closure evidence.
+
+No CFIP runtime implementation or parity status is advanced by this correction.
