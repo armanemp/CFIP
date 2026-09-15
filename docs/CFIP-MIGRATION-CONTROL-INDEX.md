@@ -8,6 +8,7 @@
 
 - Historical CFIP source snapshot: CForex v0.9.154.
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
+- Current CFIP batch-65 head: `ff57d57a773f1605062ed1627b725fef6aad880f`.
 - Historical evidence is retained and never rewritten as current source truth.
 - Current-head Admin Git hardening is reconciled as an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
@@ -70,7 +71,7 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58–64 registration
+## Batch 58–65 registration
 
 ### Batch 58
 - `docs/governance/CFIP-ECP-CHECKPOINT-58.md`
@@ -106,4 +107,13 @@ Every continuation performs: inspect both repos → source study → evidence gr
 - `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-64.md`
 - `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-64.md`
 
-Next continuation must continue the executable vertical slice: application unit-of-work → PostgreSQL execution + outbox atomicity → transport-neutral dispatcher → lease-fenced publish/retry/dead-letter semantics → canonical event publication → realtime consumer, while parallel source census, PIT/replay, global-scale, frontend and Platform Intelligence closure continue. Documentation-only expansion is not the default when safe executable work is available.
+### Batch 65
+- `packages/analysis-runtime/src/cfip_analysis_runtime/unit_of_work.py` — framework-neutral atomic execution/outbox port
+- `packages/analysis-postgres/src/cfip_analysis_postgres/unit_of_work.py` — PostgreSQL atomic execution + outbox implementation
+- lease-fenced `mark_published`, `mark_failed`, `mark_dead` outbox transitions
+- `DispatchRetryPolicy` with bounded exponential retry semantics
+- contract tests for retry policy and failure classification
+- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-65.md`
+- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-65.md`
+
+Next continuation must continue the executable vertical slice: transport-neutral dispatcher → canonical broker adapter → lease-fenced retry/dead-letter orchestration → idempotent realtime consumer → partition ownership/checkpoint/watermark semantics, while parallel source census, PIT/replay, global-scale, frontend, Platform Intelligence and Admin Git closure continue. Documentation-only expansion is not the default when safe executable work is available.
