@@ -1,4 +1,4 @@
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from cfip_contracts import EventEnvelope, EventType
 from cfip_eventing_dispatcher import IdempotentEventConsumer
@@ -6,16 +6,21 @@ from cfip_eventing_dispatcher import IdempotentEventConsumer
 
 class Dedupe:
     def __init__(self) -> None:
-        self.seen: set[tuple[str, UUID]] = set()
+        self.claimed: set[tuple[str, UUID]] = set()
+        self.processed: set[tuple[str, UUID]] = set()
 
-    def has_processed(self, *, consumer_id: str, event_id: UUID) -> bool:
-        return (consumer_id, event_id) in self.seen
+    def claim(self, *, consumer_id: str, event_id: UUID) -> bool:
+        key = (consumer_id, event_id)
+        if key in self.claimed:
+            return False
+        self.claimed.add(key)
+        return True
 
     def mark_processed(self, *, consumer_id: str, event_id: UUID) -> bool:
         key = (consumer_id, event_id)
-        if key in self.seen:
+        if key not in self.claimed or key in self.processed:
             return False
-        self.seen.add(key)
+        self.processed.add(key)
         return True
 
 
