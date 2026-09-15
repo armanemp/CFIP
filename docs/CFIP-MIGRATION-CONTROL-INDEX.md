@@ -7,7 +7,7 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Current CFIP head is advanced by Batch 71 hygiene-control commits; exact HEAD is rechecked after every canonical write sequence.
+- Current CFIP head is advanced by Batch 72 realtime-observability contract work; exact HEAD is rechecked after every canonical write sequence.
 - Historical evidence is retained only when it remains valid target evidence; obsolete architecture-history artifacts are removed from the active repository surface.
 - Current-head Admin Git hardening remains an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
@@ -70,7 +70,7 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58–71 registration
+## Batch 58–72 registration
 
 ### Batch 58–65
 Prior batch registrations remain immutable in this index history.
@@ -125,4 +125,14 @@ Prior batch registrations remain immutable in this index history.
 - no business semantics or source behavior were changed;
 - repository hygiene is now an always-on control, while source closure, parity, scale capacity and production readiness remain independently gated.
 
-Direct broker transport remains intentionally unresolved until source evidence is obtained. Live migration execution and production readiness remain unverified/locked.
+### Batch 72
+- identified and corrected a stale standards document that still described the former blanket runtime lock, reconciling it with the current controlled-implementation rule;
+- added `RealtimeTelemetrySnapshot` to the technology-neutral contract package;
+- snapshot covers queue depth, capacity, consumer lag, event-time watermark, lateness, processing latency and bounded backpressure action;
+- explicitly kept telemetry observational and non-authoritative, preserving durable checkpoints, leases, event logs and domain state as correctness authorities;
+- exported the contract through the shared contracts package;
+- added focused realtime-runtime tests for valid snapshots and negative metric validation;
+- refreshed the standards document with current OpenTelemetry semantic-convention guidance and compatibility principles;
+- no broker-specific implementation or production telemetry backend was invented without source/integration evidence.
+
+Direct broker transport remains intentionally unresolved until source evidence is obtained. PostgreSQL runtime integration, durable checkpoint/lease repository integration, recovery, capacity and production readiness remain unverified/locked.
