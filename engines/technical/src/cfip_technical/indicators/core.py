@@ -37,6 +37,56 @@ def ema(data: Sequence[OHLCV], period: int) -> IndicatorResult:
     return IndicatorResult("ema", period, tuple(values), period - 1)
 
 
+def _ema_values(values: Sequence[float | None], period: int) -> tuple[float | None, ...]:
+    """Apply the same SMA-seeded EMA semantics to an already-derived series."""
+    validate_period(period)
+    output: list[float | None] = [None] * len(values)
+    available = [index for index, value in enumerate(values) if value is not None]
+    if len(available) < period:
+        return tuple(output)
+    seed_indices = available[:period]
+    seed = sum(values[index] for index in seed_indices if values[index] is not None) / period
+    seed_index = seed_indices[-1]
+    output[seed_index] = seed
+    alpha = 2.0 / (period + 1.0)
+    previous = seed
+    for index in range(seed_index + 1, len(values)):
+        current = values[index]
+        if current is not None:
+            previous = ((current - previous) * alpha) + previous
+            output[index] = previous
+    return tuple(output)
+
+
+def dema(data: Sequence[OHLCV], period: int = 20) -> IndicatorResult:
+    """Double exponential moving average using the canonical EMA seed."""
+    validate_period(period)
+    first = ema(data, period)
+    second = _ema_values(first.values, period)
+    values = tuple(
+        None if first_value is None or second_value is None else 2.0 * first_value - second_value
+        for first_value, second_value in zip(first.values, second)
+    )
+    warmup = min(2 * period - 2, len(data))
+    return IndicatorResult("dema", period, values, warmup)
+
+
+def tema(data: Sequence[OHLCV], period: int = 20) -> IndicatorResult:
+    """Triple exponential moving average using the canonical EMA seed."""
+    validate_period(period)
+    first = ema(data, period)
+    second = _ema_values(first.values, period)
+    third = _ema_values(second, period)
+    values = tuple(
+        None
+        if first_value is None or second_value is None or third_value is None
+        else 3.0 * first_value - 3.0 * second_value + third_value
+        for first_value, second_value, third_value in zip(first.values, second, third)
+    )
+    warmup = min(3 * period - 3, len(data))
+    return IndicatorResult("tema", period, values, warmup)
+
+
 def rsi(data: Sequence[OHLCV], period: int = 14) -> IndicatorResult:
     validate_period(period)
     values: list[float | None] = [None] * len(data)
@@ -143,4 +193,4 @@ def macd(data: Sequence[OHLCV], fast_period: int = 12, slow_period: int = 26, si
     )
 
 
-__all__ = ["atr", "bollinger_bands", "ema", "macd", "rsi", "sma"]
+__all__ = ["atr", "bollinger_bands", "dema", "ema", "macd", "rsi", "sma", "tema"]
