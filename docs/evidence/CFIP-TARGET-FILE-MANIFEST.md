@@ -1,6 +1,6 @@
 # CFIP Target File Manifest
 
-**Status:** Controlled implementation manifest; Gate 0 now permits source-evidenced runtime materialization while production promotion remains locked. Architecture contracts, governance tooling and the first analysis-runtime implementation slice are physically present in GitHub.  
+**Status:** Controlled implementation manifest; Gate 0 permits source-evidenced runtime materialization while production promotion remains locked. Architecture contracts, governance tooling and controlled runtime slices are physically present in GitHub.  
 **Source:** `armanemp/CForex` `main` current evidence snapshot `900882154cab3b9b74d0543b9bbf72a708a08134`  
 **Target:** `armanemp/CFIP` `main`
 
@@ -25,9 +25,9 @@ This manifest turns the canonical target tree into a file-level implementation p
 |---|---|---|
 | `apps/` | `ARCH-CONTRACT` | `PROMOTION-LOCKED` |
 | `contexts/` | `ARCH-CONTRACT` for all 34 contexts | `PROMOTION-LOCKED` |
-| `packages/` | `ARCH-CONTRACT` plus first analysis-runtime foundation | `PROMOTION-LOCKED` |
+| `packages/` | `ARCH-CONTRACT` plus analysis and intelligence runtime foundations | `PROMOTION-LOCKED` |
 | `adapters/` | `ARCH-CONTRACT` for inbound/outbound families | `PROMOTION-LOCKED` |
-| `engines/` | `ARCH-CONTRACT` for all 14 namespaces / 15 runtime classes | `PROMOTION-LOCKED` |
+| `engines/` | `ARCH-CONTRACT` tree hygiene plus implemented `technical` engine | `PROMOTION-LOCKED` |
 | `data/` | `ARCH-CONTRACT` | `PROMOTION-LOCKED` |
 | `frontend/` | `ARCH-CONTRACT` | `PROMOTION-LOCKED` |
 | `infrastructure/` | `ARCH-CONTRACT` | `PROMOTION-LOCKED` |
@@ -35,13 +35,19 @@ This manifest turns the canonical target tree into a file-level implementation p
 | `scripts/` | `ARCH-CONTRACT` | `ACTIVE` where evidence tooling applies |
 | `tools/architecture/` | `ARCH-CONTRACT` verification tooling | `ACTIVE` |
 | `packages/analysis-runtime/` | `FOUNDATION` | `PROMOTION-LOCKED` |
+| `packages/intelligence-runtime/` | `FOUNDATION / TARGET-ADDITION` | `PROMOTION-LOCKED` |
+| `engines/technical/` | `FOUNDATION / TARGET-ADDITION` | `PROMOTION-LOCKED` |
 | `.github/workflows/architecture-contracts.yml` | CI architecture-contract gate | `ACTIVE` |
 
-## 2. First executable foundation slice
+## 2. Executable foundation slices
 
-`packages/analysis-runtime/` is the first controlled Gate-0 implementation slice. It contains immutable engine contracts, bounded async execution, explicit failure policy, identity/revision checks and direct tests. It has no production database, broker, framework or live-trading dependency.
+`packages/analysis-runtime/` provides deterministic specialist-evidence composition, indicator semantic translation and the single consensus aggregation boundary.
 
-Its implementation status is **FOUNDATION / PROMOTION-LOCKED**, not `PARITY-VERIFIED` or `PRODUCTION-READY`.
+`packages/intelligence-runtime/` provides dependency-free governed lifecycle trace contracts for `observe → context → reason → act → verify → learn → audit → safety`. It records lifecycle state but does not execute domain operations, SQL, infrastructure mutations, trades or model calls; action recording requires a prior safety event in the same trace.
+
+`engines/technical/` provides deterministic numerical indicator implementations with canonical family ownership and a versioned metadata registry. These are target engineering implementations, not source-parity proof.
+
+All three are **FOUNDATION / PROMOTION-LOCKED**, not `PARITY-VERIFIED` or `PRODUCTION-READY`.
 
 ## 3. Architecture verification tooling
 
@@ -59,12 +65,14 @@ Active verification tools include:
 - `census_policy_config.py`
 - `validate_global_scale_contracts.py`
 - `validate_migration_control_consistency.py`
+- `validate_indicator_structure.py`
+- `validate_platform_intelligence_coverage.py`
 
 These are evidence accelerators, not automatic parity proof.
 
 ## 4. Target implementation rule
 
-A runtime file may now be materialized while Gate 0 is open only when it has:
+A runtime file may be materialized while Gate 0 is open only when it has:
 
 `source evidence/target rationale + capability owner + contract + dependency direction + tests + telemetry/recovery requirements + ECP risk/change identity + rollback path`
 
@@ -92,6 +100,8 @@ The validator protects architectural obligations. It does not claim production c
 
 Architecture contracts are materialized for contracts, domain kernel, application kernel, eventing, observability, security, testing and configuration. Runtime implementation proceeds by evidence-backed vertical slice rather than by bulk directory generation.
 
+Current executable package slices are `analysis-runtime` and `intelligence-runtime`.
+
 ## 8. Bounded contexts
 
 The mandatory target contexts are:
@@ -100,29 +110,13 @@ The mandatory target contexts are:
 
 All 34 context contracts are physically materialized. Runtime files remain subject to the controlled implementation rule.
 
-## 9. Analysis engine files
+## 9. Analysis engine tree and source census
 
-Architecture contracts are materialized for all 14 top-level namespaces and 15 concrete runtime engine classes. The first target runtime foundation is framework-independent and is intended to host canonical `(engine_id, version)` implementations without coupling to API or worker composition.
+The **target physical engine tree is intentionally not a mirror of the source engine census**. At the current controlled-implementation state, `engines/technical/` is the only executable target engine family. README-only placeholder directories for unimplemented source capabilities were removed because directory existence is not implementation evidence and creates false ownership signals.
 
-Concrete source identities include:
+The CForex source census still records 14 namespace directories / 15 runtime engine classes as migration evidence. Those source identities remain requirements/evidence inputs, not a reason to recreate empty target folders.
 
-- `technical.momentum@1.0.0`
-- `technical.volatility@1.0.0`
-- `backtest.replay@1.1.0`
-- `confluence.score@1.1.0`
-- `contradiction.detect@1.1.0`
-- `fvg.causal@1.2.0`
-- `intelligence.score@1.1.0`
-- `liquidity.map@1.1.0`
-- `mtf.alignment@1.1.0`
-- `order_block.causal@1.1.0`
-- `regime.classify@1.1.0`
-- `signal.scoring@1.1.0`
-- `signal.trigger@1.1.0`
-- `strategy.baseline@1.1.0`
-- `structure.swing@1.1.0`
-
-The runtime foundation does not claim all 15 target engines are implemented.
+Current target technical implementation contains one canonical physical owner per family under `engines/technical/src/cfip_technical/indicators/` plus `catalog.py`; compatibility facade modules were removed.
 
 ## 10. Data/PIT/replay
 
@@ -157,7 +151,7 @@ Infrastructure architecture contracts are physically present. SLO/SLI, DR/backup
 9. frontend;
 10. governance/autonomy/operations hardening.
 
-Implementation now proceeds in coherent vertical slices across this order where source evidence is sufficient, rather than waiting for every documentation dimension to reach 100%.
+Implementation proceeds in coherent vertical slices across this order where source evidence is sufficient, rather than waiting for every documentation dimension to reach 100%.
 
 ## 16. Inventory correction
 
