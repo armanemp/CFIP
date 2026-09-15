@@ -7,6 +7,18 @@
   "source_baseline": "v0.9.154",
   "entries": [
     {
+      "manifest_path": "data/training/OBSERVED-RELEASE-EVIDENCE-MANIFEST-v0.1.json",
+      "dataset_path": "data/training/observed_release_evidence_v0.1.jsonl",
+      "source_manifest_sha": "ff63c87d3996bd41eca416613c763ba37d07994d",
+      "declared_record_count": 20,
+      "source_type": "observed_release_evidence",
+      "synthetic_only": false,
+      "promotion_allowed": false,
+      "model_mutation_allowed": false,
+      "materialization_status": "SOURCE_EVIDENCE_ONLY",
+      "integrity_note": "Source manifest and dataset are indexed for governed carry-forward; CFIP requires direct content hash and record-count verification before materialization."
+    },
+    {
       "manifest_path": "data/training/SEED-DATASET-MANIFEST-v0.19.json",
       "dataset_path": "data/training/governed_platform_knowledge_v0.19.jsonl",
       "source_manifest_sha": "536129183563fe94ba77f574dee274221941b807",
