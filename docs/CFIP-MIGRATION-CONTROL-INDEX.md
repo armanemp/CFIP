@@ -7,7 +7,7 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Current CFIP Batch 68 implementation/documentation head: `d301879826c5eb6df4359bb2f88228a84a429b5c`.
+- Current CFIP Batch 69 implementation/documentation head: `720474a375d0c4c9ba50e6cd92375ed6226dfd09`.
 - Historical evidence is retained and never rewritten as current source truth.
 - Current-head Admin Git hardening is reconciled as an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
@@ -70,7 +70,7 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58–68 registration
+## Batch 58–69 registration
 
 ### Batch 58–65
 Prior batch registrations remain immutable in this index history.
@@ -99,5 +99,12 @@ Prior batch registrations remain immutable in this index history.
 - realtime runtime tests;
 - PostgreSQL migration `0002_realtime_progress` for consumer dedupe, checkpoints and partition leases;
 - batch-68 documentation and intelligence training record.
+
+### Batch 69
+- added `tools/architecture/validate_continuation_contract.py` as a machine-checkable guard over the canonical continuation-control stack;
+- added `tests/architecture/test_validate_continuation_contract.py` covering control-stack presence, required operating rules and missing-document detection;
+- integrated the continuation validator into `.github/workflows/architecture-contracts.yml` so documentation/control drift fails CI before the remaining architecture checks;
+- preserved Gate 0 controlled implementation semantics and the production lock;
+- current engineering remains transport-neutral because direct broker transport evidence is still unresolved.
 
 Direct broker transport remains intentionally unresolved until source evidence is obtained. Live migration execution and production readiness remain unverified/locked.
