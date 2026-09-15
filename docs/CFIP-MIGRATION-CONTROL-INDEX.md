@@ -25,22 +25,23 @@ Read these documents in this order at the start of every migration continuation:
 10. `docs/capabilities/parity-matrix.md` — target implementation/parity status.
 11. `docs/CFIP-SOURCE-TREE.md` — target tree and ownership grammar.
 12. `docs/capabilities/CFIP-CFOREX-CARRYFORWARD-BASELINE.md` — explicit carry-forward obligations from the mature CForex baseline.
-13. `docs/adr/ADR-001-ANALYSIS-CATALOG-AND-RUNTIME-EXECUTION-PLANE.md` — canonical analysis identity/execution-plane decision.
-14. `docs/adr/ADR-002-REALTIME-EVENT-TIME-AND-BACKPRESSURE-SEMANTICS.md` — canonical realtime event-time/backpressure decision.
-15. `docs/adr/ADR-003-OBSERVABILITY-AND-AGENT-CONTROL-SEMANTICS.md` — standard-first telemetry and agent-control decision.
-16. `docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md` — dataset identity, PIT, replay and reproducibility decision.
-17. `docs/adr/ADR-005-PLATFORM-INTELLIGENCE-AND-AUTONOMOUS-OPERATION.md` — platform-wide intelligence, autonomous engineering/trading/research and governed operation.
-18. `docs/capabilities/CFIP-D3-PIT-REPLAY-EVIDENCE-CONTRACT.md` — canonical D3 PIT/replay evidence boundary.
-19. `docs/capabilities/CFIP-PLATFORM-INTELLIGENCE-COVERAGE-MATRIX.md` — mandatory capability-wide intelligence integration contract.
-20. `docs/architecture/CFIP-STANDARDS-REVIEW-47.md` — current standards review for telemetry and agent control.
-21. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
-22. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
-23. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
-24. `docs/governance/CFIP-EVOLUTION-CONTROL-PLANE.md` — internal project-control/Git governance and autonomous change lifecycle.
-25. `docs/governance/CFIP-ECP-DATA-CONTRACT.md` — machine-readable ECP/training evidence boundary and source-integrity rules.
-26. `docs/governance/CFIP-INTELLIGENCE-TRAINING-LIFECYCLE.md` — continuous governed intelligence training/evaluation lifecycle.
-27. `data/training/CFIP-CFOREX-TRAINING-DATASET-INDEX-v0.1.json` — source training-dataset carry-forward identity, hashes, counts and materialization status.
-28. Latest progress report and latest contradiction sweep.
+13. `docs/capabilities/CFIP-CFOREX-TRAINING-DATASET-SOURCE-INVENTORY.md` — complete enumerated source training/evaluation artifact inventory.
+14. `docs/adr/ADR-001-ANALYSIS-CATALOG-AND-RUNTIME-EXECUTION-PLANE.md` — canonical analysis identity/execution-plane decision.
+15. `docs/adr/ADR-002-REALTIME-EVENT-TIME-AND-BACKPRESSURE-SEMANTICS.md` — canonical realtime event-time/backpressure decision.
+16. `docs/adr/ADR-003-OBSERVABILITY-AND-AGENT-CONTROL-SEMANTICS.md` — standard-first telemetry and agent-control decision.
+17. `docs/adr/ADR-004-DATASET-REPLAY-AND-PIT-INTEGRITY.md` — dataset identity, PIT, replay and reproducibility decision.
+18. `docs/adr/ADR-005-PLATFORM-INTELLIGENCE-AND-AUTONOMOUS-OPERATION.md` — platform-wide intelligence, autonomous engineering/trading/research and governed operation.
+19. `docs/capabilities/CFIP-D3-PIT-REPLAY-EVIDENCE-CONTRACT.md` — canonical D3 PIT/replay evidence boundary.
+20. `docs/capabilities/CFIP-PLATFORM-INTELLIGENCE-COVERAGE-MATRIX.md` — mandatory capability-wide intelligence integration contract.
+21. `docs/architecture/CFIP-STANDARDS-REVIEW-47.md` — current standards review for telemetry and agent control.
+22. `docs/evidence/CFIP-EXECUTION-LIFECYCLE-EVIDENCE-ADDENDUM.md` — migration-tree and execution-lifecycle evidence correction/addendum.
+23. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
+24. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
+25. `docs/governance/CFIP-EVOLUTION-CONTROL-PLANE.md` — internal project-control/Git governance and autonomous change lifecycle.
+26. `docs/governance/CFIP-ECP-DATA-CONTRACT.md` — machine-readable ECP/training evidence boundary and source-integrity rules.
+27. `docs/governance/CFIP-INTELLIGENCE-TRAINING-LIFECYCLE.md` — continuous governed intelligence training/evaluation lifecycle.
+28. `data/training/CFIP-CFOREX-TRAINING-DATASET-INDEX-v0.1.json` — source training-dataset carry-forward identity, hashes, counts and materialization status.
+29. Latest progress report and latest contradiction sweep.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -98,6 +99,7 @@ The current CForex release truth records **101 required release gates with 100 P
 - Project-control state is evidence-driven and append-oriented; it cannot hide failed changes by rewriting history.
 - Material CForex capabilities already proven useful in the source must be explicitly classified for CFIP as `PRESERVE`, `IMPROVE`, `REPLACE` or `INTENTIONALLY-DIVERGE`.
 - Training/evaluation dataset materialization requires source hash and record-count reconciliation; a declared count is never treated as verified without direct evidence.
+- The complete CForex training/evaluation artifact inventory is maintained separately from materialized CFIP datasets; enumeration is evidence, not permission to copy.
 
 ## 6. Migration gates
 
@@ -205,16 +207,17 @@ At every continuation:
 8. inspect current ECP project-control state before any autonomous change;
 9. reconcile the CForex carry-forward baseline against source evidence and target capabilities;
 10. reconcile source training/evaluation manifests against dataset blobs before materialization;
-11. make the smallest coherent set of changes that advances the gate;
-12. verify architecture, tests, security, contracts and operational behavior;
-13. update evidence and capability status;
-14. re-read the resulting repository state from GitHub;
-15. never claim parity without executable comparison evidence;
-16. perform a contradiction and duplicate-artifact sweep across the controlled documentation stack;
-17. perform a current standards check for material improvements without introducing novelty-only dependencies;
-18. verify that every capability remains covered by the Platform Intelligence matrix and that no intelligence hook bypasses domain authority;
-19. run the governed intelligence-learning/evaluation lifecycle over newly verified evidence where applicable;
-20. report exact changes, verification, progress and blockers.
+11. reconcile the complete source training/evaluation inventory before closing Gate 0;
+12. make the smallest coherent set of changes that advances the gate;
+13. verify architecture, tests, security, contracts and operational behavior;
+14. update evidence and capability status;
+15. re-read the resulting repository state from GitHub;
+16. never claim parity without executable comparison evidence;
+17. perform a contradiction and duplicate-artifact sweep across the controlled documentation stack;
+18. perform a current standards check for material improvements without introducing novelty-only dependencies;
+19. verify that every capability remains covered by the Platform Intelligence matrix and that no intelligence hook bypasses domain authority;
+20. run the governed intelligence-learning/evaluation lifecycle over newly verified evidence where applicable;
+21. report exact changes, verification, progress and blockers.
 
 Documentation and safe Gate-0-compatible engineering are parallel tracks. The previous documentation-first sequencing restriction is removed by Amendment 47; neither documentation completeness nor engineering work may be used as an excuse to postpone the other when the work can be progressed safely and independently.
 
