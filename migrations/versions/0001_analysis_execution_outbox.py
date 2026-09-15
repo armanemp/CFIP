@@ -1,7 +1,8 @@
 """Create the first executable CFIP PostgreSQL transaction boundary.
 
-This revision intentionally owns only the analysis-execution + durable-outbox
-slice. Later capabilities must extend the append-only migration chain.
+This revision owns the analysis-execution + durable-outbox slice, including the
+fencing primitives required for safe asynchronous dispatch before migration
+freezing. Later capabilities must extend the append-only migration chain.
 """
 
 from __future__ import annotations
@@ -58,10 +59,18 @@ def upgrade() -> None:
         sa.Column("last_error", sa.Text(), nullable=True),
         sa.Column("locked_by", sa.String(255), nullable=True),
         sa.Column("locked_until", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("fencing_token", sa.BigInteger(), nullable=False, server_default="1"),
         sa.UniqueConstraint("dedupe_key", name="uq_cfip_durable_events_dedupe_key"),
+        sa.CheckConstraint("fencing_token >= 1", name="ck_cfip_durable_events_fencing_positive"),
+    )
+    op.create_index(
+        "ix_cfip_durable_events_dispatchable",
+        "cfip_durable_events",
+        ["status", "available_at", "locked_until"],
     )
 
 
 def downgrade() -> None:
+    op.drop_index("ix_cfip_durable_events_dispatchable", table_name="cfip_durable_events")
     op.drop_table("cfip_durable_events")
     op.drop_table("cfip_analysis_executions")
