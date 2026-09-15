@@ -1,118 +1,110 @@
 # CFIP Target File Manifest
 
-**Status:** Controlled implementation manifest; runtime creation remains Gate-0 locked. Architecture-contract materialization and migration-governance tooling are physically present in GitHub.  
-**Source:** `armanemp/CForex` `main` v0.9.154  
+**Status:** Controlled implementation manifest; Gate 0 now permits source-evidenced runtime materialization while production promotion remains locked. Architecture contracts, governance tooling and the first analysis-runtime implementation slice are physically present in GitHub.  
+**Source:** `armanemp/CForex` `main` current evidence snapshot `900882154cab3b9b74d0543b9bbf72a708a08134`  
 **Target:** `armanemp/CFIP` `main`
 
 ## Purpose
 
-This manifest turns the canonical target tree into a file-level implementation plan and distinguishes **architecture contracts and verification tooling already materialized** from runtime artifacts still gated. It is not a substitute for source evidence and does not authorize production implementation.
+This manifest turns the canonical target tree into a file-level implementation plan and distinguishes architecture contracts, verification tooling and controlled runtime materialization. It is not a substitute for source evidence and does not authorize production promotion.
 
 ## Status vocabulary
 
 - `PLANNED` — target artifact identified, not implemented.
 - `EVIDENCE-REQUIRED` — source trace must close first.
-- `ARCH-CONTRACT` — meaningful ownership/boundary/evidence contract physically materialized; no runtime implementation.
-- `FOUNDATION` — first runtime materialization wave after Gate 0.
+- `ARCH-CONTRACT` — meaningful ownership/boundary/evidence contract physically materialized.
+- `FOUNDATION` — implementation slice intentionally materialized under controlled Gate-0 engineering.
 - `SOURCE-MAPPED` — direct CForex capability mapping exists.
 - `TARGET-ADDITION` — intentional CFIP improvement without one-to-one source file.
 - `VERIFIED` — implementation plus required tests/evidence complete.
+- `PROMOTION-LOCKED` — implementation may exist, but production promotion remains gated.
 
 ## 1. Current physical materialization
 
-The following architecture-contract layer is now present on `main`:
-
-| Area | Physical state | Runtime state |
+| Area | Physical state | Runtime/promotion state |
 |---|---|---|
-| `apps/` | `ARCH-CONTRACT` | `LOCKED` |
-| `contexts/` | `ARCH-CONTRACT` for all 34 contexts | `LOCKED` |
-| `packages/` | `ARCH-CONTRACT` for all 8 shared packages | `LOCKED` |
-| `adapters/` | `ARCH-CONTRACT` for inbound/outbound families | `LOCKED` |
-| `engines/` | `ARCH-CONTRACT` for all 14 namespaces / 15 runtime classes | `LOCKED` |
-| `data/` | `ARCH-CONTRACT` | `LOCKED` |
-| `frontend/` | `ARCH-CONTRACT` | `LOCKED` |
-| `infrastructure/` | `ARCH-CONTRACT` | `LOCKED` |
-| `tests/` | `ARCH-CONTRACT` | `LOCKED` |
-| `scripts/` | `ARCH-CONTRACT` | `LOCKED` |
+| `apps/` | `ARCH-CONTRACT` | `PROMOTION-LOCKED` |
+| `contexts/` | `ARCH-CONTRACT` for all 34 contexts | `PROMOTION-LOCKED` |
+| `packages/` | `ARCH-CONTRACT` plus first analysis-runtime foundation | `PROMOTION-LOCKED` |
+| `adapters/` | `ARCH-CONTRACT` for inbound/outbound families | `PROMOTION-LOCKED` |
+| `engines/` | `ARCH-CONTRACT` for all 14 namespaces / 15 runtime classes | `PROMOTION-LOCKED` |
+| `data/` | `ARCH-CONTRACT` | `PROMOTION-LOCKED` |
+| `frontend/` | `ARCH-CONTRACT` | `PROMOTION-LOCKED` |
+| `infrastructure/` | `ARCH-CONTRACT` | `PROMOTION-LOCKED` |
+| `tests/` | `ARCH-CONTRACT` | `PROMOTION-LOCKED` |
+| `scripts/` | `ARCH-CONTRACT` | `ACTIVE` where evidence tooling applies |
 | `tools/architecture/` | `ARCH-CONTRACT` verification tooling | `ACTIVE` |
+| `packages/analysis-runtime/` | `FOUNDATION` | `PROMOTION-LOCKED` |
 | `.github/workflows/architecture-contracts.yml` | CI architecture-contract gate | `ACTIVE` |
 
-## 2. Architecture verification tooling
+## 2. First executable foundation slice
+
+`packages/analysis-runtime/` is the first controlled Gate-0 implementation slice. It contains immutable engine contracts, bounded async execution, explicit failure policy, identity/revision checks and direct tests. It has no production database, broker, framework or live-trading dependency.
+
+Its implementation status is **FOUNDATION / PROMOTION-LOCKED**, not `PARITY-VERIFIED` or `PRODUCTION-READY`.
+
+## 3. Architecture verification tooling
 
 Active verification tools include:
 
-- `validate_target_contracts.py` — target structure, canonical-doc and migration-hygiene validation.
-- `census_api_ws.py` — CForex HTTP/WebSocket route census.
-- `census_event_graph.py` — conservative event producer/consumer topology census.
-- `validate_migration_graph.py` — static migration revision/dependency/object-evolution validation.
-- `reconcile_engine_registry.py` — 15-engine class/registration/test evidence reconciliation.
-- `validate_worker_lifecycle.py` — worker entrypoint/shutdown/health/error-boundary evidence extraction.
-- `validate_dependency_direction.py` — target layer dependency-direction validation.
-- `validate_pit_replay_contracts.py` — PIT/replay evidence-contract validation.
-- `census_frontend.py` — recursive CForex frontend route/component/hook/import census.
-- `census_policy_config.py` — policy/configuration/hardcode/feature-flag evidence census.
-- `validate_global_scale_contracts.py` — global-scale architecture obligations covering statelessness, partitioning, idempotency, backpressure, data-store scaling, residency, SLO/capacity, recovery, checkpoints and telemetry.
-- `validate_migration_control_consistency.py` — canonical migration-control, Gate-0, tool-registration and CI wiring consistency validation.
+- `validate_target_contracts.py`
+- `census_api_ws.py`
+- `census_event_graph.py`
+- `validate_migration_graph.py`
+- `reconcile_engine_registry.py`
+- `validate_worker_lifecycle.py`
+- `validate_dependency_direction.py`
+- `validate_pit_replay_contracts.py`
+- `census_frontend.py`
+- `census_policy_config.py`
+- `validate_global_scale_contracts.py`
+- `validate_migration_control_consistency.py`
 
-The tests under `tests/architecture/` exercise these tools without importing CFIP production runtime.
+These are evidence accelerators, not automatic parity proof.
 
-`.github/workflows/architecture-contracts.yml` is the single consolidated architecture/source-closure gate. It runs the architecture validator, migration-control consistency validation, architecture-tool tests, migration graph validation when a target migration tree exists, worker lifecycle verification, dependency-direction verification, PIT/replay contract verification and global-scale contract verification.
+## 4. Target implementation rule
 
-These are **real operational quality gates**, not placeholder runtime modules. They do not close Gate 0 and do not execute CFIP production business behavior.
+A runtime file may now be materialized while Gate 0 is open only when it has:
 
-## 3. Global-scale architecture contract
+`source evidence/target rationale + capability owner + contract + dependency direction + tests + telemetry/recovery requirements + ECP risk/change identity + rollback path`
 
-Global scale is a first-class target constraint from Gate 0 onward. The contract covers:
+Implementation does not imply parity or production readiness.
 
-- stateless regional API scaling;
-- partition ownership and checkpoint semantics;
-- tenant/noisy-neighbor isolation;
-- bounded caching and explicit authority;
-- PostgreSQL control-plane scaling and retention;
-- ClickHouse analytical workload isolation;
-- asynchronous workload isolation and bounded fan-out;
-- data residency and jurisdiction-aware processing when required;
-- SLO/capacity/load methodology;
-- RPO/RTO, recovery and rollback;
-- multi-region consistency classification;
-- schema/data evolution compatibility across regions/workers;
-- rate limits, quotas and fair-use controls;
-- queue/lag/watermark/lateness/backpressure telemetry;
-- cost-aware scaling.
+## 5. Global-scale architecture contract
 
-The validator protects the presence of the architectural contract. It does **not** claim that any production scale characteristic has been benchmarked or implemented.
+Global scale is a first-class target constraint. The contract covers stateless regional API scaling, partition ownership/checkpoints, tenant isolation, bounded caching, PostgreSQL control-plane scaling, ClickHouse analytical isolation, asynchronous workload isolation, data residency, SLO/capacity methodology, RPO/RTO, recovery/rollback, consistency classification, schema evolution, rate limits and cost-aware scaling.
 
-## 4. Application process files
+The validator protects architectural obligations. It does not claim production capacity has been benchmarked.
 
-Application architecture contracts are materialized under `apps/<process>/README.md`; implementation files remain `FOUNDATION` and require Gate 0 exit.
+## 6. Application process files
 
 | Process | Required runtime files | Status |
 |---|---|---|
-| `apps/api` | `src/cfip_api/main.py`, `router.py`, `dependencies.py`, `middleware.py`, `error_handlers.py`, tests | `ARCH-CONTRACT` |
-| `apps/realtime` | `src/cfip_realtime/main.py`, `runtime.py`, `partitioning.py`, `checkpoints.py`, `backpressure.py`, tests | `ARCH-CONTRACT` |
-| `apps/market_data_worker` | `src/cfip_market_data_worker/main.py`, `consumer.py`, `normalization.py`, `quality.py`, tests | `ARCH-CONTRACT` |
-| `apps/analysis_worker` | `src/cfip_analysis_worker/main.py`, `executor.py`, `replay.py`, tests | `ARCH-CONTRACT` |
-| `apps/learning_worker` | `src/cfip_learning_worker/main.py`, `revision.py`, `evaluation.py`, tests | `ARCH-CONTRACT` |
-| `apps/autonomy_worker` | `src/cfip_autonomy_worker/main.py`, `lanes.py`, `policy.py`, `verification.py`, tests | `ARCH-CONTRACT` |
-| `apps/web` | `package.json`, Next app routes/components/tests | `ARCH-CONTRACT` |
+| `apps/api` | `src/cfip_api/main.py`, `router.py`, `dependencies.py`, `middleware.py`, `error_handlers.py`, tests | `PLANNED / CONTROLLED` |
+| `apps/realtime` | `src/cfip_realtime/main.py`, `runtime.py`, `partitioning.py`, `checkpoints.py`, `backpressure.py`, tests | `PLANNED / CONTROLLED` |
+| `apps/market_data_worker` | `src/cfip_market_data_worker/main.py`, `consumer.py`, `normalization.py`, `quality.py`, tests | `PLANNED / CONTROLLED` |
+| `apps/analysis_worker` | `src/cfip_analysis_worker/main.py`, `executor.py`, `replay.py`, tests | `PLANNED / CONTROLLED` |
+| `apps/learning_worker` | `src/cfip_learning_worker/main.py`, `revision.py`, `evaluation.py`, tests | `PLANNED / CONTROLLED` |
+| `apps/autonomy_worker` | `src/cfip_autonomy_worker/main.py`, `lanes.py`, `policy.py`, `verification.py`, tests | `PLANNED / CONTROLLED` |
+| `apps/web` | `package.json`, Next app routes/components/tests | `PLANNED / CONTROLLED` |
 
-## 5. Shared packages
+## 7. Shared packages
 
-Architecture contracts are materialized for `contracts`, `domain_kernel`, `application_kernel`, `eventing`, `observability`, `security`, `testing` and `configuration`. Runtime package files remain `FOUNDATION` or `EVIDENCE-REQUIRED` according to capability.
+Architecture contracts are materialized for contracts, domain kernel, application kernel, eventing, observability, security, testing and configuration. Runtime implementation proceeds by evidence-backed vertical slice rather than by bulk directory generation.
 
-## 6. Bounded contexts
+## 8. Bounded contexts
 
 The mandatory target contexts are:
 
 `identity`, `organization`, `workspace`, `market_reference`, `market_data`, `data_lineage`, `realtime`, `chart_workspace`, `technical_analysis`, `market_structure`, `liquidity`, `fair_value_gap`, `order_block`, `market_regime`, `multi_timeframe`, `confluence`, `contradiction`, `intelligence_consensus`, `signals`, `strategy_research`, `backtest`, `replay`, `risk`, `decision`, `journal`, `execution_boundary`, `research_intelligence`, `learning_evaluation`, `platform_intelligence`, `ai_gateway`, `entitlements`, `governance`, `observability`, `operations`.
 
-All **34** context `README.md` contracts are physically materialized. Internal `domain/application/infrastructure/tests` runtime files remain gated.
+All 34 context contracts are physically materialized. Runtime files remain subject to the controlled implementation rule.
 
-## 7. Analysis engine files
+## 9. Analysis engine files
 
-Architecture contracts are materialized for all 14 top-level namespaces and 15 concrete runtime engine classes. The runtime classes do not imply one-to-one namespace/class cardinality.
+Architecture contracts are materialized for all 14 top-level namespaces and 15 concrete runtime engine classes. The first target runtime foundation is framework-independent and is intended to host canonical `(engine_id, version)` implementations without coupling to API or worker composition.
 
-Concrete source engine identities currently mapped include:
+Concrete source identities include:
 
 - `technical.momentum@1.0.0`
 - `technical.volatility@1.0.0`
@@ -130,33 +122,29 @@ Concrete source engine identities currently mapped include:
 - `strategy.baseline@1.1.0`
 - `structure.swing@1.1.0`
 
-Executable engine files remain gated.
+The runtime foundation does not claim all 15 target engines are implemented.
 
-## 8. Data/PIT/replay
+## 10. Data/PIT/replay
 
-`data/migrations/`, `data/schemas/`, `data/seeds/`, `data/fixtures/` and `data/retention/` architecture contracts are physically present. Concrete schema artifacts and lifecycle producers remain `EVIDENCE-REQUIRED` where source closure is incomplete.
+`data/migrations/`, `data/schemas/`, `data/seeds/`, `data/fixtures/` and `data/retention/` architecture contracts are physically present. Concrete schema artifacts and lifecycle producers remain evidence-driven.
 
-`validate_pit_replay_contracts.py` checks the canonical evidence contract for dataset identity, PIT integrity, replay-case identity/invariants and provenance graph. It does not claim executable reconstruction or replay equivalence.
+## 11. Adapters
 
-A bounded negative source search on `dataset_fingerprints`, `DatasetFingerprint`, `replay_cases` and `ReplayCase` returned no code-search matches in CForex. This remains **NEGATIVE-SEARCH only**, not proof of absence.
+Inbound/outbound adapter-family architecture contracts are physically present. Concrete provider clients, persistence mappings, health semantics and integration tests remain controlled implementation work.
 
-## 9. Adapters
+## 12. Frontend file contract
 
-All inbound/outbound adapter-family architecture contracts are physically present. Concrete provider clients, persistence mappings, health semantics and integration tests remain gated by source closure and Gate 1.
+Frontend architecture contracts are physically present. Product workflows remain controlled implementation work and must preserve chart/terminal semantics, realtime behavior, i18n, RTL/LTR, accessibility and intelligence boundaries.
 
-## 10. Frontend file contract
+## 13. Verification files
 
-Frontend architecture contracts are physically present. Required feature areas remain planned and are not claimed implemented.
+Verification architecture contracts are physically present for architecture, contracts, integration, E2E, replay, PIT, performance, security and fixtures. New runtime tests are added alongside each implementation slice.
 
-## 11. Verification files
+## 14. Infrastructure/operations files
 
-Verification architecture contracts are physically present for architecture, contracts, integration, E2E, replay, PIT, performance, security and fixtures. Runtime test files remain planned until implementation is authorized.
+Infrastructure architecture contracts are physically present. SLO/SLI, DR/backup, scaling/partitioning, threat model and AI-agent-control runtime documents remain evidence-driven additions.
 
-## 12. Infrastructure/operations files
-
-Infrastructure architecture contracts are physically present. SLO/SLI, DR/backup, scaling/partitioning, threat model and AI-agent-control runtime documents remain planned or evidence-driven additions.
-
-## 13. Materialization order
+## 15. Materialization order
 
 1. governance/toolchain;
 2. contracts/domain kernel;
@@ -169,14 +157,8 @@ Infrastructure architecture contracts are physically present. SLO/SLI, DR/backup
 9. frontend;
 10. governance/autonomy/operations hardening.
 
-## 14. File-level acceptance rule
+Implementation now proceeds in coherent vertical slices across this order where source evidence is sufficient, rather than waiting for every documentation dimension to reach 100%.
 
-A target runtime file may move from `PLANNED` to implementation only when it has:
+## 16. Inventory correction
 
-`owner + source mapping/target rationale + contract + implementation purpose + dependency direction + tests + telemetry/recovery requirements + migration/parity status`.
-
-Architecture-contract and verification tooling may be materialized earlier because they carry no executable production behavior and explicitly preserve Gate 0.
-
-## 15. Inventory correction
-
-The explicit context list in this manifest contains **34** directories. Earlier progress material that reported 33 was a counting error. This is a documentation reconciliation only; no new context was added in this correction.
+The explicit context list contains 34 directories. Earlier progress material that reported 33 was a counting error; no new context was added by that correction.
