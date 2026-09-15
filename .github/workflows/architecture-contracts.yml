@@ -46,6 +46,9 @@ jobs:
       - name: Test continuation control validator
         run: python -m unittest tests/architecture/test_validate_continuation_contract.py -v
 
+      - name: Test target architecture validator
+        run: python -m unittest tests/architecture/test_validate_target_contracts.py -v
+
       - name: Validate architecture contracts
         run: python tools/architecture/validate_target_contracts.py
 
