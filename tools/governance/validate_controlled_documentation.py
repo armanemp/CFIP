@@ -35,8 +35,6 @@ def main() -> int:
         if not document.is_file():
             fail(f"canonical document is missing: {document.relative_to(ROOT)}")
 
-    # Scan each markdown file exactly once. Batch-tagged governance documents
-    # must be substantive and carry explicit gate context.
     seen: dict[int, list[Path]] = {}
     for path in (ROOT / "docs").rglob("*.md"):
         match = BATCH_DOC_RE.search(path.name)
@@ -50,23 +48,24 @@ def main() -> int:
             fail(f"batch document has no gate context: {path.relative_to(ROOT)}")
         seen.setdefault(batch, []).append(path)
 
-    # A path can only occur once in the recursive scan. Multiple documents in
-    # the same batch are expected and are not treated as duplicates.
     for batch, paths in seen.items():
         relative = [str(path.relative_to(ROOT)) for path in paths]
         if len(relative) != len(set(relative)):
             fail(f"duplicate documentation path discovered for batch {batch}")
 
-    required_markers = (
-        "armanemp/CForex",
-        "v0.9.154",
-        "Gate 0",
-        "Platform Intelligence",
-        "Evolution Control Plane",
+    # Keep this check semantic rather than tied to one historical expansion of
+    # the ECP acronym. The canonical index may use either the abbreviation or
+    # its full expansion without changing the controlled-document contract.
+    required_marker_groups = (
+        ("armanemp/CForex",),
+        ("v0.9.154",),
+        ("Gate 0",),
+        ("Platform Intelligence",),
+        ("ECP", "Evolution Control Plane"),
     )
-    for marker in required_markers:
-        if marker not in index:
-            fail(f"canonical index lost required marker: {marker}")
+    for markers in required_marker_groups:
+        if not any(marker in index for marker in markers):
+            fail(f"canonical index lost required marker group: {' / '.join(markers)}")
 
     print("documentation-contract: PASS")
     print(f"canonical_index={CONTROL_INDEX.relative_to(ROOT)}")
