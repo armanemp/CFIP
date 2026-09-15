@@ -138,12 +138,12 @@ Global scale is a first-class constraint from the beginning. Require evidence fo
 - partitionable workers/streams with explicit ownership keys;
 - deterministic idempotent consumers;
 - bounded caches with explicit authority/invalidation semantics;
-- backpressure and graceful degradation;
+- explicit backpressure and graceful degradation;
 - PostgreSQL indexing/partitioning/retention and control-plane/data-plane boundaries;
 - ClickHouse analytical workload isolation and retention;
 - asynchronous workload isolation;
 - regional latency, data-residency and jurisdiction boundaries where required;
-- capacity/SLO methodology and representative load testing;
+- capacity/SLO methodology and representative load methodology/testing;
 - tested recovery/rollback and failure-domain assumptions;
 - checkpoint/lease ownership for correctness-critical realtime state;
 - queue depth, lag, watermark, lateness, processing-latency and backpressure telemetry;
