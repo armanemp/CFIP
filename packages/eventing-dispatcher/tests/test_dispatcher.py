@@ -13,18 +13,25 @@ class FakeStore:
         self.failed: list[str] = []
         self.dead: list[str] = []
 
-    def claim_batch(self, *, worker_id: str, limit: int, lease_seconds: int) -> list[DurableEventRecord]:
+    async def claim_batch(self, *, worker_id: str, limit: int, lease_seconds: int) -> list[DurableEventRecord]:
         return self.records[:limit]
 
-    def mark_published(self, record_id, *, worker_id: str, published_at: datetime) -> bool:
+    async def mark_published(self, record_id, *, worker_id: str, published_at: datetime) -> bool:
         self.published.append(str(record_id))
         return True
 
-    def mark_failed(self, record_id, *, worker_id: str, available_at: datetime, error: DispatchFailure) -> bool:
+    async def mark_failed(
+        self,
+        record_id,
+        *,
+        worker_id: str,
+        available_at: datetime,
+        error: DispatchFailure,
+    ) -> bool:
         self.failed.append(str(record_id))
         return True
 
-    def mark_dead(self, record_id, *, worker_id: str, error: DispatchFailure) -> bool:
+    async def mark_dead(self, record_id, *, worker_id: str, error: DispatchFailure) -> bool:
         self.dead.append(str(record_id))
         return True
 
