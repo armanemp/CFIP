@@ -75,13 +75,26 @@ class IndicatorTests(unittest.TestCase):
         self.assertEqual(momentum(data, 2).values, (None, None, 5, 8))
         self.assertAlmostEqual(roc(data, 2).values[-1] or 0.0, 7.8431372549)
 
-    def test_stochastic_and_williams_r_have_bounded_ranges(self) -> None:
+    def test_stochastic_signal_uses_only_complete_k_values(self) -> None:
         data = candles([10, 11, 12, 11, 13, 12])
         k, d = stochastic(data, 3, 2)
-        wr = williams_r(data, 3)
-        self.assertTrue(all(value is None or 0.0 <= value <= 100.0 for value in k.values))
-        self.assertTrue(all(value is None or 0.0 <= value <= 100.0 for value in d.values))
-        self.assertTrue(all(value is None or -100.0 <= value <= 0.0 for value in wr.values))
+        self.assertEqual(k.values[:2], (None, None))
+        self.assertAlmostEqual(k.values[2] or 0.0, 75.0)
+        self.assertEqual(d.values[:3], (None, None, None))
+        self.assertAlmostEqual(d.values[3] or 0.0, 58.3333333333)
+
+    def test_stochastic_flat_range_has_deterministic_neutral_value(self) -> None:
+        data = [OHLCV(10, 10, 10, 10) for _ in range(4)]
+        k, d = stochastic(data, 3, 2)
+        self.assertEqual(k.values, (None, None, 50.0, 50.0))
+        self.assertEqual(d.values, (None, None, None, 50.0))
+
+    def test_williams_r_has_canonical_negative_bounded_range(self) -> None:
+        data = candles([10, 11, 12, 11, 13, 12])
+        result = williams_r(data, 3)
+        self.assertAlmostEqual(result.values[2] or 0.0, -25.0)
+        self.assertAlmostEqual(result.values[4] or 0.0, -25.0)
+        self.assertTrue(all(value is None or -100.0 <= value <= 0.0 for value in result.values))
 
     def test_cci_and_donchian_channels(self) -> None:
         data = candles([1, 2, 3, 4, 5])
@@ -110,6 +123,10 @@ class IndicatorTests(unittest.TestCase):
             macd(candles([1, 2, 3]), 12, 12, 9)
         with self.assertRaises(ValueError):
             bollinger_bands(candles([1, 2, 3]), 2, -1)
+        with self.assertRaises(ValueError):
+            stochastic(candles([1, 2, 3]), 0, 3)
+        with self.assertRaises(ValueError):
+            stochastic(candles([1, 2, 3]), 3, 0)
 
 
 if __name__ == "__main__":
