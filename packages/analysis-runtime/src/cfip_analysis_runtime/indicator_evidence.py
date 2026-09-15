@@ -62,6 +62,7 @@ DEFAULT_INDICATOR_EVIDENCE_POLICIES: tuple[IndicatorEvidencePolicy, ...] = (
     IndicatorEvidencePolicy("stochastic_rsi.signal", "centered", center=50.0, deadband=5.0, scale=50.0),
     IndicatorEvidencePolicy("momentum", "centered", center=0.0, deadband=0.0, scale=1.0),
     IndicatorEvidencePolicy("roc", "centered", center=0.0, deadband=0.0, scale=100.0),
+    IndicatorEvidencePolicy("trix", "centered", center=0.0, deadband=0.0, scale=1.0),
     IndicatorEvidencePolicy("macd.histogram", "centered", center=0.0, deadband=0.0, scale=1.0),
 )
 
