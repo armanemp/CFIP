@@ -99,8 +99,11 @@ def parse_file(path: Path, root: Path) -> Migration:
 
 def scan(root: Path) -> list[Migration]:
     files = sorted(
-        path for path in root.rglob("*.py")
-        if path.is_file() and not any(part in {".git", ".venv", "venv", "__pycache__"} for part in path.parts)
+        path
+        for path in root.rglob("*.py")
+        if path.is_file()
+        and path.name != "__init__.py"
+        and not any(part in {".git", ".venv", "venv", "__pycache__"} for part in path.parts)
     )
     return [parse_file(path, root) for path in files]
 
