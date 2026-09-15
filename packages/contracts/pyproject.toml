@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cfip-contracts"
+version = "0.1.0"
+description = "CFIP technology-neutral domain and event contracts"
+requires-python = ">=3.14,<3.15"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cfip_contracts"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
