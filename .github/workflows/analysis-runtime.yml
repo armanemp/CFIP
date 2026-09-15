@@ -31,8 +31,9 @@ jobs:
         with:
           python-version: '3.14'
 
-      - name: Install analysis runtime
-        run: python -m pip install --no-deps ./packages/analysis-runtime
+      - name: Install analysis runtime with test dependencies
+        run: python -m pip install --no-deps '.[test]'
+        working-directory: packages/analysis-runtime
 
       - name: Compile analysis runtime
         run: python -m compileall -q packages/analysis-runtime/src packages/analysis-runtime/tests
