@@ -27,7 +27,27 @@ class MigrationControlConsistencyTests(unittest.TestCase):
         workflow.write_text("validate_migration_control_consistency.py\n", encoding="utf-8")
         return root
 
-    def test_accepts_controlled_implementation_policy(self) -> None:
+    def test_accepts_canonical_controlled_implementation_wording(self) -> None:
+        root = self._fixture()
+        (root / "docs/CFIP-MIGRATION-CONTROL-INDEX.md").write_text(
+            "`armanemp/CForex` `main` v0.9.154\n", encoding="utf-8"
+        )
+        (root / "docs/CFIP-CONTINUATION-PROMPT.md").write_text(
+            "Controlled target implementation is PERMITTED\nProduction promotion is LOCKED\n34 contexts\n",
+            encoding="utf-8",
+        )
+        (root / "docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md").write_text(
+            "**Status:** **OPEN — controlled implementation permitted; production promotion locked**\n"
+            "Production restriction:** remains active\nImplementation restriction:** removed\n"
+            "| D11 | Reconciliation | IN PROGRESS |\n",
+            encoding="utf-8",
+        )
+        (root / "docs/evidence/CFIP-TARGET-FILE-MANIFEST.md").write_text(
+            "all 34 contexts\n" + "\n".join(REQUIRED_TOOLS), encoding="utf-8"
+        )
+        self.assertEqual(validate(root), [])
+
+    def test_accepts_legacy_canonical_phrases(self) -> None:
         root = self._fixture()
         (root / "docs/CFIP-MIGRATION-CONTROL-INDEX.md").write_text(
             "`armanemp/CForex` `main` v0.9.154\n", encoding="utf-8"
@@ -37,8 +57,7 @@ class MigrationControlConsistencyTests(unittest.TestCase):
             encoding="utf-8",
         )
         (root / "docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md").write_text(
-            "**Status:** **OPEN — controlled implementation permitted; production promotion locked**\n"
-            "Production promotion:** LOCKED\nImplementation restriction:** removed\n"
+            "**Status:** OPEN\nProduction promotion: **LOCKED**\nImplementation restriction:** removed\n"
             "| D11 | Reconciliation | IN PROGRESS |\n",
             encoding="utf-8",
         )
@@ -53,11 +72,11 @@ class MigrationControlConsistencyTests(unittest.TestCase):
             "`armanemp/CForex` `main` v0.9.154\n", encoding="utf-8"
         )
         (root / "docs/CFIP-CONTINUATION-PROMPT.md").write_text(
-            "controlled implementation is PERMITTED\nProduction promotion remains LOCKED\n34 contexts\n",
+            "Controlled target implementation is PERMITTED\nProduction promotion is LOCKED\n34 contexts\n",
             encoding="utf-8",
         )
         (root / "docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md").write_text(
-            "**Status:** CLOSED\nProduction promotion:** LOCKED\nImplementation restriction:** removed\n"
+            "**Status:** CLOSED\nProduction promotion: **LOCKED**\nImplementation restriction:** removed\n"
             "| D11 | Reconciliation | IN PROGRESS |\n",
             encoding="utf-8",
         )
