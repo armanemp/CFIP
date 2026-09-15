@@ -1,0 +1,124 @@
+# CFIP Documentation & Project Progress Report 65
+
+**Gate:** Gate 0 OPEN — controlled implementation permitted  
+**Production promotion:** LOCKED  
+**Live execution:** LOCKED  
+**Source:** CForex `main` @ `900882154cab3b9b74d0543b9bbf72a708a08134`  
+**CFIP head at batch close:** `ff57d57a773f1605062ed1627b725fef6aad880f`  
+
+## Executive result
+
+Batch 65 advances the executable durable-event vertical slice from separate persistence adapters to an explicit application transaction boundary. CFIP now has a framework-neutral unit-of-work port plus a PostgreSQL implementation that commits `AnalysisExecution + durable outbox record` together. The outbox also gained lease-fenced publication, retry-failure and dead-letter transitions so stale workers cannot mutate records after lease ownership expires.
+
+A bounded, deterministic dispatch retry policy was added to the technology-neutral contracts package. It defines maximum attempts and capped exponential delay without coupling the contract to a broker or scheduler.
+
+This batch deliberately did **not** add MongoDB, Redis authority, a broker SDK, microservices, or a second analysis engine. Those additions still require demonstrated workload/ownership evidence and source/architecture closure.
+
+## Implementation delivered
+
+### D2 / D7 — atomic durable-event boundary
+
+Added `AnalysisExecutionUnitOfWork` as a framework-independent application port and `PostgreSQLAnalysisExecutionUnitOfWork` as its storage adapter.
+
+The PostgreSQL boundary guarantees:
+
+- execution idempotency is resolved inside the same DB transaction;
+- a new execution and its outbox record are committed together;
+- an identical idempotent retry returns the already committed execution without creating another event;
+- a conflicting idempotency fingerprint remains a hard conflict;
+- an outbox insertion failure rolls back the execution transaction;
+- the application boundary remains independent from the broker transport.
+
+### D7 — lease fencing and recovery
+
+`PostgreSQLTransactionalOutbox` now exposes:
+
+- `mark_published()` guarded by record ID, `PROCESSING` status, worker ownership and an unexpired lease;
+- `mark_failed()` with the same fencing boundary and explicit classified failure;
+- `mark_dead()` as an explicit terminal transition;
+- timezone-aware timestamp validation;
+- worker-ID validation.
+
+This closes an important stale-worker race: a worker whose lease has expired cannot acknowledge, retry, or dead-letter a record that another worker may already own.
+
+### Contracts — retry policy
+
+`DispatchRetryPolicy` now provides:
+
+- explicit maximum attempts;
+- positive base delay;
+- maximum delay cap;
+- deterministic exponential backoff;
+- explicit exhaustion check.
+
+The policy remains transport-neutral and does not itself mutate durable state.
+
+## Architecture and quality decisions
+
+- PostgreSQL remains authoritative for this transactional boundary.
+- The durable outbox remains caller-transaction-owned for atomic domain-state + event persistence.
+- Event identity and durable-record identity remain distinct.
+- Redis remains non-authoritative.
+- MongoDB remains conditional and was not introduced without a demonstrated document workload.
+- No premature microservice boundary was introduced.
+- Runtime analysis semantics remain separate from storage and transport adapters.
+- Retry policy is a contract; scheduling/dispatch execution remains a separate application concern.
+- Production migrations remain the canonical schema owner; `create_schema()` remains a bootstrap/sandbox helper only.
+
+## Verification state
+
+Repository changes were read back from GitHub after each canonical write. Fresh GitHub commit/status evidence for the final head `ff57d57a773f1605062ed1627b725fef6aad880f` shows no combined status entries and no workflow runs associated with the commit. Therefore:
+
+- static contract intent: **CONFIRMED by repository source**;
+- GitHub Actions execution: **UNVERIFIED**;
+- live PostgreSQL integration/concurrency: **UNVERIFIED**;
+- broker publication/recovery E2E: **UNVERIFIED**;
+- parity: **not advanced**;
+- production readiness: **not advanced**.
+
+No CI-green claim is made.
+
+## Documentation and governance
+
+The batch preserves the mandatory continuation loop:
+
+`inspect → source-study → evidence graph → contradiction/gap detection → engineer → test → verify → reconcile → document → re-read GitHub → report`
+
+The intelligence-training cycle for this batch records the new atomicity, fencing and retry evidence as reusable engineering-learning evidence. It does not promote synthetic or unverified market data into training truth.
+
+## Progress
+
+| Area | Progress | Status | Δ |
+|---|---:|---|---:|
+| Source / Architecture Closure | **97%** | 🟡 | 0 |
+| D1 Identity / Workspace / API | **81%** | 🟡 | 0 |
+| D2 Market / Data / Events | **86%** | 🟢 | +3 |
+| D3 PIT / Replay / Data Ownership | **84%** | 🟡 | 0 |
+| D4 Analytics / Engines | **92%** | 🟢 | 0 |
+| D5 Decision / Risk / Execution | **81%** | 🟢 | 0 |
+| D6 Product / UX / Frontend | **64%** | 🟡 | 0 |
+| D7 Realtime / Event Runtime | **93%** | 🟢 | +2 |
+| D8 Governance / Security / Observability | **95%** | 🟢 | +1 |
+| D9 AI / Research / Providers | **68%** | 🟡 | 0 |
+| D10 Global Scale / SLO / DR | **72%** | 🟡 | +2 |
+| D11 Learning / Calibration / Drift | **85%** | 🟢 | 0 |
+| **Overall engineering + evidence closure** | **~92%** | 🟢 | **+1** |
+
+These are engineering/evidence-closure indicators only. They are **not** production-capacity, trading-performance, parity, safety-approval or production-readiness percentages.
+
+## Remaining highest-value work
+
+1. Canonical Alembic ownership for analysis/outbox schema.
+2. Transport-neutral dispatcher implementation using claim → publish → fenced transition.
+3. Explicit dead-letter/retry classification and operational metrics.
+4. Current CForex producer/consumer/subject/partition/retention census and behavioral parity mapping.
+5. Realtime consumer idempotency, partition ownership, checkpoints and watermarks.
+6. PIT dataset identity and deterministic reconstruction/replay loader.
+7. Live PostgreSQL integration/concurrency tests in CI.
+8. Source Admin Git write-handler/test census.
+9. Platform Intelligence hooks around persistence, dispatch, recovery and verification.
+10. Global-scale load/SLO/DR/residency evidence.
+11. Frontend terminal/chart vertical slice over stabilized contracts.
+12. Whole-project dependency, duplicate, hardcode, documentation contradiction and tree sweep.
+
+Gate 0 remains open for controlled implementation, but production promotion and live execution remain locked.
