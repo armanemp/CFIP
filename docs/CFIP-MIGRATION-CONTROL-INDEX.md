@@ -7,7 +7,7 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Current CFIP batch-67 implementation head: `e12572ac25349d30d5608361cb822fc451baef1e`.
+- Current CFIP Batch 68 implementation/documentation head: `6c48b0a490367a1265eb59efc25f4f3aaeba81cf`.
 - Historical evidence is retained and never rewritten as current source truth.
 - Current-head Admin Git hardening is reconciled as an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
@@ -70,7 +70,7 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58–67 registration
+## Batch 58–68 registration
 
 ### Batch 58–65
 Prior batch registrations remain immutable in this index history.
@@ -91,4 +91,13 @@ Prior batch registrations remain immutable in this index history.
 - isolated `migrations/pyproject.toml` with current stable Alembic `1.20.0`, SQLAlchemy `2.0.52`, and Psycopg `3.3.5`;
 - migration documentation updated with explicit runtime configuration and production-evidence gate.
 
-The next executable boundary is source-derived broker transport plus durable consumer checkpoint/partition ownership/watermark/backpressure semantics. The migration stream is now executable in principle, but live database execution evidence remains open.
+### Batch 68
+- transport-neutral partition position/checkpoint/lease contracts;
+- fencing-token model for stale-owner protection;
+- monotonic event-time watermark contract and deterministic tracker;
+- explicit bounded backpressure/degradation policy with critical-event protection;
+- realtime runtime tests;
+- PostgreSQL migration `0002_realtime_progress` for consumer dedupe, checkpoints and partition leases;
+- batch-68 documentation and intelligence training record.
+
+Direct broker transport remains intentionally unresolved until source evidence is obtained. Live migration execution and production readiness remain unverified/locked.
