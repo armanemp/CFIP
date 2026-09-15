@@ -32,12 +32,15 @@ class DurableEventRecord:
     last_error: str | None = None
     locked_by: str | None = None
     locked_until: datetime | None = None
+    fencing_token: int = 1
 
     def __post_init__(self) -> None:
         if not self.dedupe_key.strip():
             raise ValueError("dedupe_key is required")
         if self.attempts < 0:
             raise ValueError("attempts must be >= 0")
+        if self.fencing_token < 1:
+            raise ValueError("fencing_token must be >= 1")
         for name, value in (("available_at", self.available_at), ("created_at", self.created_at)):
             if value.tzinfo is None:
                 raise ValueError(f"{name} must be timezone-aware")
@@ -114,18 +117,33 @@ class DurableEventClaimPort(Protocol):
 class DurableEventStatePort(Protocol):
     """Async lease-fenced durable state transitions."""
 
-    async def mark_published(self, record_id: UUID, *, worker_id: str, published_at: datetime) -> bool:
-        """Mark only a record still owned by the supplied lease as published."""
+    async def mark_published(
+        self,
+        record_id: UUID,
+        *,
+        worker_id: str,
+        fencing_token: int,
+        published_at: datetime,
+    ) -> bool:
+        """Mark only a record still owned by the supplied fencing token as published."""
 
     async def mark_failed(
         self,
         record_id: UUID,
         *,
         worker_id: str,
+        fencing_token: int,
         available_at: datetime,
         error: DispatchFailure,
     ) -> bool:
-        """Record a retryable/non-retryable failure only under the active lease."""
+        """Record a failure only under the active fencing token."""
 
-    async def mark_dead(self, record_id: UUID, *, worker_id: str, error: DispatchFailure) -> bool:
-        """Terminally dead-letter a record only under the active lease."""
+    async def mark_dead(
+        self,
+        record_id: UUID,
+        *,
+        worker_id: str,
+        fencing_token: int,
+        error: DispatchFailure,
+    ) -> bool:
+        """Terminally dead-letter a record only under the active fencing token."""
