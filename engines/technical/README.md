@@ -16,6 +16,7 @@ This namespace owns deterministic, dependency-free technical indicator primitive
 - OBV
 - VWAP
 - Donchian Channels
+- ADX (+DI/-DI, Wilder smoothing)
 
 The public implementation lives under `src/cfip_technical` and is deliberately independent of API, broker, database and transport concerns. Inputs are ordered OHLCV observations; outputs retain explicit warm-up gaps so callers cannot silently consume incomplete values. Volume-dependent indicators fail closed when volume is unavailable rather than fabricating a substitute.
 
