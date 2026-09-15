@@ -2,7 +2,7 @@
 
 **Purpose:** prevent loss of material capabilities and engineering decisions accumulated in CForex while keeping CFIP clean-room and evidence-driven.
 
-The source baseline is `armanemp/CForex` `main` / v0.9.154. This document is a carry-forward obligation index, not proof that CFIP already implements these capabilities.
+The historical source baseline is `armanemp/CForex` `main` / v0.9.154. The current observed CForex HEAD is `900882154cab3b9b74d0543b9bbf72a708a08134`. This document remains a carry-forward obligation index, not proof that CFIP already implements these capabilities. Current-head deltas are recorded separately and must be reconciled before Gate 0 closure.
 
 ## Carry-forward principles
 
@@ -11,6 +11,7 @@ The source baseline is `armanemp/CForex` `main` / v0.9.154. This document is a c
 3. Preserve mature governance controls even when implementation boundaries change.
 4. Do not carry forward contradictory, obsolete or technically unsafe behavior merely because it existed in CForex; record intentional divergence with evidence/ADR.
 5. Treat source implementation/tests/migrations/contracts as stronger evidence than release prose.
+6. Historical source baselines never override the current CForex HEAD; source drift must produce an explicit evidence record before parity decisions.
 
 ## Material capabilities already established in CForex that CFIP must account for
 
@@ -83,6 +84,8 @@ The source baseline is `armanemp/CForex` `main` / v0.9.154. This document is a c
 - Security posture, health/readiness and operational diagnostics.
 - Billing and product entitlement surfaces.
 - Notifications and user/workspace controls.
+- Governed Admin Git as an application capability, explicitly separated from shell/terminal authority.
+- Git input/ref validation, bounded execution, credential-safe output, operation identity and telemetry.
 
 ### Operations and quality
 
@@ -96,9 +99,13 @@ The source baseline is `armanemp/CForex` `main` / v0.9.154. This document is a c
 - Hidden-tab polling suppression and visibility-aware refresh.
 - Single-flight/cancellation patterns to reduce duplicate work and stale responses.
 
+## Current-head delta obligation
+
+CForex current HEAD `900882154cab3b9b74d0543b9bbf72a708a08134` adds hardened governed Admin Git behavior. The delta is classified as `PRESERVE + IMPROVE` for the governance boundary, with explicit reconciliation still required for all write operations and source tests. Detailed evidence: `docs/architecture/CFIP-SOURCE-DELTA-59-ADMIN-GIT.md`.
+
 ## Known source evidence caveat
 
-CForex v0.9.154 records 330 governed synthetic point-in-time platform-knowledge records across 18 AI aspects, 42 authoritative research/data sources, 69 release gates in the continuity update, and 15/15 independent verification checks. These are **source-side evidence**, not CFIP implementation claims.
+The v0.9.154 evidence records 330 governed synthetic point-in-time platform-knowledge records across 18 AI aspects, 42 authoritative research/data sources, 69 release gates in the continuity update, and 15/15 independent verification checks. These are **source-side evidence**, not CFIP implementation claims.
 
 The source README also records an earlier release history with evolving versions and temporary validation constraints. Those historical details are useful for capability discovery but must not be copied blindly into CFIP configuration or dependency policy.
 
