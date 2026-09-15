@@ -8,7 +8,8 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Batch 78 adds SQL-shape regression coverage around the concrete PostgreSQL durable-event adapter without pretending that compilation equals live database verification.
+- Batch 79 begins target technical-analysis engineering with a dependency-free deterministic indicator package; this is target implementation, not parity evidence.
+- Batch 79 also adds focused indicator CI and reconciles the technical-engine namespace documentation with the current controlled-implementation rule.
 - CFIP event transport, durable claim and durable state boundaries are asynchronous at the contract/dispatcher level.
 - `packages/eventing-postgres` provides a SQLAlchemy async adapter with atomic claim and monotonic fencing; live PostgreSQL execution and end-to-end broker composition remain unverified.
 - Current-head Admin Git hardening remains an explicit source delta; full write-path/test census remains open.
@@ -183,6 +184,16 @@ Prior batch registrations remain immutable in this index history.
 - retained the runtime evidence boundary explicitly so SQL compilation cannot be misreported as database integration;
 - current architecture and repository-hygiene CI for the previous canonical head both completed successfully; this batch intentionally triggers fresh CI for the new test commit.
 
+### Batch 79
+- started the `CAP-TECHNICAL` target implementation with a pure Python technical-indicator package under `engines/technical`;
+- added typed immutable `OHLCV` and `IndicatorResult` models with finite-value, OHLC-bound and warm-up validation;
+- implemented deterministic SMA, EMA, Wilder RSI, Wilder ATR, Bollinger Bands and EMA-based MACD primitives without framework/database/broker dependencies;
+- made warm-up gaps explicit instead of silently emitting partial values, preserving PIT/replay correctness boundaries for later engine composition;
+- added dependency-free `unittest` coverage for rolling calculations, Wilder smoothing, true-range handling, MACD warm-up and fail-closed input validation;
+- added a focused Python 3.14 GitHub Actions workflow for the technical namespace;
+- corrected `engines/technical/README.md`, which previously claimed implementation was locked despite the current controlled-implementation rule;
+- classified the indicator slice as `TARGET-REQUIRED` engineering until source-specific semantics, canonical engine identities, golden fixtures and PIT/replay parity evidence are reconciled.
+
 ## Active evidence gaps
 
 1. Live PostgreSQL integration execution of the durable-event adapter.
@@ -196,3 +207,4 @@ Prior batch registrations remain immutable in this index history.
 9. Raw-byte dataset hash/count reconciliation.
 10. Whole-repository dependency/hardcode/duplicate/contradiction closure.
 11. Global-scale capacity, tenant isolation, regional consistency and DR/RPO/RTO evidence.
+12. `CAP-TECHNICAL` source-specific indicator census, canonical engine registry composition and golden/PIT/replay fixtures.
