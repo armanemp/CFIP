@@ -1,6 +1,7 @@
 # CFIP Migration Control Index
 
 **Source:** `armanemp/CForex` `main` — current HEAD rechecked every continuation  
+**Documented source baseline:** CForex `v0.9.154` / `main` (rechecked; current HEAD is authoritative for behavior)  
 **Target:** `armanemp/CFIP` `main`  
 **Purpose:** single front door for architecture, source evidence, migration sequencing, parity, project control and release governance.
 
@@ -157,6 +158,8 @@ Prior batch registrations remain immutable in this index history.
 - added ADR-019 defining the async durable event-state boundary and explicitly preserving transactional fencing/atomicity requirements;
 - updated the standards document to require async storage at the worker boundary while keeping database correctness transactional;
 - added OpenTelemetry messaging guidance for future producer/consumer/process/settle instrumentation and message-context propagation;
+- fixed the migration-control consistency validator after its current-head CI run exposed brittle exact-phrase assumptions that contradicted the canonical Gate-0 wording;
+- expanded validator tests for both canonical and legacy accepted wording while retaining fail-closed checks;
 - no production PostgreSQL adapter or live JetStream topology was claimed without executable integration evidence.
 
 ## Active evidence gaps
