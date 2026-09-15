@@ -92,10 +92,10 @@ class DispatchRetryPolicy:
 
 
 class EventTransport(Protocol):
-    """Minimal transport port; implementations must provide at-least-once publish semantics."""
+    """Minimal transport port with explicit adapter-level failure classification."""
 
-    def publish(self, event: EventEnvelope) -> None:
-        """Publish an event; acknowledgement means accepted by the transport."""
+    def publish(self, event: EventEnvelope) -> DispatchFailure | None:
+        """Return ``None`` on acceptance or a classified failure without mutating durable state."""
 
 
 class DurableEventClaimPort(Protocol):
@@ -117,14 +117,7 @@ class DurableEventStatePort(Protocol):
     def mark_published(self, record_id: UUID, *, worker_id: str, published_at: datetime) -> bool:
         """Mark only a record still owned by the supplied lease as published."""
 
-    def mark_failed(
-        self,
-        record_id: UUID,
-        *,
-        worker_id: str,
-        available_at: datetime,
-        error: DispatchFailure,
-    ) -> bool:
+    def mark_failed(self, record_id: UUID, *, worker_id: str, available_at: datetime, error: DispatchFailure) -> bool:
         """Record a retryable/non-retryable failure only under the active lease."""
 
     def mark_dead(self, record_id: UUID, *, worker_id: str, error: DispatchFailure) -> bool:
