@@ -1,3 +1,4 @@
+import asyncio
 from datetime import UTC, datetime
 from uuid import uuid4
 
@@ -34,13 +35,17 @@ class FakeTransport:
         self.failure = failure
         self.events = []
 
-    def publish(self, event):
+    async def publish(self, event):
         if self.error is not None:
             raise self.error
         if self.failure is not None:
             return self.failure
         self.events.append(event)
         return None
+
+
+def run_dispatch(dispatcher: DurableEventDispatcher, **kwargs):
+    return asyncio.run(dispatcher.dispatch_once(**kwargs))
 
 
 def record(attempts: int = 1) -> DurableEventRecord:
@@ -55,7 +60,7 @@ def record(attempts: int = 1) -> DurableEventRecord:
 def test_dispatch_publishes_and_fences_ack() -> None:
     store = FakeStore([record()])
     dispatcher = DurableEventDispatcher(claim_store=store, state_store=store, transport=FakeTransport())
-    result = dispatcher.dispatch_once(worker_id="worker-1", now=datetime.now(UTC))
+    result = run_dispatch(dispatcher, worker_id="worker-1", now=datetime.now(UTC))
     assert result == result.__class__(claimed=1, published=1, retried=0, dead_lettered=0, lease_lost=0)
     assert len(store.published) == 1
 
@@ -68,7 +73,7 @@ def test_dispatch_retries_retryable_failure() -> None:
         transport=FakeTransport(RuntimeError("broker unavailable")),
         retry_policy=DispatchRetryPolicy(max_attempts=3, base_delay_seconds=1, max_delay_seconds=2),
     )
-    result = dispatcher.dispatch_once(worker_id="worker-1", now=datetime.now(UTC))
+    result = run_dispatch(dispatcher, worker_id="worker-1", now=datetime.now(UTC))
     assert result.retried == 1
     assert result.dead_lettered == 0
 
@@ -80,7 +85,7 @@ def test_dispatch_honors_non_retryable_transport_failure() -> None:
         state_store=store,
         transport=FakeTransport(failure=DispatchFailure("schema.rejected", "invalid event", retryable=False)),
     )
-    result = dispatcher.dispatch_once(worker_id="worker-1", now=datetime.now(UTC))
+    result = run_dispatch(dispatcher, worker_id="worker-1", now=datetime.now(UTC))
     assert result.dead_lettered == 1
     assert result.retried == 0
 
@@ -93,6 +98,6 @@ def test_dispatch_dead_letters_when_attempt_budget_is_exhausted() -> None:
         transport=FakeTransport(RuntimeError("broker unavailable")),
         retry_policy=DispatchRetryPolicy(max_attempts=3),
     )
-    result = dispatcher.dispatch_once(worker_id="worker-1", now=datetime.now(UTC))
+    result = run_dispatch(dispatcher, worker_id="worker-1", now=datetime.now(UTC))
     assert result.dead_lettered == 1
     assert result.retried == 0
