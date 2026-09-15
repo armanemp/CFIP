@@ -19,7 +19,9 @@ src/cfip_technical/
 └── models.py                       # canonical input/result models
 ```
 
-`tools/architecture/validate_indicator_structure.py` and its regression test enforce this relationship in CI. The guard fails if obsolete module-level facades reappear. This prevents directory presence from being mistaken for implementation completeness and prevents ambiguous module/package imports.
+The `indicators/` directory is intentionally **not** a collection of one-file-per-indicator placeholders. The four family modules above contain the executable implementations. The architecture guard also fails closed if an unexpected implementation file is added to this directory or if the removed module-level facades reappear. This makes the Git tree itself an enforceable ownership boundary rather than a documentation convention.
+
+`tools/architecture/validate_indicator_structure.py` and `tests/architecture/test_validate_indicator_structure.py` enforce this relationship in CI.
 
 ## Canonical metadata registry
 
