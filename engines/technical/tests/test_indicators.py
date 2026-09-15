@@ -13,6 +13,8 @@ from cfip_technical import (
     cci,
     donchian_channels,
     ema,
+    ichimoku,
+    keltner_channels,
     macd,
     money_flow_index,
     momentum,
@@ -21,6 +23,7 @@ from cfip_technical import (
     rsi,
     sma,
     stochastic,
+    stochastic_rsi,
     vwap,
     williams_r,
 )
@@ -49,11 +52,7 @@ class IndicatorTests(unittest.TestCase):
         self.assertEqual(falling.values[3:], (0.0, 0.0, 0.0))
 
     def test_atr_uses_previous_close_for_true_range(self) -> None:
-        data = [
-            OHLCV(10, 12, 9, 11),
-            OHLCV(11, 15, 10, 14),
-            OHLCV(14, 16, 13, 13),
-        ]
+        data = [OHLCV(10, 12, 9, 11), OHLCV(11, 15, 10, 14), OHLCV(14, 16, 13, 13)]
         result = atr(data, 2)
         self.assertEqual(result.values, (None, None, 4.0))
         self.assertEqual(result.warmup, 2)
@@ -121,13 +120,7 @@ class IndicatorTests(unittest.TestCase):
             vwap(candles([1, 2, 3]))
 
     def test_aroon_tracks_recent_extremes_and_preserves_warmup(self) -> None:
-        data = [
-            OHLCV(1, 2, 0, 1),
-            OHLCV(2, 3, 1, 2),
-            OHLCV(3, 4, 2, 3),
-            OHLCV(2, 3, 1, 2),
-            OHLCV(5, 6, 4, 5),
-        ]
+        data = [OHLCV(1, 2, 0, 1), OHLCV(2, 3, 1, 2), OHLCV(3, 4, 2, 3), OHLCV(2, 3, 1, 2), OHLCV(5, 6, 4, 5)]
         up, down = aroon(data, 3)
         self.assertEqual(up.values[:2], (None, None))
         self.assertEqual(down.values[:2], (None, None))
@@ -157,6 +150,35 @@ class IndicatorTests(unittest.TestCase):
         self.assertTrue(all(value is None or 0.0 <= value <= 100.0 for value in adx_result.values))
         self.assertGreater(plus_di.values[-1] or 0.0, minus_di.values[-1] or 0.0)
 
+    def test_ichimoku_preserves_component_warmups(self) -> None:
+        data = candles([float(index) for index in range(1, 61)])
+        conversion, base, span_a, span_b, lagging = ichimoku(data, 3, 5, 7)
+        self.assertEqual(conversion.values[:2], (None, None))
+        self.assertEqual(base.values[:4], (None,) * 4)
+        self.assertIsNotNone(span_a.values[4])
+        self.assertIsNone(span_b.values[5])
+        self.assertIsNotNone(span_b.values[6])
+        self.assertIsNotNone(lagging.values[4])
+
+    def test_keltner_channels_require_complete_ema_and_atr(self) -> None:
+        upper, middle, lower = keltner_channels(candles([1, 2, 3, 4, 5, 6, 7]), 3, 2.0)
+        self.assertEqual(middle.values[:2], (None, None))
+        self.assertEqual(upper.values[:2], (None, None))
+        self.assertEqual(lower.values[:2], (None, None))
+        self.assertIsNotNone(middle.values[-1])
+        self.assertIsNotNone(upper.values[-1])
+        self.assertIsNotNone(lower.values[-1])
+        self.assertGreater(upper.values[-1] or 0.0, middle.values[-1] or 0.0)
+        self.assertLess(lower.values[-1] or 0.0, middle.values[-1] or 0.0)
+
+    def test_stochastic_rsi_is_bounded_and_has_signal_warmup(self) -> None:
+        data = candles([float(10 + ((index * 3) % 7)) for index in range(40)])
+        value, signal = stochastic_rsi(data, 3, 4, 2)
+        self.assertTrue(all(item is None or 0.0 <= item <= 100.0 for item in value.values))
+        self.assertTrue(all(item is None or 0.0 <= item <= 100.0 for item in signal.values))
+        self.assertIsNotNone(value.values[-1])
+        self.assertIsNotNone(signal.values[-1])
+
     def test_invalid_inputs_fail_closed(self) -> None:
         with self.assertRaises(ValueError):
             sma(candles([1, 2]), 0)
@@ -174,6 +196,12 @@ class IndicatorTests(unittest.TestCase):
             aroon(candles([1, 2, 3]), 0)
         with self.assertRaises(ValueError):
             money_flow_index(candles([1, 2, 3]), 0)
+        with self.assertRaises(ValueError):
+            ichimoku(candles([1, 2, 3]), 5, 3, 7)
+        with self.assertRaises(ValueError):
+            keltner_channels(candles([1, 2, 3]), 3, -1)
+        with self.assertRaises(ValueError):
+            stochastic_rsi(candles([1, 2, 3]), 0, 3, 2)
 
 
 if __name__ == "__main__":
