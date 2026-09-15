@@ -92,38 +92,40 @@ class DispatchRetryPolicy:
 
 
 class EventTransport(Protocol):
-    """Async transport port with explicit adapter-level failure classification.
-
-    Async is intentional: the canonical source transport uses an asynchronous
-    JetStream client, and blocking the worker loop around network I/O would
-    undermine bounded concurrency and graceful backpressure.
-    """
+    """Async transport port with explicit adapter-level failure classification."""
 
     async def publish(self, event: EventEnvelope) -> DispatchFailure | None:
         """Return ``None`` on acceptance or a classified failure without mutating durable state."""
 
 
 class DurableEventClaimPort(Protocol):
-    """Claim a bounded batch under a worker lease."""
+    """Async durable claim boundary for correctness-critical worker state."""
 
-    def claim_batch(
+    async def claim_batch(
         self,
         *,
         worker_id: str,
         limit: int,
         lease_seconds: int,
     ) -> list[DurableEventRecord]:
-        """Atomically claim eligible durable events and return leased records."""
+        """Atomically claim eligible durable events without blocking an async worker loop."""
 
 
 class DurableEventStatePort(Protocol):
-    """Lease-fenced state transitions owned by the durable store."""
+    """Async lease-fenced durable state transitions."""
 
-    def mark_published(self, record_id: UUID, *, worker_id: str, published_at: datetime) -> bool:
+    async def mark_published(self, record_id: UUID, *, worker_id: str, published_at: datetime) -> bool:
         """Mark only a record still owned by the supplied lease as published."""
 
-    def mark_failed(self, record_id: UUID, *, worker_id: str, available_at: datetime, error: DispatchFailure) -> bool:
+    async def mark_failed(
+        self,
+        record_id: UUID,
+        *,
+        worker_id: str,
+        available_at: datetime,
+        error: DispatchFailure,
+    ) -> bool:
         """Record a retryable/non-retryable failure only under the active lease."""
 
-    def mark_dead(self, record_id: UUID, *, worker_id: str, error: DispatchFailure) -> bool:
+    async def mark_dead(self, record_id: UUID, *, worker_id: str, error: DispatchFailure) -> bool:
         """Terminally dead-letter a record only under the active lease."""
