@@ -156,8 +156,8 @@ def aroon(
     down: list[float | None] = [None] * len(data)
     for index in range(period - 1, len(data)):
         window = data[index - period + 1 : index + 1]
-        high_offset = max(range(period), key=lambda offset: window[offset].high)
-        low_offset = min(range(period), key=lambda offset: window[offset].low)
+        high_offset = max(range(period), key=lambda offset: (window[offset].high, offset))
+        low_offset = min(range(period), key=lambda offset: (window[offset].low, -offset))
         bars_since_high = period - 1 - high_offset
         bars_since_low = period - 1 - low_offset
         up[index] = 100.0 * (period - bars_since_high) / period
