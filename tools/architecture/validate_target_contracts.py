@@ -93,30 +93,36 @@ def check_migration_policy(root: Path) -> list[str]:
     return errors
 
 
-def _is_text_candidate(path: Path) -> bool:
-    return path.suffix.lower() in {
-        ".md", ".mdx", ".txt", ".rst", ".py", ".ts", ".tsx", ".js", ".jsx",
-        ".json", ".jsonl", ".yaml", ".yml", ".toml", ".ini", ".cfg", ".env",
-        ".sql", ".sh", ".ps1", ".html", ".css", ".scss", ".xml", ".csv",
-    }
-
-
 def check_legacy_references(root: Path) -> list[str]:
-    errors: list[str] = []
+    """Reject obsolete references in both paths and file bytes.
+
+    The byte-level scan intentionally covers extensionless files and non-text
+    artifacts as well as normal source/documentation files. The repository is
+    small enough that a complete current-tree scan is preferable to a suffix
+    allow-list that can silently miss a new artifact type.
+    """
+    errors: set[str] = set()
     ignored = {".git", ".venv", "node_modules", "__pycache__", ".mypy_cache", ".pytest_cache"}
+    marker_bytes = tuple(marker.lower().encode("ascii") for marker in _LEGACY_MARKERS)
+
     for path in root.rglob("*"):
-        if not path.is_file() or any(part in ignored for part in path.parts) or not _is_text_candidate(path):
+        if any(part in ignored for part in path.parts):
+            continue
+        relative = path.relative_to(root)
+        relative_lower = str(relative).lower().encode("utf-8")
+        if any(marker in relative_lower for marker in marker_bytes):
+            errors.add(f"obsolete architecture reference present in path: {relative}")
+            continue
+        if not path.is_file():
             continue
         try:
-            text = path.read_text(encoding="utf-8")
-        except (UnicodeDecodeError, OSError):
+            content = path.read_bytes().lower()
+        except OSError:
             continue
-        lowered = text.lower()
-        for marker in _LEGACY_MARKERS:
-            if marker in lowered:
-                errors.append(f"obsolete architecture reference present: {path.relative_to(root)}")
-                break
-    return sorted(set(errors))
+        if any(marker in content for marker in marker_bytes):
+            errors.add(f"obsolete architecture reference present: {relative}")
+
+    return sorted(errors)
 
 
 def main() -> int:
