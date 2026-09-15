@@ -98,14 +98,15 @@ def parse_file(path: Path, root: Path) -> Migration:
 
 
 def scan(root: Path) -> list[Migration]:
+    revision_root = root / "versions" if (root / "versions").is_dir() else root
     files = sorted(
         path
-        for path in root.rglob("*.py")
+        for path in revision_root.rglob("*.py")
         if path.is_file()
         and path.name != "__init__.py"
         and not any(part in {".git", ".venv", "venv", "__pycache__"} for part in path.parts)
     )
-    return [parse_file(path, root) for path in files]
+    return [parse_file(path, revision_root) for path in files]
 
 
 def validate(migrations: list[Migration]) -> tuple[list[str], list[str]]:
