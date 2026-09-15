@@ -10,20 +10,20 @@ from cfip_contracts import EventEnvelope
 
 
 class ConsumerDeduplicationPort(Protocol):
-    """Durable record of event identities already accepted by a consumer."""
+    """Durable event state owned by the consumer application boundary."""
 
-    def has_processed(self, *, consumer_id: str, event_id: UUID) -> bool:
-        """Return whether this consumer has durably accepted the event."""
+    def claim(self, *, consumer_id: str, event_id: UUID) -> bool:
+        """Atomically claim an unseen event; false means it is already owned/processed."""
 
     def mark_processed(self, *, consumer_id: str, event_id: UUID) -> bool:
-        """Atomically record event acceptance; false means another worker won the race."""
+        """Acknowledge successful handling of a previously claimed event."""
 
 
 class ConsumerHandler(Protocol):
     """Domain/application handler for one event."""
 
     def handle(self, event: EventEnvelope) -> None:
-        """Apply the event. The handler must itself tolerate at-least-once delivery."""
+        """Apply the event using a durable domain idempotency boundary."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -44,13 +44,12 @@ class IdempotentEventConsumer:
         self._handler = handler
 
     def consume(self, event: EventEnvelope) -> ConsumeResult:
-        if self._dedupe_store.has_processed(consumer_id=self._consumer_id, event_id=event.event_id):
+        if not self._dedupe_store.claim(consumer_id=self._consumer_id, event_id=event.event_id):
             return ConsumeResult(event.event_id, applied=False, duplicate=True)
 
-        # Delivery is at-least-once: a crash between handler completion and
-        # durable acknowledgement can redeliver the event. The handler must
-        # therefore use its own domain idempotency boundary where side effects
-        # matter. The dedupe record is the durable consumer acknowledgement.
+        # The atomic claim prevents concurrent workers from executing the same
+        # event simultaneously. A crash after handling but before acknowledgement
+        # can still redeliver, so domain side effects must remain idempotent.
         self._handler.handle(event)
         accepted = self._dedupe_store.mark_processed(consumer_id=self._consumer_id, event_id=event.event_id)
         return ConsumeResult(event.event_id, applied=accepted, duplicate=not accepted)
