@@ -20,7 +20,10 @@ def make_execution(*, fingerprint_suffix: str = "") -> AnalysisExecution:
     output = EngineOutput(
         engine_id="technical.momentum",
         version="1.0.0",
-        values={"score": 0.5},
+        direction="bullish",
+        score=0.5,
+        confidence=0.8,
+        data_revision=context.data_revision,
     )
     return AnalysisExecution.from_output(
         execution_id=f"execution-{fingerprint_suffix or '1'}",
