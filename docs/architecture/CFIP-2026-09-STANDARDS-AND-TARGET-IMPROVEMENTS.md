@@ -1,26 +1,26 @@
 # CFIP 2026-09 Standards and Target Improvements
 
-**Date:** 2026-09-14  
-**Scope:** migration architecture and documentation governance  
-**Gate:** Gate 0 — no runtime implementation authorized
+**Date:** 2026-09-15  
+**Scope:** migration architecture, runtime contracts, observability and documentation governance  
+**Gate:** Gate 0 — controlled target implementation permitted; production promotion remains locked
 
 ## 1. Standards baseline refresh
 
-Current OpenTelemetry Semantic Conventions are the preferred baseline for common HTTP, database, messaging, events, logs, metrics, traces, resources and related telemetry semantics. CFIP should reuse standard attributes before creating project-specific attributes. New attributes require a concrete operational use case, documented type/meaning/sensitivity and a stability strategy. citeturn0search0turn0search6
+Current OpenTelemetry Semantic Conventions are the preferred baseline for common HTTP, database, messaging, events, logs, metrics, traces, resources and related telemetry semantics. CFIP should reuse standard attributes before creating project-specific attributes. New attributes require a concrete operational use case, documented type/meaning/sensitivity and a stability strategy. citeturn0search0turn0search1
 
-Telemetry evolution must be treated as a compatibility surface: changes that can break dashboards, alerts or consumers require controlled schema/version handling rather than casual renaming. citeturn0search10
-
-Current OWASP agentic-security guidance reinforces inspectable identity, traceability, instrumentation and runtime control for autonomous agents. CFIP's agent authority model therefore remains separate from analytical-engine authority and must expose policy/action/evidence boundaries. citeturn0search14
+Telemetry evolution is a compatibility surface: changes that can break dashboards, alerts or consumers require controlled schema/version handling rather than casual renaming. OpenTelemetry's event guidance also distinguishes point-in-time events from duration-bearing spans and recommends stable, domain-specific event names with documented attributes. citeturn0search10turn0search4
 
 ## 2. Target improvements confirmed
 
 ### 2.1 Contract-first observability
 
-CFIP will use:
+CFIP uses:
 
 `standard semantic convention → stable CFIP extension only when necessary → versioned telemetry schema → dashboards/alerts/tests`
 
 Telemetry is observational and cannot become an implicit correctness store.
+
+The realtime contract now explicitly represents a low-cardinality `RealtimeTelemetrySnapshot` containing queue depth, capacity, consumer lag, event-time watermark, lateness, processing latency and bounded backpressure action. The snapshot is immutable and observational; durable checkpoints, leases, event logs and domain state remain authoritative.
 
 ### 2.2 Realtime session isolation
 
@@ -66,6 +66,8 @@ CFIP will not blindly remove every literal. Immutable domain invariants remain c
 8. No new datastore is introduced solely for fashion; ownership, consistency, retention, backup and workload evidence are mandatory.
 9. No microservice split is accepted without measured scaling, isolation, ownership or security justification.
 10. No documentation status may imply runtime parity without executable evidence.
+11. Realtime operational telemetry must remain low-cardinality, bounded and non-authoritative; correctness state is persisted through its explicit ownership boundary.
+12. Realtime telemetry schema changes must be compatibility-reviewed before changing dashboards, alerts or consumers.
 
 ## 4. Speed without loss of rigor
 
@@ -73,6 +75,19 @@ Investigation can proceed in parallel across API, events, data/PIT, engines, wor
 
 The fastest safe unit is a **closure packet** containing direct source evidence, target implication, unresolved questions, and verification references. This avoids repeatedly rereading the same source surface while preventing unsupported closure claims.
 
-## 5. Gate impact
+## 5. Verification boundary
 
-These improvements are architectural/documentation controls only. They do not authorize Gate 1. Gate 0 remains OPEN and CFIP runtime implementation remains LOCKED.
+The realtime telemetry contract and its focused tests have been added to the target. Repository read-back verifies the intended source changes; executable CI remains the authoritative final verification surface.
+
+This batch does **not** claim:
+
+- live broker integration;
+- durable checkpoint/lease repository integration;
+- PostgreSQL runtime migration evidence;
+- production telemetry backend readiness;
+- global-scale capacity;
+- production readiness.
+
+## 6. Gate impact
+
+These improvements remain Gate-0-compatible. Controlled implementation is permitted when source-evidenced, contract-first, reversible and testable. Gate 1 and production promotion remain separately gated by their required evidence.
