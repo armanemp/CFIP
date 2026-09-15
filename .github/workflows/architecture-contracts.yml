@@ -40,6 +40,12 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Validate continuation control stack
+        run: python tools/architecture/validate_continuation_contract.py
+
+      - name: Test continuation control validator
+        run: python -m unittest tests/architecture/test_validate_continuation_contract.py -v
+
       - name: Validate architecture contracts
         run: python tools/architecture/validate_target_contracts.py
 
