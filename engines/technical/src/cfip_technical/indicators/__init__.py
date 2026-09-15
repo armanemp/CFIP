@@ -8,7 +8,7 @@ semantic duplication or behavioral drift.
 from ..models import IndicatorResult, OHLCV
 from .core import atr, bollinger_bands, ema, macd, rsi, sma
 from .oscillators import cci, momentum, money_flow_index, roc, stochastic, stochastic_rsi, williams_r
-from .trend import aroon, ichimoku, keltner_channels
+from .trend import aroon, donchian_channels, ichimoku, keltner_channels
 from .volume import chaikin_money_flow, obv, vwap
 
 __all__ = [
@@ -18,9 +18,10 @@ __all__ = [
     "stochastic_rsi", "vwap", "williams_r",
 ]
 
-# Extended-only families are imported lazily to avoid package/module import cycles.
+# ADX remains in the extended compatibility implementation until its family
+# module is migrated. Lazy loading prevents the package/module naming collision.
 def __getattr__(name: str):
-    if name in {"adx", "donchian_channels"}:
-        from .. import extended
-        return getattr(extended, name)
+    if name == "adx":
+        from ..extended import adx
+        return adx
     raise AttributeError(name)
