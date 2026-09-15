@@ -2,8 +2,14 @@ from datetime import UTC, datetime
 
 import pytest
 
-from cfip_contracts import DurableEventRecord, DurableEventStatus, EventEnvelope, EventType
-from cfip_contracts.eventing import DispatchFailure
+from cfip_contracts import (
+    DispatchFailure,
+    DispatchRetryPolicy,
+    DurableEventRecord,
+    DurableEventStatus,
+    EventEnvelope,
+    EventType,
+)
 
 
 def test_event_envelope_is_causal_and_timezone_aware() -> None:
@@ -38,3 +44,19 @@ def test_durable_event_rejects_invalid_dedupe_key() -> None:
 def test_dispatch_failure_is_explicitly_retryable() -> None:
     assert DispatchFailure(error_code="transport.unavailable", message="broker unavailable").retryable is True
     assert DispatchFailure(error_code="policy.rejected", message="rejected", retryable=False).retryable is False
+
+
+def test_dispatch_retry_policy_is_bounded_and_deterministic() -> None:
+    policy = DispatchRetryPolicy(max_attempts=3, base_delay_seconds=2, max_delay_seconds=5)
+    assert policy.next_delay(1).total_seconds() == 2
+    assert policy.next_delay(2).total_seconds() == 4
+    assert policy.next_delay(3).total_seconds() == 5
+    assert policy.exhausted(2) is False
+    assert policy.exhausted(3) is True
+
+
+def test_dispatch_retry_policy_rejects_invalid_configuration() -> None:
+    with pytest.raises(ValueError, match="max_attempts"):
+        DispatchRetryPolicy(max_attempts=0)
+    with pytest.raises(ValueError, match="max_delay_seconds"):
+        DispatchRetryPolicy(base_delay_seconds=5, max_delay_seconds=4)
