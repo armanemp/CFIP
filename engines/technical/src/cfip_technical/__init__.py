@@ -1,39 +1,49 @@
 """Pure deterministic technical indicators.
 
-The public API is sourced from the canonical family namespace. Compatibility
-modules remain available for staged migration but do not own implementations.
+The public API resolves directly to canonical family implementations. There is
+no duplicate module-level compatibility surface: each implementation has one
+physical owner under ``cfip_technical.indicators``.
 """
 
 from .catalog import IndicatorDescriptor, all_indicators, get_indicator
-from .indicators import (
-    IndicatorResult,
-    OHLCV,
-    adx,
-    aroon,
-    atr,
-    bollinger_bands,
+from .indicators.core import IndicatorResult, OHLCV, atr, bollinger_bands, ema, macd, rsi, sma
+from .indicators.oscillators import (
     cci,
-    chaikin_money_flow,
-    donchian_channels,
-    ema,
-    ichimoku,
-    keltner_channels,
-    macd,
     money_flow_index,
     momentum,
-    obv,
     roc,
-    rsi,
-    sma,
     stochastic,
     stochastic_rsi,
-    vwap,
     williams_r,
 )
+from .indicators.trend import adx, aroon, donchian_channels, ichimoku, keltner_channels
+from .indicators.volume import chaikin_money_flow, obv, vwap
 
 __all__ = [
-    "IndicatorDescriptor", "IndicatorResult", "OHLCV", "adx", "all_indicators", "aroon",
-    "atr", "bollinger_bands", "cci", "chaikin_money_flow", "donchian_channels", "ema",
-    "get_indicator", "ichimoku", "keltner_channels", "macd", "money_flow_index", "momentum",
-    "obv", "roc", "rsi", "sma", "stochastic", "stochastic_rsi", "vwap", "williams_r",
+    "IndicatorDescriptor",
+    "IndicatorResult",
+    "OHLCV",
+    "adx",
+    "all_indicators",
+    "aroon",
+    "atr",
+    "bollinger_bands",
+    "cci",
+    "chaikin_money_flow",
+    "donchian_channels",
+    "ema",
+    "get_indicator",
+    "ichimoku",
+    "keltner_channels",
+    "macd",
+    "money_flow_index",
+    "momentum",
+    "obv",
+    "roc",
+    "rsi",
+    "sma",
+    "stochastic",
+    "stochastic_rsi",
+    "vwap",
+    "williams_r",
 ]
