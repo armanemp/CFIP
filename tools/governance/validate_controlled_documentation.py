@@ -17,6 +17,13 @@ CANONICAL_DOCS = (
     ROOT / "docs" / "CFIP-ARCHITECTURE-GUIDE.md",
 )
 BATCH_DOC_RE = re.compile(r"(?:CHECKPOINT|PROGRESS-REPORT|CONTRADICTION-SWEEP|TRAINING-CYCLE)-(\d+)")
+REQUIRED_MARKER_GROUPS = (
+    ("armanemp/CForex",),
+    ("v0.9.154",),
+    ("Gate 0",),
+    ("Platform Intelligence",),
+    ("ECP", "Evolution Control Plane"),
+)
 
 
 def fail(message: str) -> None:
@@ -56,14 +63,7 @@ def main() -> int:
     # Keep this check semantic rather than tied to one historical expansion of
     # the ECP acronym. The canonical index may use either the abbreviation or
     # its full expansion without changing the controlled-document contract.
-    required_marker_groups = (
-        ("armanemp/CForex",),
-        ("v0.9.154",),
-        ("Gate 0",),
-        ("Platform Intelligence",),
-        ("ECP", "Evolution Control Plane"),
-    )
-    for markers in required_marker_groups:
+    for markers in REQUIRED_MARKER_GROUPS:
         if not any(marker in index for marker in markers):
             fail(f"canonical index lost required marker group: {' / '.join(markers)}")
 
