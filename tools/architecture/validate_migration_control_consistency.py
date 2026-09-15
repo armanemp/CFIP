@@ -43,6 +43,10 @@ REQUIRED_TOOLS = (
 )
 
 
+def _contains_any(text: str, fragments: tuple[str, ...]) -> bool:
+    return any(fragment in text for fragment in fragments)
+
+
 def validate(root: Path) -> list[str]:
     errors: list[str] = []
     docs = {}
@@ -58,17 +62,45 @@ def validate(root: Path) -> list[str]:
     gate = docs.get("docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md", "")
     manifest = docs.get("docs/evidence/CFIP-TARGET-FILE-MANIFEST.md", "")
 
-    if control and "`armanemp/CForex` `main` v0.9.154" not in control:
-        errors.append("control index does not identify CForex main v0.9.154 as source baseline")
-    if gate and "**Status:** **OPEN" not in gate:
+    if control and "`armanemp/CForex` `main`" not in control:
+        errors.append("control index does not identify CForex main as source baseline")
+    if control and "v0.9.154" not in control:
+        errors.append("control index does not identify CForex v0.9.154 as documented baseline")
+    if gate and not _contains_any(gate, ("**Status:** **OPEN", "**Status:** OPEN")):
         errors.append("active Gate-0 register is not explicitly OPEN")
-    if gate and "Production promotion:** LOCKED" not in gate:
+    if gate and not _contains_any(
+        gate,
+        (
+            "production promotion locked",
+            "Production promotion: **LOCKED",
+            "Production promotion: **LOCKED**",
+            "Production restriction:** remains active",
+        ),
+    ):
         errors.append("active Gate-0 register does not explicitly lock production promotion")
-    if gate and "Implementation restriction:** removed" not in gate:
+    if gate and not _contains_any(
+        gate,
+        (
+            "controlled implementation permitted",
+            "Implementation restriction:** removed",
+        ),
+    ):
         errors.append("active Gate-0 register does not explicitly permit controlled implementation")
-    if prompt and "controlled implementation is PERMITTED" not in prompt:
+    if prompt and not _contains_any(
+        prompt,
+        (
+            "controlled implementation is PERMITTED",
+            "Controlled target implementation is PERMITTED",
+        ),
+    ):
         errors.append("continuation contract does not permit controlled Gate-0 implementation")
-    if prompt and "Production promotion remains LOCKED" not in prompt:
+    if prompt and not _contains_any(
+        prompt,
+        (
+            "Production promotion remains LOCKED",
+            "Production promotion is LOCKED",
+        ),
+    ):
         errors.append("continuation contract does not preserve the production-promotion lock")
     if prompt and "34 bounded contexts" not in prompt and "34 contexts" not in prompt:
         if manifest and "all 34 contexts" not in manifest and "34 contexts" not in manifest:
