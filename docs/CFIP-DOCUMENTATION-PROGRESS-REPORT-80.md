@@ -8,10 +8,11 @@
 ## 1. Evidence snapshot
 
 - CForex HEAD rechecked: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- CFIP final HEAD after this report correction: `ddecbaf15fcfbaae70ed66158923622edcb44705`.
+- CFIP engineering HEAD before the report-only finalization commit: `ddecbaf15fcfbaae70ed66158923622edcb44705`.
+- This report is itself committed after the engineering snapshot; the report commit is therefore not represented as an engineering-head claim.
 - The canonical key continuation prompt, full continuation contract and migration control index were re-read before engineering.
 - The technical namespace and analysis-runtime boundaries were inspected before implementation.
-- No current-head CI green claim is made: the connected GitHub workflow lookup does not expose a completed push-triggered run for the final main commit, and the combined commit-status endpoint currently reports no statuses.
+- No current-head CI green claim is made: the connected GitHub workflow lookup does not expose a completed push-triggered run for the final engineering snapshot, and the combined commit-status endpoint reported no statuses.
 
 ## 2. Engineering changes
 
@@ -53,8 +54,8 @@ All specialist evidence is bound to a common `data_revision`, preventing evidenc
 | Technical tests | CONFIRMED |
 | Consensus implementation | CONFIRMED |
 | Consensus tests | CONFIRMED |
-| Technical CI on final HEAD | UNVERIFIED |
-| Analysis-runtime CI on final HEAD | UNVERIFIED |
+| Technical CI on engineering snapshot | UNVERIFIED |
+| Analysis-runtime CI on engineering snapshot | UNVERIFIED |
 | Source indicator parity | UNVERIFIED |
 | Golden numerical fixtures | UNVERIFIED |
 | PIT/replay technical integration | UNVERIFIED |
