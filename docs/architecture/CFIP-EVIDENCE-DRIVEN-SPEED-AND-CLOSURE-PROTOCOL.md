@@ -115,9 +115,11 @@ Any migration modification must be followed by:
 
 No migration correction is considered complete merely because the file parses.
 
-## 8. Runtime lock discipline
+## 8. Gate-0 runtime discipline
 
-While Gate 0 is OPEN, target runtime implementation remains locked. Architecture contracts, evidence tools, manifests, ADRs and governance documents may be improved. Runtime code may not be counted as Gate 1 implementation until the formal Gate 0 exit decision.
+Gate 0 is **OPEN for controlled implementation**. Source-evidenced runtime code, ports, adapters, schemas, tests and observability may be added when they are contract-first, reversible, independently testable and explicitly Gate-0-compatible. Such implementation does **not** advance production readiness automatically.
+
+Production promotion, live trading, irreversible high-impact mutation, parity promotion and production readiness remain locked until their applicable evidence and gates close. Runtime implementation must never be created solely to improve a progress percentage or satisfy a directory shape.
 
 ## 9. Definition of closure
 
