@@ -12,9 +12,9 @@ src/cfip_technical/
 ├── catalog.py                      # versioned metadata registry; no calculations
 ├── indicators/
 │   ├── __init__.py                 # canonical public family namespace
-│   ├── core.py                     # SMA, EMA, RSI, ATR, Bollinger, MACD
-│   ├── oscillators.py              # Momentum, ROC, Stochastic, Williams %R, CCI, MFI, StochRSI
-│   ├── trend.py                    # ADX, Aroon, Donchian, Ichimoku, Keltner
+│   ├── core.py                     # SMA, EMA, DEMA, TEMA, RSI, ATR, Bollinger, MACD
+│   ├── oscillators.py              # Momentum, ROC, TRIX, Stochastic, Williams %R, CCI, MFI, StochRSI
+│   ├── trend.py                    # ADX, Aroon, Donchian, Ichimoku, Keltner, Parabolic SAR
 │   └── volume.py                   # OBV, VWAP, CMF
 └── models.py                       # canonical input/result models
 ```
@@ -31,12 +31,15 @@ The `indicators/` directory is intentionally **not** a collection of one-file-pe
 
 - SMA
 - EMA
+- DEMA
+- TEMA
 - RSI (Wilder smoothing)
 - ATR (Wilder smoothing)
 - Bollinger Bands
 - MACD (EMA-based line/signal/histogram)
 - Momentum
 - ROC
+- TRIX
 - Stochastic %K/%D
 - Williams %R
 - CCI
@@ -50,6 +53,7 @@ The `indicators/` directory is intentionally **not** a collection of one-file-pe
 - Ichimoku conversion/base/leading spans/lagging component
 - Keltner Channels (EMA center + Wilder ATR envelope)
 - Stochastic RSI + signal
+- Parabolic SAR
 
 The public implementation lives under `src/cfip_technical` and is deliberately independent of API, broker, database and transport concerns. Inputs are ordered OHLCV observations; outputs retain explicit warm-up gaps so callers cannot silently consume incomplete values. Volume-dependent indicators fail closed when volume is unavailable.
 
@@ -71,7 +75,7 @@ The intended composition is:
 
 `OHLCV → canonical indicator → IndicatorResult → IndicatorEvidenceAdapter → SpecialistEvidence → AnalysisConsensusService`
 
-Provenance, quality, source-specific semantics and multi-output/contextual composition remain explicit follow-up contracts rather than implicit behavior.
+Consensus additionally exposes deterministic conflict classification and an explanation trace. Provenance, quality, source-specific semantics, outcome attribution and multi-output/contextual composition remain explicit follow-up contracts rather than implicit behavior.
 
 ## Gate status
 
