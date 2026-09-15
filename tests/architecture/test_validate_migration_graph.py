@@ -9,8 +9,7 @@ import unittest
 TOOL = Path(__file__).resolve().parents[2] / "tools" / "architecture" / "validate_migration_graph.py"
 spec = importlib.util.spec_from_file_location("validate_migration_graph", TOOL)
 assert spec and spec.loader
-module = importlib.util.module_from_spec(spec)
-sys.modules[spec.name] = module
+sys.modules[spec.name] = module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 
 
@@ -29,6 +28,20 @@ class MigrationGraphTests(unittest.TestCase):
             root = Path(directory)
             (root / "__init__.py").write_text("# package marker\n", encoding="utf-8")
             (root / "001.py").write_text("revision='a'\ndown_revision=None\n", encoding="utf-8")
+            migrations = module.scan(root)
+            self.assertEqual(["001.py"], [item.path for item in migrations])
+            errors, _ = module.validate(migrations)
+            self.assertEqual([], errors)
+
+    def test_alembic_environment_files_are_not_treated_as_revisions(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            versions = root / "versions"
+            versions.mkdir()
+            (root / "env.py").write_text("from alembic import context\n", encoding="utf-8")
+            (root / "script.py.mako").write_text("revision = None\n", encoding="utf-8")
+            (versions / "__init__.py").write_text("# package marker\n", encoding="utf-8")
+            (versions / "001.py").write_text("revision='a'\ndown_revision=None\n", encoding="utf-8")
             migrations = module.scan(root)
             self.assertEqual(["001.py"], [item.path for item in migrations])
             errors, _ = module.validate(migrations)
