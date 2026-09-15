@@ -6,9 +6,8 @@
 
 ## Current evidence snapshot
 
-- Historical CFIP source snapshot: CForex v0.9.154.
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Current CFIP batch-65 head: `ff57d57a773f1605062ed1627b725fef6aad880f`.
+- Current CFIP batch-66 implementation head: `87f9fa32e26a256e004589f8e9171429ff16d603`.
 - Historical evidence is retained and never rewritten as current source truth.
 - Current-head Admin Git hardening is reconciled as an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
@@ -71,49 +70,21 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58–65 registration
+## Batch 58–66 registration
 
-### Batch 58
-- `docs/governance/CFIP-ECP-CHECKPOINT-58.md`
-- `docs/architecture/CFIP-SOURCE-DRIFT-58.md`
-- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-58.md`
-- `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-57.md`
-- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-58.md`
+### Batch 58–65
+Prior batch registrations remain immutable in this index history.
 
-### Batch 59
-- `docs/governance/CFIP-ECP-CHECKPOINT-59.md`
-- `docs/architecture/CFIP-SOURCE-DELTA-59-ADMIN-GIT.md`
-- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-59.md`
-- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-59.md`
+### Batch 66
+- `packages/eventing-dispatcher/` — transport-neutral bounded durable-event dispatcher
+- `DurableEventClaimPort` — technology-neutral claim boundary
+- explicit transport failure classification via `DispatchFailure | None`
+- bounded retry/dead-letter orchestration with lease-fenced acknowledgements
+- PostgreSQL outbox claim adapter now supports an owned transaction when no caller connection is supplied, while preserving caller-transaction participation
+- `migrations/README.md` — canonical PostgreSQL migration ownership rules
+- `migrations/versions/0001_analysis_execution_outbox.py` — deployable first executable PostgreSQL schema revision for analysis + outbox
+- dispatcher package test configuration and failure-mode tests
+- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-66.md`
+- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-66.md`
 
-### Batch 60
-- `docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md`
-- controlled Gate-0 implementation policy added to the continuation contract
-- production/promotion/live-execution restrictions explicitly retained
-
-### Batch 63
-- `packages/analysis-postgres/` — PostgreSQL durable analysis-execution adapter
-- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-63.md`
-- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-63.md`
-- stable dependency review: SQLAlchemy 2.0.52 + Psycopg 3.3.5
-
-### Batch 64
-- PostgreSQL transactional outbox adapter
-- separate durable-record and event identity
-- database dedupe invariant
-- bounded `FOR UPDATE SKIP LOCKED` claiming
-- expired-lease recovery
-- explicit `cfip-contracts` package dependency
-- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-64.md`
-- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-64.md`
-
-### Batch 65
-- `packages/analysis-runtime/src/cfip_analysis_runtime/unit_of_work.py` — framework-neutral atomic execution/outbox port
-- `packages/analysis-postgres/src/cfip_analysis_postgres/unit_of_work.py` — PostgreSQL atomic execution + outbox implementation
-- lease-fenced `mark_published`, `mark_failed`, `mark_dead` outbox transitions
-- `DispatchRetryPolicy` with bounded exponential retry semantics
-- contract tests for retry policy and failure classification
-- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-65.md`
-- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-65.md`
-
-Next continuation must continue the executable vertical slice: transport-neutral dispatcher → canonical broker adapter → lease-fenced retry/dead-letter orchestration → idempotent realtime consumer → partition ownership/checkpoint/watermark semantics, while parallel source census, PIT/replay, global-scale, frontend, Platform Intelligence and Admin Git closure continue. Documentation-only expansion is not the default when safe executable work is available.
+The next executable boundary is the canonical broker adapter plus idempotent realtime consumer and partition/checkpoint/watermark semantics. Migration ownership is now explicit for the first runtime slice; future domains must extend the append-only migration chain rather than relying on `create_schema()` helpers.
