@@ -1,0 +1,39 @@
+name: Intelligence Memory Contracts
+
+on:
+  pull_request:
+    paths:
+      - 'data/training/CFIP-INTELLIGENCE-MEMORY-INDEX-v0.1.json'
+      - 'docs/governance/CFIP-INTELLIGENCE-MEMORY-CONTRACT.md'
+      - 'tools/governance/validate_intelligence_memory_index.py'
+      - 'tests/architecture/test_validate_intelligence_memory_index.py'
+      - '.github/workflows/intelligence-memory-contracts.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/training/CFIP-INTELLIGENCE-MEMORY-INDEX-v0.1.json'
+      - 'docs/governance/CFIP-INTELLIGENCE-MEMORY-CONTRACT.md'
+      - 'tools/governance/validate_intelligence_memory_index.py'
+      - 'tests/architecture/test_validate_intelligence_memory_index.py'
+      - '.github/workflows/intelligence-memory-contracts.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  intelligence-memory-contracts:
+    name: Validate Platform Intelligence memory contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Test intelligence memory index
+        run: python -m unittest tests/architecture/test_validate_intelligence_memory_index.py -v
+
+      - name: Validate intelligence memory index
+        run: python tools/governance/validate_intelligence_memory_index.py data/training/CFIP-INTELLIGENCE-MEMORY-INDEX-v0.1.json
