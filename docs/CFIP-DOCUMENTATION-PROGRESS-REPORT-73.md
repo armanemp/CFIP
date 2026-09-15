@@ -2,7 +2,7 @@
 
 Date: 2026-09-15  
 Source: `armanemp/CForex` `main` @ `900882154cab3b9b74d0543b9bbf72a708a08134`  
-Target: `armanemp/CFIP` `main` @ `5c40fa36c9781d495a31cdef155776fe07a4e048`
+Target engineering checkpoint: `armanemp/CFIP` `main` @ `e797e48b1544fdefe09b6a61dccf19a682c25b00`
 
 ## Executive result
 
@@ -83,7 +83,7 @@ Added `docs/adr/ADR-018-async-event-transport.md` and updated the September stan
 
 GitHub read-back confirms the contract, dispatcher, tests, NATS package, ADR, standards document and control index are present on the target `main` history.
 
-Fresh GitHub Actions runs for the final Batch 73 commit were observed in **queued** state at report time, including Architecture Contracts and Documentation Contracts. Therefore this report does **not** claim CI green. fileciteturn171file0L1-L2
+The repository-hygiene workflow for checkpoint `0e95741773632bc70b1a73c83f58a85a923ece52` completed successfully. The subsequent current-head hygiene run for `e797e48b1544fdefe09b6a61dccf19a682c25b00` was queued at the time of this report. Architecture Contracts and Documentation Contracts were also observed queued on the preceding Batch 73 checkpoint. Therefore this report does **not** claim a complete CI-green state. fileciteturn178file0L1-L2
 
 Not yet verified:
 
@@ -119,7 +119,7 @@ Not yet verified:
 |---|---|---|
 | Repository governance | **STRONG** | always-on hygiene + canonical control stack |
 | Documentation integrity | **STRONGER** | Batch 73 architecture/ADR/index reconciliation |
-| Obsolete-reference hygiene | **ENFORCED** | repository-wide validator; CI result pending for current head |
+| Obsolete-reference hygiene | **ENFORCED** | repository-wide validator; current-head CI pending |
 | Source study | **ADVANCING / OPEN** | current source transport evidence directly inspected |
 | Source closure | **OPEN** | event transport improved; many capability gaps remain |
 | Target engineering | **ADVANCING** | Gate-0 controlled implementation active |
