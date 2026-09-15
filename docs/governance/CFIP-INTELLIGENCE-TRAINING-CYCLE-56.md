@@ -1,5 +1,9 @@
 # CFIP Intelligence Training Cycle 56
 
+**Gate:** Gate 0  
+**Source baseline:** CForex v0.9.154 / main  
+**Status:** GOVERNED / NON-PROMOTABLE
+
 ## Cycle type
 
 Governed evidence-ingestion / evaluation cycle. No production model mutation or promotion.
