@@ -8,12 +8,14 @@ committed together, or neither becomes committed.
 
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Generic, Protocol, TypeVar
 
 from .execution import AnalysisExecution
 
+EventT = TypeVar("EventT")
 
-class AnalysisExecutionUnitOfWork(Protocol):
+
+class AnalysisExecutionUnitOfWork(Protocol, Generic[EventT]):
     """Atomic application boundary for an execution and its durable event."""
 
     def save_execution_and_event(
@@ -21,11 +23,6 @@ class AnalysisExecutionUnitOfWork(Protocol):
         execution: AnalysisExecution,
         *,
         idempotency_key: str,
-        event: object,
+        event: EventT,
     ) -> AnalysisExecution:
-        """Persist execution and durable event in one commit boundary.
-
-        ``event`` is intentionally typed as ``object`` here so the runtime port
-        does not depend on a particular event-contract package. Concrete
-        application composition should validate/adapt it before persistence.
-        """
+        """Persist execution and durable event in one commit boundary."""
