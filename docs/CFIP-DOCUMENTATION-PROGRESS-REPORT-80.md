@@ -8,7 +8,7 @@
 ## 1. Evidence snapshot
 
 - CForex HEAD rechecked: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- CFIP final HEAD after this report correction: `0f8e6a9c6a2f0e9e0b9a1f4c8e0a7d3c4b2f1e6d`.
+- CFIP final HEAD after this report correction: `ddecbaf15fcfbaae70ed66158923622edcb44705`.
 - The canonical key continuation prompt, full continuation contract and migration control index were re-read before engineering.
 - The technical namespace and analysis-runtime boundaries were inspected before implementation.
 - No current-head CI green claim is made: the connected GitHub workflow lookup does not expose a completed push-triggered run for the final main commit, and the combined commit-status endpoint currently reports no statuses.
@@ -17,76 +17,50 @@
 
 ### Technical-analysis foundation
 
-Added eight deterministic indicator primitives under `engines/technical/src/cfip_technical/extended.py`:
-
-1. Momentum
-2. Rate of Change (ROC)
-3. Stochastic %K/%D
-4. Williams %R
-5. CCI
-6. OBV
-7. VWAP
-8. Donchian Channels
-
-The existing SMA, EMA, RSI, ATR, Bollinger Bands and MACD implementations remain unchanged. The public technical API now exports the complete target foundation currently implemented in the namespace.
-
-Volume-dependent indicators fail closed when volume is absent. Warm-up gaps remain explicit. No indicator imports infrastructure or transport dependencies.
+Added eight deterministic indicator primitives under `engines/technical/src/cfip_technical/extended.py`: Momentum, ROC, Stochastic %K/%D, Williams %R, CCI, OBV, VWAP and Donchian Channels. Existing SMA, EMA, RSI, ATR, Bollinger Bands and MACD remain available. Volume-dependent indicators fail closed when volume is absent; warm-up gaps remain explicit.
 
 ### Authoritative consensus boundary
 
-Added `packages/analysis-runtime/src/cfip_analysis_runtime/consensus.py` with:
+Added `packages/analysis-runtime/src/cfip_analysis_runtime/consensus.py` with immutable `SpecialistEvidence`, immutable `ConsensusResult`, deterministic `AnalysisConsensusService`, shared `data_revision` enforcement, weighted strength/confidence aggregation, agreement calculation, minimum-confidence/minimum-margin abstention and neutral fail-safe output for insufficient or contradictory evidence.
 
-- immutable `SpecialistEvidence`;
-- immutable `ConsensusResult`;
-- deterministic `AnalysisConsensusService`;
-- shared `data_revision` enforcement;
-- weighted strength/confidence aggregation;
-- agreement calculation;
-- minimum-confidence and minimum-margin abstention;
-- neutral fail-safe output when evidence is insufficient or materially contradictory.
-
-The consensus service is intentionally generic and has no dependency on technical indicators, brokers, databases, AI providers or transports. Technical indicators will later normalize into this contract rather than creating a competing final-decision authority.
-
-The service was exported from the analysis-runtime public API and covered with deterministic tests for reproducibility, disagreement abstention, revision mismatch and invalid weighting.
+The consensus service is generic and infrastructure-independent. Technical indicators will normalize into this contract rather than creating a competing final-decision authority. It is exported from the analysis-runtime public API and covered by deterministic tests for reproducibility, disagreement abstention, revision mismatch and invalid weighting.
 
 ## 3. Architecture rationale
 
-The target architecture explicitly requires one authoritative analysis-consensus boundary. The new service therefore lives in `analysis-runtime`, not inside `engines/technical`. This prevents technical analysis from becoming a second decision authority and permits structure, liquidity, regime, MTF, confluence and contradiction engines to contribute through the same evidence contract.
+The target architecture requires one authoritative analysis-consensus boundary. The service therefore lives in `analysis-runtime`, not inside `engines/technical`, allowing structure, liquidity, regime, MTF, confluence and contradiction engines to contribute through the same evidence contract.
 
-The consensus implementation is deliberately deterministic. It does not contain model calls, network access, persistence or hidden global state. AI may later explain, calibrate or assist the result through governed application boundaries, but it cannot silently override deterministic risk or decision policy.
+The consensus implementation contains no model calls, network access, persistence or hidden global state. AI may later explain, calibrate or assist through governed application boundaries, but cannot silently override deterministic risk or decision policy.
 
-All specialist evidence is bound to a common `data_revision`. This is an important PIT/replay guard: evidence from different market-data revisions cannot accidentally be aggregated into a single historical decision package.
-
-Abstention is explicit. Close disagreement or insufficient confidence returns a neutral result rather than manufacturing directional certainty. This is a safety boundary, not a trading-performance claim.
+All specialist evidence is bound to a common `data_revision`, preventing evidence from different market-data revisions from being silently aggregated into one historical decision package. Close disagreement or insufficient confidence explicitly abstains instead of manufacturing directional certainty.
 
 ## 4. Documentation reconciliation
 
-- `engines/technical/README.md` was updated to enumerate the expanded indicator foundation and explicitly document the central consensus boundary.
-- `docs/CFIP-MIGRATION-CONTROL-INDEX.md` was updated with complete Batch 80 registration and new evidence gaps.
-- The control index's historical Batch 66–74 registrations were rechecked and restored after the first Batch-80 edit so documentation history was not accidentally truncated.
-- No parity matrix status was promoted merely because implementation now exists.
-- Platform Intelligence remains cross-cutting; the new consensus boundary is a deterministic analytical authority, not a new intelligence authority.
+- `engines/technical/README.md` now enumerates the expanded indicator foundation and central consensus boundary.
+- `docs/CFIP-MIGRATION-CONTROL-INDEX.md` contains complete Batch 80 registration and new evidence gaps.
+- Historical Batch 66–74 registrations were restored after the first Batch-80 edit so documentation history was not accidentally truncated.
+- No parity matrix status was promoted merely because implementation exists.
+- Platform Intelligence remains cross-cutting; the consensus service is deterministic analytical authority, not a second intelligence authority.
 
 ## 5. Verification status
 
-| Verification | Status | Evidence |
-|---|---|---|
-| Source HEAD recheck | CONFIRMED | GitHub source history |
-| Target HEAD recheck | CONFIRMED | GitHub target history |
-| Continuation contract read | CONFIRMED | canonical repository prompt |
-| Control index reconciliation | CONFIRMED | current control index |
-| Technical extended implementation present | CONFIRMED | target source files |
-| Technical tests updated | CONFIRMED | target test file |
-| Consensus implementation present | CONFIRMED | target analysis-runtime source |
-| Consensus tests present | CONFIRMED | target test file |
-| Technical CI result on final HEAD | UNVERIFIED | workflow result not exposed by connected lookup |
-| Analysis-runtime CI result on final HEAD | UNVERIFIED | no current-head status exposed |
-| Source indicator parity | UNVERIFIED | CForex technical census still open |
-| Golden numerical fixtures | UNVERIFIED | independent fixture set still required |
-| PIT/replay technical integration | UNVERIFIED | composition still open |
-| Consensus integration with all specialist domains | UNVERIFIED | structure/liquidity/regime/MTF/confluence/contradiction still open |
-| Final decision/risk integration | UNVERIFIED | decision/risk closure still open |
-| Production readiness | LOCKED | Gate 0 policy |
+| Verification | Status |
+|---|---|
+| Source HEAD recheck | CONFIRMED |
+| Target HEAD recheck | CONFIRMED |
+| Continuation contract read | CONFIRMED |
+| Control index reconciliation | CONFIRMED |
+| Technical extended implementation | CONFIRMED |
+| Technical tests | CONFIRMED |
+| Consensus implementation | CONFIRMED |
+| Consensus tests | CONFIRMED |
+| Technical CI on final HEAD | UNVERIFIED |
+| Analysis-runtime CI on final HEAD | UNVERIFIED |
+| Source indicator parity | UNVERIFIED |
+| Golden numerical fixtures | UNVERIFIED |
+| PIT/replay technical integration | UNVERIFIED |
+| Consensus integration with all specialist domains | UNVERIFIED |
+| Final decision/risk integration | UNVERIFIED |
+| Production readiness | LOCKED |
 
 ## 6. D1–D11 progress
 
@@ -95,14 +69,14 @@ Abstention is explicit. Close disagreement or insufficient confidence returns a 
 | D1 API/WS | ADVANCED | none | route/channel/auth/entitlement lifecycle |
 | D2 Events | ADVANCED / INTEGRATION OPEN | none | live PostgreSQL + JetStream lifecycle |
 | D3 Data/PIT | ADVANCED / OPEN | consensus revision binding strengthens PIT boundary | reconstruction, revision identity, integrity |
-| D4 Engines | **ADVANCED / STRONGER** | **expanded indicator foundation + central consensus boundary** | source parity, registry, golden/PIT/replay |
+| D4 Engines | **ADVANCED / STRONGER** | **expanded indicators + central consensus boundary** | source parity, registry, golden/PIT/replay |
 | D5 Workers | ADVANCED / OPEN | none | durable runtime, fencing recovery, capacity |
-| D6 Frontend | IN PROGRESS | future indicator/consensus presentation boundary clarified | chart UX, realtime, i18n/a11y |
+| D6 Frontend | IN PROGRESS | presentation boundary clarified | chart UX, realtime, i18n/a11y |
 | D7 Tests | **STRONGER / OPEN** | extended indicator + consensus tests | live integration, race, performance, E2E |
-| D8 Policy/config | IN PROGRESS | consensus thresholds are explicit constructor policy but not yet governed runtime config | policy ownership/config boundary |
+| D8 Policy/config | IN PROGRESS | explicit consensus thresholds exist but runtime governance remains open | policy ownership/config boundary |
 | D9 Adapters | ADVANCED / OPEN | none | provider/broker/model/research lifecycle |
 | D10 Operations | IN PROGRESS | deterministic hot-path boundaries remain infrastructure-free | telemetry/SLO/capacity/DR/residency |
-| D11 Reconciliation | **STRONGER / OPEN** | Batch 80 registered; historical control index restored and reconciled | whole-repo closure |
+| D11 Reconciliation | **STRONGER / OPEN** | Batch 80 registered and control history reconciled | whole-repo closure |
 
 ## 7. Overall progress state
 
@@ -206,4 +180,4 @@ Percentages are intentionally not used as evidence of completion.
 - **JetStream end-to-end evidence:** NOT VERIFIED.
 - **Global-scale capacity:** UNPROVEN.
 
-Batch 80 materially advances the analytical kernel: the technical indicator foundation is broader, and a single deterministic consensus boundary now exists. The next correctness-critical step is not adding arbitrary indicator count; it is reconciling source semantics, proving PIT/replay behavior, normalizing specialist evidence and connecting that evidence to the authoritative decision/risk pipeline without creating duplicate analytical authorities.
+Batch 80 materially advances the analytical kernel: the technical indicator foundation is broader, and a single deterministic consensus boundary now exists. The next correctness-critical step is reconciling source semantics, proving PIT/replay behavior, normalizing specialist evidence and connecting it to the authoritative decision/risk pipeline without creating duplicate analytical authorities.
