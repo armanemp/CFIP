@@ -1,4 +1,4 @@
-"""Transport-neutral realtime partition, checkpoint and backpressure contracts."""
+"""Transport-neutral realtime partition, checkpoint, telemetry and backpressure contracts."""
 
 from __future__ import annotations
 
@@ -99,3 +99,44 @@ class BackpressureDecision:
             raise ValueError("queue_depth/capacity are invalid")
         if not self.reason.strip():
             raise ValueError("reason is required")
+
+
+@dataclass(frozen=True, slots=True)
+class RealtimeTelemetrySnapshot:
+    """Low-cardinality operational snapshot for one stream partition.
+
+    Values are observations only. They never become correctness state or replace
+    durable checkpoints, leases, event logs or domain records.
+    """
+
+    stream: str
+    partition: int
+    observed_at: datetime
+    queue_depth: int
+    capacity: int
+    consumer_lag: int
+    watermark_event_time: datetime | None
+    lateness_ms: int
+    processing_latency_ms: int
+    backpressure_action: BackpressureAction
+
+    def __post_init__(self) -> None:
+        if not self.stream.strip() or self.partition < 0:
+            raise ValueError("stream and partition are invalid")
+        if self.observed_at.tzinfo is None or self.observed_at.utcoffset() is None:
+            raise ValueError("observed_at must be timezone-aware")
+        for value, name in (
+            (self.queue_depth, "queue_depth"),
+            (self.capacity, "capacity"),
+            (self.consumer_lag, "consumer_lag"),
+            (self.lateness_ms, "lateness_ms"),
+            (self.processing_latency_ms, "processing_latency_ms"),
+        ):
+            if value < 0:
+                raise ValueError(f"{name} must be >= 0")
+        if self.capacity < 1:
+            raise ValueError("capacity must be >= 1")
+        if self.watermark_event_time is not None and (
+            self.watermark_event_time.tzinfo is None or self.watermark_event_time.utcoffset() is None
+        ):
+            raise ValueError("watermark_event_time must be timezone-aware")
