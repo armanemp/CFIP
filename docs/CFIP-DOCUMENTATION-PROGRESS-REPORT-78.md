@@ -29,7 +29,7 @@ The new Batch 78 commit intentionally triggers fresh CI. No green claim is made 
 
 No new datastore, transport or external dependency was introduced. The change strengthens an existing correctness boundary and preserves the project rule that SQL compilation is not runtime evidence.
 
-OpenTelemetry remains aligned with the current upstream semantic-convention model. Messaging semantic conventions are still documented as Development, so future instrumentation must be version-aware and must not turn telemetry into a correctness authority. citeturn0search0turn0search2
+OpenTelemetry remains aligned with the current upstream semantic-convention model. Messaging semantic conventions are still documented as Development, so future instrumentation must be version-aware and must not turn telemetry into a correctness authority.
 
 ## D1–D11 progress
 
