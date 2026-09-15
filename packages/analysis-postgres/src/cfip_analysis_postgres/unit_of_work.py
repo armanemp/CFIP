@@ -2,17 +2,14 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from sqlalchemy import select
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
 
 from cfip_analysis_runtime.execution import AnalysisExecution
-from cfip_analysis_runtime.repository import ExecutionIdempotencyConflict
 from cfip_contracts.eventing import DurableEventRecord
 
-from .outbox import PostgreSQLTransactionalOutbox, durable_events
+from .outbox import PostgreSQLTransactionalOutbox
 from .repository import (
     PostgreSQLAnalysisExecutionRepository,
     _assert_same_request,
