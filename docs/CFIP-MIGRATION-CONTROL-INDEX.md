@@ -41,7 +41,9 @@ Read these documents in this order at the start of every migration continuation:
 26. `docs/governance/CFIP-ECP-DATA-CONTRACT.md` — machine-readable ECP/training evidence boundary and source-integrity rules.
 27. `docs/governance/CFIP-INTELLIGENCE-TRAINING-LIFECYCLE.md` — continuous governed intelligence training/evaluation lifecycle.
 28. `data/training/CFIP-CFOREX-TRAINING-DATASET-INDEX-v0.1.json` — source training-dataset carry-forward identity, hashes, counts and materialization status.
-29. Latest progress report and latest contradiction sweep.
+29. `docs/governance/CFIP-INTELLIGENCE-MEMORY-CONTRACT.md` — durable Platform Intelligence memory, temporal retrieval, provenance and lifecycle contract.
+30. `data/training/CFIP-INTELLIGENCE-MEMORY-INDEX-v0.1.json` — machine-readable governed intelligence-memory index; initially empty by design.
+31. `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-53.md` and `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-53.md` — latest progress and contradiction evidence.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -100,6 +102,8 @@ The current CForex release truth records **101 required release gates with 100 P
 - Material CForex capabilities already proven useful in the source must be explicitly classified for CFIP as `PRESERVE`, `IMPROVE`, `REPLACE` or `INTENTIONALLY-DIVERGE`.
 - Training/evaluation dataset materialization requires source hash and record-count reconciliation; a declared count is never treated as verified without direct evidence.
 - The complete CForex training/evaluation artifact inventory is maintained separately from materialized CFIP datasets; enumeration is evidence, not permission to copy.
+- Durable intelligence memory is governed evidence metadata, not an uncontrolled model-memory or second domain-authority layer.
+- Intelligence-memory retrieval is temporal, provenance-aware, authorization-aware and deterministic; derived retrieval indexes are rebuildable projections.
 
 ## 6. Migration gates
 
@@ -160,6 +164,7 @@ No stage may be skipped. A capability can only advance when its required evidenc
 - Telemetry is observational; it must not become an implicit correctness database.
 - Dataset/replay artifacts are immutable evidence objects; transactional metadata and large immutable artifacts may use separate storage boundaries when scale requires it.
 - Migration/schema ownership remains canonical; related corrections are made at the owning migration rather than duplicated across patch files during the mutable target phase.
+- Intelligence memory metadata belongs to the governed intelligence/application boundary; derived semantic/vector indexes never become the sole authoritative store.
 
 ## 9. Global-scale requirements
 
@@ -193,6 +198,8 @@ Agent authority is independent of analytical-engine authority; multi-agent actio
 
 Platform Intelligence is a cross-cutting capability across market data, analysis, consensus, risk/decision, research, learning, frontend assistance, operations, security and governed development. It may automate routine observation, diagnosis, research, planning, verification and bounded remediation, but it must use authoritative domain contracts rather than becoming a second domain authority. See ADR-005, `docs/capabilities/CFIP-PLATFORM-INTELLIGENCE-COVERAGE-MATRIX.md` and `docs/governance/CFIP-INTELLIGENCE-TRAINING-LIFECYCLE.md`.
 
+Durable intelligence memory follows `evidence → normalized lesson → provenance → validity → evaluation → revision → governed retrieval → outcome → superseding revision`. Memory cannot silently transfer authority to an AI model or replace an owning domain contract. See `docs/governance/CFIP-INTELLIGENCE-MEMORY-CONTRACT.md`.
+
 ## 11. Release/continuation protocol
 
 At every continuation:
@@ -217,7 +224,8 @@ At every continuation:
 18. perform a current standards check for material improvements without introducing novelty-only dependencies;
 19. verify that every capability remains covered by the Platform Intelligence matrix and that no intelligence hook bypasses domain authority;
 20. run the governed intelligence-learning/evaluation lifecycle over newly verified evidence where applicable;
-21. report exact changes, verification, progress and blockers.
+21. validate the intelligence-memory contract/index and ensure active memory has verification evidence;
+22. report exact changes, verification, progress and blockers.
 
 Documentation and safe Gate-0-compatible engineering are parallel tracks. The previous documentation-first sequencing restriction is removed by Amendment 47; neither documentation completeness nor engineering work may be used as an excuse to postpone the other when the work can be progressed safely and independently.
 
@@ -231,7 +239,7 @@ Documentation, source inspection, evidence extraction, reconciliation and govern
 
 ## 13. Integrated project rule
 
-The key prompt, continuation contract, architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register, carry-forward baseline and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
+The key prompt, continuation contract, architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register, carry-forward baseline, intelligence-memory contract and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
 
 ## 14. Execution-lifecycle evidence rule
 
