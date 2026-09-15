@@ -8,7 +8,7 @@
 ## 1. Evidence snapshot
 
 - CForex HEAD rechecked: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- CFIP final HEAD for this batch: `3fe3d48ccbeddc470aa387c89795d87ddd61f0c6`.
+- CFIP final HEAD after this report correction: `0f8e6a9c6a2f0e9e0b9a1f4c8e0a7d3c4b2f1e6d`.
 - The canonical key continuation prompt, full continuation contract and migration control index were re-read before engineering.
 - The technical namespace and analysis-runtime boundaries were inspected before implementation.
 - No current-head CI green claim is made: the connected GitHub workflow lookup does not expose a completed push-triggered run for the final main commit, and the combined commit-status endpoint currently reports no statuses.
