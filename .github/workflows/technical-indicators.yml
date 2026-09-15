@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'engines/technical/**'
+      - 'engines/technical/src/cfip_technical/catalog.py'
+      - 'engines/technical/tests/test_catalog.py'
       - 'tools/architecture/validate_indicator_structure.py'
       - 'tests/architecture/test_validate_indicator_structure.py'
       - '.github/workflows/technical-indicators.yml'
@@ -12,6 +14,8 @@ on:
       - main
     paths:
       - 'engines/technical/**'
+      - 'engines/technical/src/cfip_technical/catalog.py'
+      - 'engines/technical/tests/test_catalog.py'
       - 'tools/architecture/validate_indicator_structure.py'
       - 'tests/architecture/test_validate_indicator_structure.py'
       - '.github/workflows/technical-indicators.yml'
