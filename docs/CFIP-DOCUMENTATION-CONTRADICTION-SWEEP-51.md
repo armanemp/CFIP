@@ -16,7 +16,7 @@ The new dataset index and ECP data contract explicitly distinguish source eviden
 
 ### 3. Source dataset integrity — explicit blocker, not contradiction
 
-CForex v0.9.21 training evidence declares 330 records in its v0.21 manifest, while the directly retrieved dataset blob exposes 108 records. The CFIP documentation now records this as an unresolved source-integrity discrepancy. It is not converted into a false parity or completeness claim.
+The CForex v0.9.154 source baseline's v0.21 training evidence declares 330 records in its v0.21 manifest, while the directly retrieved dataset blob exposes 108 records. The CFIP documentation now records this as an unresolved source-integrity discrepancy. It is not converted into a false parity or completeness claim.
 
 ### 4. Synthetic-data safety — consistent
 
