@@ -37,7 +37,7 @@ Before every continuation:
    - `docs/CFIP-MIGRATION-MASTER-PLAN.md`
    - `docs/CFIP-ARCHITECTURE-GUIDE.md`
    - `docs/capabilities/source-study-integration.md`
-   - `docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md`
+   - the active Gate-0 register (`docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md` while Gate 0 remains open)
    - `docs/capabilities/CFIP-CAPABILITY-REGISTRY.md`
    - `docs/capabilities/source-evidence-matrix.md`
    - `docs/capabilities/parity-matrix.md`
@@ -48,16 +48,19 @@ Before every continuation:
 8. For material architecture/security/AI/data/observability/performance/dependency decisions, check current primary/official standards and upstream guidance.
 9. Record the inspected source and target HEADs as the evidence snapshot for the batch; if either HEAD changes during the batch, stop and re-baseline before making canonical status claims.
 
-## 3. Gate 0 discipline
+## 3. Gate 0 discipline — controlled parallel engineering
 
-**Gate 0 is OPEN until the canonical Gate-0 register records formal closure.**
+**Gate 0 remains OPEN until the canonical Gate-0 register records formal source-closure decision.** Gate 0 is an evidence-completeness gate, but it no longer imposes a blanket ban on target coding.
 
 While Gate 0 is open:
 
-- CFIP production business runtime remains **0% / LOCKED**.
-- Permitted engineering includes source census, evidence extraction, architecture contracts, validators, tests, CI, documentation reconciliation and other runtime-independent quality infrastructure.
-- Do not implement target business runtime merely to raise progress.
-- Do not promote capabilities through the lifecycle without required evidence.
+- **Production promotion remains LOCKED.** No capability may be declared production-ready, parity-verified, or promoted into an operational release solely because code exists.
+- **Controlled target implementation is PERMITTED** when it is source-evidenced, contract-first, reversible, independently testable and explicitly tagged as Gate-0-compatible engineering.
+- Allowed runtime work includes bounded domain/application code, ports/adapters, schemas/migrations, event contracts, deterministic engines, frontend foundations, workers, validators, test infrastructure and other implementation slices whose source behavior and ownership are sufficiently understood.
+- Implementation must never be used to conceal unresolved source semantics. Unknown behavior remains `UNVERIFIED` or `TARGET-REQUIRED`.
+- Every implementation slice must link to source evidence, capability ID, contract, tests and rollback/change identity.
+- High-impact execution, irreversible data mutation, live trading, unrestricted autonomous mutation and production promotion remain fail-closed until their respective gates/evidence are satisfied.
+- Gate-0-compatible implementation may progress capabilities through `IMPLEMENTED` and, when independently verified, `VERIFIED`; `PARITY-VERIFIED` and `PRODUCTION-READY` still require the corresponding evidence and later gates.
 
 Lifecycle:
 
@@ -287,7 +290,7 @@ Current documented baseline:
 - CForex: `v0.9.154`.
 - CFIP: 34 bounded contexts, 14 engine namespaces, 15 concrete runtime engines.
 - Gate 0: OPEN.
-- CFIP production runtime: 0% / LOCKED.
+- CFIP production promotion: LOCKED until the applicable gates/evidence close.
 
 Recheck all of these against GitHub at every continuation.
 
@@ -298,7 +301,7 @@ Migration is complete only when every source capability is either:
 - parity-verified and production-ready; or
 - intentionally divergent/retired with an explicit ADR, preserved source evidence, replacement capability and validated impact.
 
-Gate 0 closes only after sufficient D1–D11 source-closure evidence and a formal decision in the canonical Gate-0 register. Runtime gates then proceed sequentially.
+Gate 0 closes only after sufficient D1–D11 source-closure evidence and a formal decision in the canonical Gate-0 register. Controlled implementation does not itself close Gate 0.
 
 ## 17. Key-prompt rule
 
