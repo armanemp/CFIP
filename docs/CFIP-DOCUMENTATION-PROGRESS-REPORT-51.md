@@ -3,7 +3,7 @@
 ## Evidence snapshot
 
 - CForex source: `main` / v0.9.154.
-- CFIP current HEAD: `462cd38a81cb27d967f8bb366a0f58ff7a498d7d`.
+- CFIP current HEAD at report creation: `462cd38a81cb27d967f8bb366a0f58ff7a498d7d`.
 - Gate 0: **OPEN**.
 - CFIP production business runtime: **0% / LOCKED**.
 - Documentation + Gate-0-compatible engineering: **ACTIVE IN PARALLEL**.
@@ -16,7 +16,7 @@
 3. Added `tools/governance/validate_training_dataset_index.py` and architecture tests for the new dataset-governance boundary.
 4. Extended `.github/workflows/architecture-contracts.yml` so training-data governance is tested and validated together with the existing architecture contracts.
 5. Updated the canonical migration control index so source training/evaluation manifests must be reconciled against dataset blobs before materialization.
-6. During source inspection, found a material integrity discrepancy that must remain visible: the CForex v0.9.21 training manifest declares 330 records, while the directly retrieved source dataset blob evidence exposes 108 JSONL records. CFIP deliberately does **not** copy a partial dataset or trust the declared count without reconciliation.
+6. During source inspection, found a material integrity discrepancy that must remain visible: the CForex v0.9.154 source baseline's v0.21 training manifest declares 330 records, while the directly retrieved source dataset blob evidence exposes 108 JSONL records. CFIP deliberately does **not** copy a partial dataset or trust the declared count without reconciliation.
 7. Preserved the source discrepancy as a governed blocker rather than hiding it or converting it into a false dataset-completeness claim.
 
 ## Source dataset evidence discovered
