@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-15  
 **Source:** `armanemp/CForex` `main` @ `900882154cab3b9b74d0543b9bbf72a708a08134`  
-**Target:** `armanemp/CFIP` `main` — Batch 74 canonical documentation checkpoint follows the engineering commits listed below.
+**Latest target HEAD:** `armanemp/CFIP` `main` @ `222d121709f5b9e7aa9de83343a4fbe4c1eb78cc`
 
 ## 1. Executive result
 
@@ -81,11 +81,52 @@ The standards now distinguish:
 
 OpenTelemetry's current messaging guidance describes producer/consumer/process/settle spans and recommends message creation context propagation so producer and consumer traces can be correlated without depending on business payload fields. citeturn0search3turn0search9
 
-### 3.6 Control index
+### 3.6 CI quality fixes found during verification
 
-`docs/CFIP-MIGRATION-CONTROL-INDEX.md` now registers Batch 74 and records the remaining runtime evidence gaps.
+The first current-head Architecture Contracts run exposed two real control-plane defects:
 
-## 4. Why this is important for global scale
+1. the migration-control consistency validator depended on brittle exact wording even though the canonical Gate-0 register had already changed to the approved equivalent wording;
+2. the migration-graph workflow step treated the presence of the empty `migrations/` scaffold as a materialized revision graph and failed before any revision existed.
+
+Both were fixed directly on GitHub:
+
+- validator matching now accepts the canonical wording and retains fail-closed checks;
+- validator tests cover both canonical and legacy accepted wording;
+- migration-graph CI now runs only when actual `*.py` revision files are materialized under the revision directories.
+
+This is important because CI failures are treated as root-cause engineering work, not as noise.
+
+### 3.7 Control index
+
+`docs/CFIP-MIGRATION-CONTROL-INDEX.md` now registers Batch 74, the CI corrections, and the remaining runtime evidence gaps.
+
+## 4. Verification status
+
+### Confirmed on current/latest workflow evidence
+
+- Repository Hygiene: **PASS** on the latest completed run before the final CI queue; the same workflow is triggered for the latest HEAD. fileciteturn221file0L1-L2
+- Architecture Contracts run on the preceding HEAD: all architecture contract, census, dependency, scale, intelligence, PIT/replay and training checks passed through the migration-graph step; the migration graph step was the only failure and was caused by the empty revision scaffold, not by a detected invalid migration graph. fileciteturn216file0L1-L2
+- The migration-control validator itself passed after the wording fix on that run. fileciteturn216file0L1-L2
+
+### Current latest HEAD
+
+The latest HEAD is `222d121709f5b9e7aa9de83343a4fbe4c1eb78cc`. Its Architecture Contracts run was queued at report time, so the final result is **PENDING**, not PASS. fileciteturn221file0L1-L2
+
+Not yet verified by executable runtime evidence:
+
+- PostgreSQL async adapter;
+- atomic claim transaction;
+- fencing-token correctness under concurrency;
+- stale-owner rejection;
+- transaction cancellation/shutdown behavior;
+- connection-pool exhaustion behavior;
+- worker restart/recovery;
+- live NATS stream/consumer topology;
+- end-to-end outbox → dispatcher → NATS lifecycle;
+- production OTel backend;
+- representative global-scale load and failure-domain tests.
+
+## 5. Why this is important for global scale
 
 A globally scaled event worker can be dominated by storage latency even when broker I/O is non-blocking. A synchronous claim/ack boundary would serialize event-loop progress behind database waits or force hidden thread-pool capacity.
 
@@ -103,26 +144,6 @@ The new architecture makes storage concurrency an explicit adapter/runtime conce
 
 No capacity number is inferred from this architectural improvement alone.
 
-## 5. Verification boundary
-
-GitHub read-back confirms the updated contract, dispatcher, tests, ADR, standards document and migration control index are present in the target history.
-
-The following remain unverified until executable integration evidence exists:
-
-- PostgreSQL async adapter;
-- atomic claim transaction;
-- fencing-token correctness under concurrency;
-- stale-owner rejection;
-- transaction cancellation/shutdown behavior;
-- connection-pool exhaustion behavior;
-- worker restart/recovery;
-- live NATS stream/consumer topology;
-- end-to-end outbox → dispatcher → NATS lifecycle;
-- production OTel backend;
-- representative global-scale load and failure-domain tests.
-
-CI status must be taken from the current GitHub Actions run and is not inferred from source read-back.
-
 ## 6. D1–D11 progress
 
 | Dimension | Current status | Batch 74 impact | Remaining closure |
@@ -133,19 +154,19 @@ CI status must be taken from the current GitHub Actions run and is not inferred 
 | D4 Engines | ADVANCED / BOUNDED | none | PIT/replay/fixture/telemetry closure |
 | D5 Workers | **ADVANCED / OPEN** | storage boundary now async | durable implementation, fencing, recovery, scale |
 | D6 Frontend | IN PROGRESS | none | product/workflow/i18n/a11y evidence |
-| D7 Tests | IN PROGRESS | async storage contract coverage | integration/E2E/security/recovery/performance |
+| D7 Tests | IN PROGRESS | async storage contract coverage + CI root-cause fixes | integration/E2E/security/recovery/performance |
 | D8 Policy/config | IN PROGRESS | none | exhaustive classification |
 | D9 Adapters | **ADVANCED / OPEN** | async adapter boundary strengthened | PostgreSQL/NATS live lifecycle and other adapters |
 | D10 Operations | IN PROGRESS | better runtime scalability boundary | telemetry/SLO/capacity/DR/residency |
-| D11 Reconciliation | **STRONGER / OPEN** | contract/source/standards/ADR aligned | whole-repo closure |
+| D11 Reconciliation | **STRONGER / OPEN** | contract/source/standards/ADR/CI aligned | whole-repo closure |
 
 ## 7. Overall progress
 
 | Area | Status | Evidence boundary |
 |---|---|---|
-| Repository governance | STRONG | always-on hygiene + canonical controls |
-| Documentation integrity | STRONGER | Batch 74 reconciliation |
-| Obsolete-reference hygiene | ENFORCED | repository-wide validator; current run still evidence-gated |
+| Repository governance | **STRONGER** | hygiene + architecture controls + root-cause CI fixes |
+| Documentation integrity | **STRONGER** | Batch 74 reconciliation |
+| Obsolete-reference hygiene | **ENFORCED** | repository-wide validator; latest run queued |
 | Source study | ADVANCING / OPEN | current async outbox evidence confirmed |
 | Source closure | OPEN | event path improved, broader census incomplete |
 | Target engineering | ADVANCING | controlled Gate-0 implementation |
@@ -228,4 +249,4 @@ Tracks A–G can be investigated in parallel. Shared canonical status changes re
 - Unrestricted autonomous mutation: **NOT PERMITTED**.
 - Global-scale readiness: **NOT CLAIMED**.
 
-Batch 74 therefore closes an actual architectural inconsistency rather than only extending documentation: the complete durable event dispatch boundary is now async by contract, while correctness remains explicitly owned by transactional durable implementations.
+Batch 74 therefore closes an actual architectural inconsistency and two CI control-plane defects: the complete durable event dispatch boundary is now async by contract, migration-control validation is aligned with canonical wording, and migration graph validation waits for actual revision materialization. Correctness remains explicitly owned by transactional durable implementations.
