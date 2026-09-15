@@ -98,6 +98,19 @@ class EventTransport(Protocol):
         """Publish an event; acknowledgement means accepted by the transport."""
 
 
+class DurableEventClaimPort(Protocol):
+    """Claim a bounded batch under a worker lease."""
+
+    def claim_batch(
+        self,
+        *,
+        worker_id: str,
+        limit: int,
+        lease_seconds: int,
+    ) -> list[DurableEventRecord]:
+        """Atomically claim eligible durable events and return leased records."""
+
+
 class DurableEventStatePort(Protocol):
     """Lease-fenced state transitions owned by the durable store."""
 
