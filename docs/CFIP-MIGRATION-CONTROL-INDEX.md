@@ -7,7 +7,7 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Current CFIP Batch 70 implementation/documentation head: recorded after the final hygiene/control commits of this batch.
+- Current CFIP head is advanced by Batch 71 hygiene-control commits; exact HEAD is rechecked after every canonical write sequence.
 - Historical evidence is retained only when it remains valid target evidence; obsolete architecture-history artifacts are removed from the active repository surface.
 - Current-head Admin Git hardening remains an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
@@ -70,7 +70,7 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58–70 registration
+## Batch 58–71 registration
 
 ### Batch 58–65
 Prior batch registrations remain immutable in this index history.
@@ -116,5 +116,13 @@ Prior batch registrations remain immutable in this index history.
 - obsolete contradiction-sweep and early progress-report artifacts containing superseded architecture history removed from the active repository surface;
 - no business semantics were changed by the cleanup batch;
 - global-scale, PIT/replay, Platform Intelligence and Gate-0 controls remain intact.
+
+### Batch 71
+- upgraded repository hygiene from a text-extension allow-list to a complete current-tree byte scan plus path-name scan, excluding only repository/runtime cache internals;
+- expanded validator tests to cover text content, path names and extensionless files;
+- added `.github/workflows/repository-hygiene.yml` so the hygiene gate runs on every pull request and every push to `main`, rather than only on architecture-sensitive paths;
+- retained read-only workflow permissions and a bounded CI timeout;
+- no business semantics or source behavior were changed;
+- repository hygiene is now an always-on control, while source closure, parity, scale capacity and production readiness remain independently gated.
 
 Direct broker transport remains intentionally unresolved until source evidence is obtained. Live migration execution and production readiness remain unverified/locked.
