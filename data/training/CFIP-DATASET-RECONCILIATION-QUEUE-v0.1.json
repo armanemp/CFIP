@@ -19,8 +19,10 @@
       "generation": "v0.19",
       "declared_record_count": 204,
       "observed_record_count": null,
-      "status": "MANIFEST-OBSERVED",
-      "blocking_reason": "direct_blob_count_and_hash_verification_required"
+      "status": "BLOB-LOCATED",
+      "blocking_reason": "direct_blob_count_and_hash_verification_required",
+      "manifest_evidence": "armanemp/CForex:data/training/SEED-DATASET-MANIFEST-v0.19.json",
+      "blob_evidence": "armanemp/CForex:data/training/governed_platform_knowledge_v0.19.jsonl"
     },
     {
       "generation": "v0.20",
