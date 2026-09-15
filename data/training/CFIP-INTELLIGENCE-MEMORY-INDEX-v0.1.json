@@ -1,0 +1,31 @@
+{
+  "schema_version": "0.1",
+  "status": "GOVERNED_INDEX_ONLY",
+  "storage_authority": "postgresql_metadata_plus_immutable_evidence",
+  "source_repository": "armanemp/CForex",
+  "target_repository": "armanemp/CFIP",
+  "memory_lifecycle": [
+    "CANDIDATE",
+    "VERIFIED",
+    "ACTIVE",
+    "SUPERSEDED",
+    "RETIRED"
+  ],
+  "retrieval_requirements": [
+    "temporal_validity",
+    "provenance",
+    "authorization",
+    "verification_state",
+    "uncertainty",
+    "contradiction_awareness",
+    "deterministic_ties"
+  ],
+  "promotion_policy": {
+    "production_mutation_allowed": false,
+    "domain_authority_transfer_allowed": false,
+    "requires_verified_evidence": true,
+    "requires_reproducibility": true,
+    "requires_rollback_or_reversion": true
+  },
+  "entries": []
+}
