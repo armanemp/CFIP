@@ -6,12 +6,15 @@ import unittest
 from cfip_technical import (
     OHLCV,
     adx,
+    aroon,
     atr,
     bollinger_bands,
+    chaikin_money_flow,
     cci,
     donchian_channels,
     ema,
     macd,
+    money_flow_index,
     momentum,
     obv,
     roc,
@@ -117,6 +120,33 @@ class IndicatorTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             vwap(candles([1, 2, 3]))
 
+    def test_aroon_tracks_recent_extremes_and_preserves_warmup(self) -> None:
+        data = [
+            OHLCV(1, 2, 0, 1),
+            OHLCV(2, 3, 1, 2),
+            OHLCV(3, 4, 2, 3),
+            OHLCV(2, 3, 1, 2),
+            OHLCV(5, 6, 4, 5),
+        ]
+        up, down = aroon(data, 3)
+        self.assertEqual(up.values[:2], (None, None))
+        self.assertEqual(down.values[:2], (None, None))
+        self.assertEqual(up.values[4], 100.0)
+        self.assertAlmostEqual(down.values[4] or 0.0, 33.3333333333)
+
+    def test_money_flow_indicators_require_volume_and_bound_mfi(self) -> None:
+        data = candles([10, 11, 12, 11, 13, 14], 100)
+        mfi_result = money_flow_index(data, 3)
+        cmf_result = chaikin_money_flow(data, 3)
+        self.assertEqual(mfi_result.warmup, 3)
+        self.assertTrue(all(value is None or 0.0 <= value <= 100.0 for value in mfi_result.values))
+        self.assertIsNotNone(cmf_result.values[-1])
+        self.assertTrue(all(value is None or -1.0 <= value <= 1.0 for value in cmf_result.values))
+        with self.assertRaises(ValueError):
+            money_flow_index(candles([1, 2, 3, 4]))
+        with self.assertRaises(ValueError):
+            chaikin_money_flow(candles([1, 2, 3, 4]))
+
     def test_adx_uses_wilder_warmup_and_directional_components(self) -> None:
         data = [OHLCV(i, i + 2, i - 1, i + 1) for i in range(1, 35)]
         plus_di, minus_di, adx_result = adx(data, 5)
@@ -140,6 +170,10 @@ class IndicatorTests(unittest.TestCase):
             stochastic(candles([1, 2, 3]), 3, 0)
         with self.assertRaises(ValueError):
             adx(candles([1, 2, 3]), 0)
+        with self.assertRaises(ValueError):
+            aroon(candles([1, 2, 3]), 0)
+        with self.assertRaises(ValueError):
+            money_flow_index(candles([1, 2, 3]), 0)
 
 
 if __name__ == "__main__":
