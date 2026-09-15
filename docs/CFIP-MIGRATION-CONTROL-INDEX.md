@@ -8,9 +8,9 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Batch 74 continues directly from the Batch 73 event-transport checkpoint and removes a remaining async storage-boundary mismatch.
-- Current source study confirms the source worker uses asynchronous NATS JetStream publication after a durable PostgreSQL outbox.
-- CFIP event transport, durable claim and durable state boundaries are now asynchronous at the contract/dispatcher level; concrete PostgreSQL runtime integration remains unverified.
+- Batch 75 advances the durable event path from asynchronous contracts to a concrete PostgreSQL adapter with atomic claim and explicit monotonic fencing.
+- CFIP event transport, durable claim and durable state boundaries are asynchronous at the contract/dispatcher level.
+- `packages/eventing-postgres` now provides a SQLAlchemy async adapter; live PostgreSQL execution and end-to-end broker composition remain unverified.
 - Current-head Admin Git hardening remains an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
 - CFIP production promotion: **LOCKED**.
@@ -162,14 +162,26 @@ Prior batch registrations remain immutable in this index history.
 - expanded validator tests for both canonical and legacy accepted wording while retaining fail-closed checks;
 - no production PostgreSQL adapter or live JetStream topology was claimed without executable integration evidence.
 
+### Batch 75
+- added migration `0003_durable_event_fencing` with a monotonic `fencing_token` on `cfip_durable_events` plus a dispatchability index;
+- strengthened `DurableEventRecord` and `DurableEventStatePort` so every durable transition carries an explicit fencing token;
+- updated `DurableEventDispatcher` to propagate the claimed token to every state transition;
+- added `packages/eventing-postgres` with SQLAlchemy async durability adapter;
+- implemented atomic PostgreSQL claim using `FOR UPDATE SKIP LOCKED`, bounded batch selection, lease assignment, attempt increment and monotonic fencing in one transaction;
+- implemented published/retry/dead transitions fenced by worker identity, token, processing state and unexpired lease;
+- added deterministic adapter tests for PostgreSQL compilation, causal envelope preservation, error bounding and fencing invariants;
+- documented the adapter's runtime verification boundary; live PostgreSQL and end-to-end outbox→dispatcher→broker execution remain explicitly unverified;
+- no production readiness or live integration claim is inferred from package presence or SQL compilation alone.
+
 ## Active evidence gaps
 
-1. Exhaustive event-family/subject/consumer registry and replay/retention classification.
-2. Live JetStream stream/consumer configuration and integration tests.
-3. PostgreSQL durable claim/state runtime integration with transactional fencing.
-4. Realtime checkpoint/lease recovery and replay integration.
-5. Production telemetry emission and backend integration, including messaging context propagation.
-6. Current-head Admin Git write-path/test census.
-7. Raw-byte dataset hash/count reconciliation.
-8. Whole-repository dependency/hardcode/duplicate/contradiction closure.
-9. Global-scale capacity, tenant isolation, regional consistency and DR/RPO/RTO evidence.
+1. Live PostgreSQL integration execution of the durable-event adapter.
+2. End-to-end outbox → PostgreSQL claim → dispatcher → JetStream publish → fenced state transition.
+3. Exhaustive event-family/subject/consumer registry and replay/retention classification.
+4. Live JetStream stream/consumer configuration and integration tests.
+5. Realtime checkpoint/lease recovery and replay integration.
+6. Production telemetry emission and backend integration, including messaging context propagation.
+7. Current-head Admin Git write-path/test census.
+8. Raw-byte dataset hash/count reconciliation.
+9. Whole-repository dependency/hardcode/duplicate/contradiction closure.
+10. Global-scale capacity, tenant isolation, regional consistency and DR/RPO/RTO evidence.
