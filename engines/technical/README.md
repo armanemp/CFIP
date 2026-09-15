@@ -60,9 +60,17 @@ The current implementations are **target engineering**, not parity evidence. The
 
 Component names and conventional formulas do not prove identical source defaults, warm-up rules, tie-breaking, smoothing, missing-volume behavior or visual displacement. Those dimensions remain unverified until source evidence and independent fixtures close them.
 
-## Consensus boundary
+## Consensus composition boundary
 
 The authoritative final analysis boundary is `cfip_analysis_runtime.AnalysisConsensusService`. Technical indicators contribute normalized specialist evidence to that boundary; they do not create an independent final-decision authority.
+
+`cfip_analysis_runtime.IndicatorEvidenceAdapter` is the current semantic translation boundary. It consumes canonical indicator-result shape by protocol, applies an explicit allow-listed policy, and emits `SpecialistEvidence`. It performs no indicator calculation. Outputs that require additional contextual inputs—such as standalone volatility or channel/band components—fail closed until a higher-level composition contract supplies that context.
+
+The intended composition is:
+
+`OHLCV → canonical indicator → IndicatorResult → IndicatorEvidenceAdapter → SpecialistEvidence → AnalysisConsensusService`
+
+Provenance, quality, source-specific semantics and multi-output/contextual composition remain explicit follow-up contracts rather than implicit behavior.
 
 ## Gate status
 
