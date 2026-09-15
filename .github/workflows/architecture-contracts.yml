@@ -7,7 +7,9 @@ on:
       - 'docs/**'
       - 'migrations/**'
       - 'data/migrations/**'
+      - 'data/training/**'
       - 'tools/architecture/**'
+      - 'tools/governance/**'
       - 'tests/architecture/**'
       - '.github/workflows/architecture-contracts.yml'
   push:
@@ -18,7 +20,9 @@ on:
       - 'docs/**'
       - 'migrations/**'
       - 'data/migrations/**'
+      - 'data/training/**'
       - 'tools/architecture/**'
+      - 'tools/governance/**'
       - 'tests/architecture/**'
       - '.github/workflows/architecture-contracts.yml'
 
@@ -80,6 +84,12 @@ jobs:
 
       - name: Test worker lifecycle
         run: python -m unittest tests/architecture/test_validate_worker_lifecycle.py -v
+
+      - name: Test training dataset index
+        run: python -m unittest tests/architecture/test_validate_training_dataset_index.py -v
+
+      - name: Validate training dataset index
+        run: python tools/governance/validate_training_dataset_index.py data/training/CFIP-CFOREX-TRAINING-DATASET-INDEX-v0.1.json
 
       - name: Validate target migration graph when materialized
         shell: bash
