@@ -6,7 +6,7 @@ physical owner under ``cfip_technical.indicators``.
 """
 
 from .catalog import IndicatorDescriptor, all_indicators, get_indicator
-from .indicators.core import IndicatorResult, OHLCV, atr, bollinger_bands, ema, macd, rsi, sma
+from .indicators.core import IndicatorResult, OHLCV, atr, bollinger_bands, dema, ema, macd, rsi, sma, tema
 from .indicators.oscillators import (
     cci,
     money_flow_index,
@@ -14,9 +14,10 @@ from .indicators.oscillators import (
     roc,
     stochastic,
     stochastic_rsi,
+    trix,
     williams_r,
 )
-from .indicators.trend import adx, aroon, donchian_channels, ichimoku, keltner_channels
+from .indicators.trend import adx, aroon, donchian_channels, ichimoku, keltner_channels, parabolic_sar
 from .indicators.volume import chaikin_money_flow, obv, vwap
 
 __all__ = [
@@ -30,6 +31,7 @@ __all__ = [
     "bollinger_bands",
     "cci",
     "chaikin_money_flow",
+    "dema",
     "donchian_channels",
     "ema",
     "get_indicator",
@@ -39,11 +41,14 @@ __all__ = [
     "money_flow_index",
     "momentum",
     "obv",
+    "parabolic_sar",
     "roc",
     "rsi",
     "sma",
     "stochastic",
     "stochastic_rsi",
+    "tema",
+    "trix",
     "vwap",
     "williams_r",
 ]
