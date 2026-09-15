@@ -5,6 +5,7 @@ import unittest
 
 from cfip_technical import (
     OHLCV,
+    adx,
     atr,
     bollinger_bands,
     cci,
@@ -116,6 +117,16 @@ class IndicatorTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             vwap(candles([1, 2, 3]))
 
+    def test_adx_uses_wilder_warmup_and_directional_components(self) -> None:
+        data = [OHLCV(i, i + 2, i - 1, i + 1) for i in range(1, 35)]
+        plus_di, minus_di, adx_result = adx(data, 5)
+        self.assertEqual(plus_di.values[:5], (None,) * 5)
+        self.assertEqual(minus_di.values[:5], (None,) * 5)
+        self.assertIsNotNone(plus_di.values[5])
+        self.assertIsNotNone(adx_result.values[9])
+        self.assertTrue(all(value is None or 0.0 <= value <= 100.0 for value in adx_result.values))
+        self.assertGreater(plus_di.values[-1] or 0.0, minus_di.values[-1] or 0.0)
+
     def test_invalid_inputs_fail_closed(self) -> None:
         with self.assertRaises(ValueError):
             sma(candles([1, 2]), 0)
@@ -127,6 +138,8 @@ class IndicatorTests(unittest.TestCase):
             stochastic(candles([1, 2, 3]), 0, 3)
         with self.assertRaises(ValueError):
             stochastic(candles([1, 2, 3]), 3, 0)
+        with self.assertRaises(ValueError):
+            adx(candles([1, 2, 3]), 0)
 
 
 if __name__ == "__main__":
