@@ -7,7 +7,7 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Current CFIP Batch 68 implementation/documentation head: `6c48b0a490367a1265eb59efc25f4f3aaeba81cf`.
+- Current CFIP Batch 68 implementation/documentation head: `d301879826c5eb6df4359bb2f88228a84a429b5c`.
 - Historical evidence is retained and never rewritten as current source truth.
 - Current-head Admin Git hardening is reconciled as an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
