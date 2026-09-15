@@ -4,7 +4,7 @@ This namespace owns deterministic, dependency-free technical indicator primitive
 
 ## Canonical implementation structure
 
-The physical repository structure is part of the engineering contract. A family directory must contain the executable implementation for that family; it must not be an empty placeholder or a re-export from a compatibility module.
+The physical repository structure is part of the engineering contract. Each indicator family has exactly one executable implementation owner; there are no module-level compatibility facades or duplicate calculation surfaces.
 
 ```text
 src/cfip_technical/
@@ -16,11 +16,10 @@ src/cfip_technical/
 │   ├── oscillators.py              # Momentum, ROC, Stochastic, Williams %R, CCI, MFI, StochRSI
 │   ├── trend.py                    # ADX, Aroon, Donchian, Ichimoku, Keltner
 │   └── volume.py                   # OBV, VWAP, CMF
-├── indicators.py                   # compatibility facade only
-└── extended.py                     # compatibility facade only
+└── models.py                       # canonical input/result models
 ```
 
-`tools/architecture/validate_indicator_structure.py` and its regression test enforce this relationship in CI. This control exists specifically to prevent documentation/directory presence from being mistaken for implementation completeness.
+`tools/architecture/validate_indicator_structure.py` and its regression test enforce this relationship in CI. The guard fails if obsolete module-level facades reappear. This prevents directory presence from being mistaken for implementation completeness and prevents ambiguous module/package imports.
 
 ## Canonical metadata registry
 
