@@ -16,6 +16,7 @@ from .realtime import (
     ConsumerCheckpoint,
     PartitionLease,
     PartitionPosition,
+    RealtimeTelemetrySnapshot,
     Watermark,
 )
 
@@ -34,5 +35,6 @@ __all__ = [
     "EventType",
     "PartitionLease",
     "PartitionPosition",
+    "RealtimeTelemetrySnapshot",
     "Watermark",
 ]
