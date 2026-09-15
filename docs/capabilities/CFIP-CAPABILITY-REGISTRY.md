@@ -9,7 +9,7 @@ This registry is the starting parity map. It is intentionally capability-oriente
 | CAP-MARKET-REFERENCE | symbols/instruments/timeframes | market_reference | `contexts/market_reference` | contract/PIT/unit tests |
 | CAP-MARKET-DATA | providers/ingestion/canonical observations | market_data | `contexts/market_data`, adapters | provider contract/PIT/integration |
 | CAP-DATA-LINEAGE | provenance/quality/revision | data_lineage | `contexts/data_lineage` | lineage/PIT/replay tests |
-| CAP-REALTIME | realtime/eventing/outbox | realtime | `contexts/realtime`, packages/eventing | event contract/integration/load |
+| CAP-REALTIME | realtime/eventing/outbox | realtime | `contexts/realtime`, eventing dispatcher/adapters | event contract/integration/load |
 | CAP-CHART-WORKSPACE | chart/workspace/drawings | chart_workspace | `contexts/chart_workspace`, `frontend/chart` | UI/a11y/realtime/e2e |
 | CAP-TECHNICAL | technical indicators/features | technical_analysis | `contexts/technical_analysis`, `engines/technical` | deterministic engine tests |
 | CAP-STRUCTURE | market structure | market_structure | `contexts/market_structure`, `engines/structure` | deterministic/PIT tests |
