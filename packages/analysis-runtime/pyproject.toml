@@ -9,7 +9,10 @@ description = "CFIP deterministic, governed analysis runtime contracts"
 requires-python = ">=3.14,<3.15"
 
 [project.optional-dependencies]
-test = ["pytest>=8,<9"]
+test = [
+  "pytest>=8,<9",
+  "pytest-asyncio>=1,<2",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/cfip_analysis_runtime"]
