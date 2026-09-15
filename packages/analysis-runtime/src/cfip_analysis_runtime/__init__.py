@@ -14,10 +14,12 @@ from .repository import (
     InMemoryAnalysisExecutionRepository,
 )
 from .runtime import EngineHealth, EngineRuntime, UnknownEngineError
+from .unit_of_work import AnalysisExecutionUnitOfWork
 
 __all__ = [
     "AnalysisExecution",
     "AnalysisExecutionRepository",
+    "AnalysisExecutionUnitOfWork",
     "EngineDescriptor",
     "EngineExecutionContext",
     "EngineHealth",
