@@ -10,7 +10,9 @@ Current OpenTelemetry Semantic Conventions are the preferred baseline for common
 
 Telemetry evolution is a compatibility surface: changes that can break dashboards, alerts or consumers require controlled schema/version handling rather than casual renaming. OpenTelemetry's event guidance also distinguishes point-in-time events from duration-bearing spans and recommends stable, domain-specific event names with documented attributes. citeturn0search10turn0search4
 
-NATS JetStream supports publisher-supplied `Nats-Msg-Id` values for broker-side duplicate suppression. CFIP uses that reserved header only for the event identity and keeps application-specific metadata outside the reserved `Nats-*` namespace. citeturn1search0turn1search5
+Messaging telemetry should use the current OpenTelemetry messaging model where applicable, including producer/consumer/process/settle semantics, message creation context and low-cardinality destination identity. citeturn0search3turn0search9
+
+NATS JetStream supports publisher-supplied `Nats-Msg-Id` values for broker-side duplicate suppression. CFIP uses that reserved header only for the event identity and keeps application-specific metadata outside the reserved `Nats-*` namespace.
 
 ## 2. Target improvements confirmed
 
@@ -22,15 +24,15 @@ CFIP uses:
 
 Telemetry is observational and cannot become an implicit correctness store.
 
-The realtime contract now explicitly represents a low-cardinality `RealtimeTelemetrySnapshot` containing queue depth, capacity, consumer lag, event-time watermark, lateness, processing latency and bounded backpressure action. The snapshot is immutable and observational; durable checkpoints, leases, event logs and domain state remain authoritative.
+The realtime contract explicitly represents a low-cardinality `RealtimeTelemetrySnapshot` containing queue depth, capacity, consumer lag, event-time watermark, lateness, processing latency and bounded backpressure action. The snapshot is immutable and observational; durable checkpoints, leases, event logs and domain state remain authoritative.
 
-### 2.2 Async transport boundary
+### 2.2 Fully asynchronous event-dispatch boundary
 
-Network transports are asynchronous at the application boundary:
+The complete worker I/O boundary is asynchronous:
 
-`durable claim → async transport publish → lease-fenced durable state transition`
+`async durable claim → async transport publish → async lease-fenced durable state transition`
 
-The `EventTransport` port therefore exposes `async publish(...)`. This prevents a real broker client from forcing blocking network I/O into the worker loop and keeps transport latency compatible with bounded concurrency/backpressure. Durable claim/state ports remain independent until their storage integration demonstrates a need for an async storage contract.
+The `EventTransport`, `DurableEventClaimPort` and `DurableEventStatePort` contracts therefore all expose asynchronous operations. This prevents broker **and storage** network I/O from forcing blocking work into the async worker loop and keeps transport/storage latency compatible with bounded concurrency and backpressure. Concrete storage adapters must preserve transactional claim/fencing semantics; the async contract does not weaken atomicity requirements.
 
 ### 2.3 NATS JetStream adapter ownership
 
@@ -88,9 +90,11 @@ CFIP will not blindly remove every literal. Immutable domain invariants remain c
 10. No documentation status may imply runtime parity without executable evidence.
 11. Realtime operational telemetry must remain low-cardinality, bounded and non-authoritative; correctness state is persisted through its explicit ownership boundary.
 12. Realtime telemetry schema changes must be compatibility-reviewed before changing dashboards, alerts or consumers.
-13. Concrete transport SDKs may appear only in adapter packages; domain/contracts/dispatcher layers remain SDK-neutral.
+13. Concrete transport/storage SDKs may appear only in adapter packages; domain/contracts/dispatcher layers remain SDK-neutral.
 14. Reserved transport headers are used only for their protocol-defined purposes; application metadata uses an explicit project namespace.
 15. Network I/O must not be introduced as blocking work inside an async worker path.
+16. Async storage contracts must still be backed by atomic, transactionally fenced implementations; `async` is a scheduling property, not a correctness guarantee.
+17. Messaging trace context must be propagated deliberately at the adapter/consumer boundary; telemetry correlation must not depend on business payload fields alone. citeturn0search9
 
 ## 4. Speed without loss of rigor
 
@@ -100,13 +104,14 @@ The fastest safe unit is a **closure packet** containing direct source evidence,
 
 ## 5. Verification boundary
 
-The realtime telemetry contract and focused tests are present, and the event transport boundary has now been aligned with asynchronous broker I/O. The NATS adapter has isolated unit tests. Repository read-back verifies the intended source changes; executable CI remains the authoritative final verification surface.
+The realtime telemetry contract and focused tests are present, the event transport boundary is aligned with asynchronous broker I/O, and durable claim/state contracts are now asynchronous as well. The NATS adapter has isolated unit tests. Repository read-back verifies the intended source changes; executable CI remains the authoritative final verification surface.
 
 This batch does **not** claim:
 
 - live broker integration;
 - durable checkpoint/lease repository integration;
 - PostgreSQL runtime migration evidence;
+- transactional fencing under concurrent workers;
 - production telemetry backend readiness;
 - global-scale capacity;
 - production readiness.
