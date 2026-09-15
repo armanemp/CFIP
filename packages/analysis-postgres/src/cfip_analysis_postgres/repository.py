@@ -116,10 +116,6 @@ def _assert_same_request(persisted: AnalysisExecution, requested: AnalysisExecut
         raise ExecutionIdempotencyConflict(
             f"idempotency key {key!r} is already bound to a different request"
         )
-    if persisted.execution_id != requested.execution_id:
-        raise ExecutionIdempotencyConflict(
-            f"idempotency key {key!r} is already bound to execution {persisted.execution_id!r}"
-        )
 
 
 def _execution_to_row(execution: AnalysisExecution, key: str) -> dict[str, Any]:
