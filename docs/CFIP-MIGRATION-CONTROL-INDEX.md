@@ -47,7 +47,9 @@ Read these documents in this order at the start of every migration continuation:
 32. `docs/governance/CFIP-DATASET-RECONCILIATION-PROTOCOL.md` — source dataset evidence-state and reconciliation rules.
 33. `data/training/CFIP-DATASET-RECONCILIATION-QUEUE-v0.1.json` — machine-readable dataset reconciliation work queue and eligibility state.
 34. `docs/CFIP-ECP-CHECKPOINT-54.md` — Batch 54 governed checkpoint.
-35. `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-54.md` and `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-54.md` — latest progress and contradiction evidence.
+35. `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-54.md` and `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-54.md` — Batch 54 progress and contradiction evidence.
+36. `docs/CFIP-ECP-CHECKPOINT-55.md` — Batch 55 governed checkpoint.
+37. `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-55.md` and `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-55.md` — Batch 55 progress and contradiction evidence.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -243,7 +245,7 @@ Documentation, source inspection, evidence extraction, reconciliation and govern
 
 ## 13. Integrated project rule
 
-The key prompt, continuation contract, architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register, carry-forward baseline, intelligence-memory contract, dataset-reconciliation protocol/queue and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
+The key prompt, continuation contract, architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register, carry-forward baseline, intelligence-memory contract, dataset-reconciliation protocol/queue, Batch 55 checkpoint/progress/contradiction evidence and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
 
 ## 14. Execution-lifecycle evidence rule
 
