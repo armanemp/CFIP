@@ -82,7 +82,7 @@ class IndicatorTests(unittest.TestCase):
         self.assertEqual(k.values[:2], (None, None))
         self.assertAlmostEqual(k.values[2] or 0.0, 75.0)
         self.assertEqual(d.values[:3], (None, None, None))
-        self.assertAlmostEqual(d.values[3] or 0.0, 45.8333333333)
+        self.assertAlmostEqual(d.values[3] or 0.0, 54.1666666667)
 
     def test_stochastic_flat_range_has_deterministic_neutral_value(self) -> None:
         data = [OHLCV(10, 10, 10, 10) for _ in range(4)]
@@ -94,7 +94,7 @@ class IndicatorTests(unittest.TestCase):
         data = candles([10, 11, 12, 11, 13, 12])
         result = williams_r(data, 3)
         self.assertAlmostEqual(result.values[2] or 0.0, -25.0)
-        self.assertAlmostEqual(result.values[4] or 0.0, 0.0)
+        self.assertAlmostEqual(result.values[4] or 0.0, -25.0)
         self.assertTrue(all(value is None or -100.0 <= value <= 0.0 for value in result.values))
 
     def test_cci_and_donchian_channels(self) -> None:
@@ -103,8 +103,8 @@ class IndicatorTests(unittest.TestCase):
         upper, middle, lower = donchian_channels(data, 3)
         self.assertIsNotNone(cci_result.values[-1])
         self.assertEqual(upper.values[-1], 6)
-        self.assertEqual(lower.values[-1], 3)
-        self.assertEqual(middle.values[-1], 4.5)
+        self.assertEqual(lower.values[-1], 2)
+        self.assertEqual(middle.values[-1], 4.0)
 
     def test_obv_and_vwap_require_volume_and_are_deterministic(self) -> None:
         data = candles([10, 11, 9], 100)
