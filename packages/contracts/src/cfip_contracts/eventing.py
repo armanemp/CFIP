@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 from typing import Protocol
 from uuid import UUID, uuid4
@@ -53,6 +53,42 @@ class DispatchFailure:
     error_code: str
     message: str
     retryable: bool = True
+
+    def __post_init__(self) -> None:
+        if not self.error_code.strip():
+            raise ValueError("error_code is required")
+        if not self.message.strip():
+            raise ValueError("message is required")
+
+
+@dataclass(frozen=True, slots=True)
+class DispatchRetryPolicy:
+    """Bounded exponential retry policy with explicit terminal attempt count."""
+
+    max_attempts: int = 8
+    base_delay_seconds: float = 1.0
+    max_delay_seconds: float = 300.0
+
+    def __post_init__(self) -> None:
+        if self.max_attempts < 1:
+            raise ValueError("max_attempts must be >= 1")
+        if self.base_delay_seconds <= 0:
+            raise ValueError("base_delay_seconds must be > 0")
+        if self.max_delay_seconds < self.base_delay_seconds:
+            raise ValueError("max_delay_seconds must be >= base_delay_seconds")
+
+    def next_delay(self, attempts: int) -> timedelta:
+        """Return bounded delay before the next retry after ``attempts`` attempts."""
+        if attempts < 1:
+            raise ValueError("attempts must be >= 1")
+        seconds = min(self.base_delay_seconds * (2 ** (attempts - 1)), self.max_delay_seconds)
+        return timedelta(seconds=seconds)
+
+    def exhausted(self, attempts: int) -> bool:
+        """Return whether no additional attempt is permitted."""
+        if attempts < 0:
+            raise ValueError("attempts must be >= 0")
+        return attempts >= self.max_attempts
 
 
 class EventTransport(Protocol):
