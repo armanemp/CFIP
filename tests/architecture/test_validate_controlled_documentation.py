@@ -10,13 +10,17 @@ TOOL = ROOT / "tools" / "governance" / "validate_controlled_documentation.py"
 
 
 class ControlledDocumentationValidatorTests(unittest.TestCase):
-    def test_validator_module_loads(self) -> None:
+    def _module(self):
         spec = importlib.util.spec_from_file_location("validate_controlled_documentation", TOOL)
         self.assertIsNotNone(spec)
         assert spec is not None
         module = importlib.util.module_from_spec(spec)
         assert spec.loader is not None
         spec.loader.exec_module(module)
+        return module
+
+    def test_validator_module_loads(self) -> None:
+        module = self._module()
         self.assertTrue(callable(module.main))
 
     def test_canonical_documents_exist(self) -> None:
@@ -29,6 +33,10 @@ class ControlledDocumentationValidatorTests(unittest.TestCase):
         )
         for path in required:
             self.assertTrue(path.is_file(), path)
+
+    def test_ecp_marker_accepts_abbreviation_or_full_expansion(self) -> None:
+        module = self._module()
+        self.assertIn(("ECP", "Evolution Control Plane"), module.required_marker_groups)
 
 
 if __name__ == "__main__":
