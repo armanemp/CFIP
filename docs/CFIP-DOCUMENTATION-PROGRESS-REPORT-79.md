@@ -8,7 +8,7 @@
 ## 1. Evidence snapshot
 
 - CForex HEAD rechecked: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- CFIP Batch-79 final HEAD: `2e477eaeb02fea3b2fa8797b214a233a067b8317`.
+- CFIP Batch-79 final HEAD at report creation: `2e477eaeb02fea3b2fa8797b214a233a067b8317`.
 - The continuation key prompt and full operating contract were re-read before work.
 - The migration control index was re-read and reconciled before implementation.
 - No current-head green CI claim is made here: the available GitHub workflow-run lookup for the final push does not expose a completed run through the connected workflow endpoint. Previous green runs remain historical evidence only.
@@ -155,7 +155,7 @@ Percentages are deliberately not used as evidence of completion; the atomic unit
 
 ## 8. Standards alignment note
 
-The target observability architecture continues to follow OpenTelemetry semantic-convention guidance. Messaging conventions remain version-sensitive/development-status material, so future NATS instrumentation must preserve explicit convention versioning/opt-in decisions and low-cardinality destination attributes rather than hard-coding assumptions. The messaging conventions also emphasize propagation of message creation context from producer to consumer, which remains a planned integration requirement rather than a claimed implementation. citeturn0search0turn0search5
+The target observability architecture continues to follow current OpenTelemetry semantic-convention guidance. Messaging conventions are version-sensitive and currently development-status material; future NATS instrumentation must therefore preserve explicit convention/version decisions and low-cardinality destination attributes. Producer-to-consumer message creation context propagation remains a planned integration requirement rather than a claimed implementation.
 
 ## 9. Next parallel tracks
 
