@@ -135,4 +135,52 @@ def adx(data: Sequence[OHLCV], period: int = 14) -> tuple[IndicatorResult, Indic
     return IndicatorResult("adx.plus_di", period, tuple(plus_di), min(period, length)), IndicatorResult("adx.minus_di", period, tuple(minus_di), min(period, length)), IndicatorResult("adx", period, tuple(adx_values), min(first_adx, length))
 
 
-__all__ = ["adx", "aroon", "donchian_channels", "ichimoku", "keltner_channels"]
+def parabolic_sar(data: Sequence[OHLCV], step: float = 0.02, maximum: float = 0.2) -> IndicatorResult:
+    """Deterministic Wilder-style parabolic SAR with explicit two-candle warm-up."""
+    if not 0.0 < step <= maximum <= 1.0:
+        raise ValueError("step and maximum must satisfy 0 < step <= maximum <= 1")
+    length = len(data)
+    values: list[float | None] = [None] * length
+    if length < 2:
+        return IndicatorResult("parabolic_sar", 1, tuple(values), length)
+
+    rising = data[1].close >= data[0].close
+    sar = data[0].low if rising else data[0].high
+    extreme = data[0].high if rising else data[0].low
+    acceleration = step
+
+    for index in range(1, length):
+        candidate = sar + acceleration * (extreme - sar)
+        if rising:
+            candidate = min(candidate, data[index - 1].low)
+            if index > 1:
+                candidate = min(candidate, data[index - 2].low)
+            if data[index].low < candidate:
+                rising = False
+                sar = extreme
+                extreme = data[index].low
+                acceleration = step
+            else:
+                sar = candidate
+                if data[index].high > extreme:
+                    extreme = data[index].high
+                    acceleration = min(maximum, acceleration + step)
+        else:
+            candidate = max(candidate, data[index - 1].high)
+            if index > 1:
+                candidate = max(candidate, data[index - 2].high)
+            if data[index].high > candidate:
+                rising = True
+                sar = extreme
+                extreme = data[index].high
+                acceleration = step
+            else:
+                sar = candidate
+                if data[index].low < extreme:
+                    extreme = data[index].low
+                    acceleration = min(maximum, acceleration + step)
+        values[index] = sar
+    return IndicatorResult("parabolic_sar", 1, tuple(values), 1)
+
+
+__all__ = ["adx", "aroon", "donchian_channels", "ichimoku", "keltner_channels", "parabolic_sar"]
