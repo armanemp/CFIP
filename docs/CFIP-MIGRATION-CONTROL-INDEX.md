@@ -6,9 +6,10 @@
 
 ## Current evidence snapshot
 
-- CFIP pre-Batch-58 HEAD: `d04043875083090a63dfeaa637a579d5f8e05518`.
-- Observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Historical source baseline `v0.9.154` remains a controlled evidence snapshot, but is not the current CForex HEAD. Source drift must be reconciled before Gate 0 closure.
+- Historical CFIP source snapshot: CForex v0.9.154.
+- Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
+- Historical v0.9.154 evidence is retained and must not be rewritten as current source truth.
+- Current-head Admin Git hardening is now reconciled as an explicit source delta; full source-delta closure remains open.
 - Gate 0: **OPEN**.
 - CFIP production business runtime: **0% / LOCKED**.
 
@@ -53,20 +54,27 @@ Every registered capability has a Platform Intelligence boundary. Applicable hoo
 
 No dataset is training-eligible merely because its manifest declares a count/hash. Synthetic artifacts remain synthetic and are never silently treated as market truth.
 
-## Source-drift action
+## Current source-delta register
 
-CForex `main` currently resolves to `900882154cab3b9b74d0543b9bbf72a708a08134`; recent history includes governed admin-Git hardening. This source delta must be incorporated into the next canonical source-closure baseline. Historical v0.9.154 documents remain immutable snapshots and must be labeled as such.
+`docs/architecture/CFIP-SOURCE-DRIFT-58.md` records the HEAD drift. `docs/architecture/CFIP-SOURCE-DELTA-59-ADMIN-GIT.md` records the first behaviorally material current-head delta: governed Admin Git hardening. It is classified as `PRESERVE + IMPROVE` for the governance boundary, with complete write-path and test census still required.
 
 ## Continuation protocol
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58 registration
+## Batch 58/59 registration
 
-- `docs/governance/CFIP-ECP-CHECKPOINT-58.md` — source-drift/reconciliation checkpoint.
-- `docs/architecture/CFIP-SOURCE-DRIFT-58.md` — verified source-HEAD drift register.
-- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-58.md` — Batch 58 progress.
-- `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-57.md` — corrected current contradiction sweep.
-- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-58.md` — governed intelligence-training cycle.
+### Batch 58
+- `docs/governance/CFIP-ECP-CHECKPOINT-58.md`
+- `docs/architecture/CFIP-SOURCE-DRIFT-58.md`
+- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-58.md`
+- `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-57.md`
+- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-58.md`
 
-Next batch must continue evidence-backed source closure; reporting never substitutes for closure.
+### Batch 59
+- `docs/governance/CFIP-ECP-CHECKPOINT-59.md`
+- `docs/architecture/CFIP-SOURCE-DELTA-59-ADMIN-GIT.md`
+- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-59.md`
+- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-59.md`
+
+Next continuation must prioritize exhaustive current-source delta closure and raw dataset reconciliation over report-only expansion.
