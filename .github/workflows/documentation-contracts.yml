@@ -1,0 +1,32 @@
+name: Documentation Contracts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "tools/governance/**"
+      - "tests/architecture/**"
+      - ".github/workflows/documentation-contracts.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "tools/governance/**"
+      - "tests/architecture/**"
+      - ".github/workflows/documentation-contracts.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  documentation-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Validate controlled documentation
+        run: python tools/governance/validate_controlled_documentation.py
+      - name: Run documentation architecture test
+        run: python -m unittest tests/architecture/test_validate_controlled_documentation.py
