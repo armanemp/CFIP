@@ -1,0 +1,27 @@
+name: Repository Hygiene
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  repository-hygiene:
+    name: Validate repository hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Test repository hygiene validator
+        run: python -m unittest tests/architecture/test_validate_target_contracts.py -v
+
+      - name: Validate complete repository hygiene
+        run: python tools/architecture/validate_target_contracts.py
