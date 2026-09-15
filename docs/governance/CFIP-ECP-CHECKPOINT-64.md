@@ -1,6 +1,7 @@
 # CFIP ECP Checkpoint 64
 
 **Change class:** R1/R2 boundary — durable event infrastructure; production promotion remains locked.  
+**Gate:** Gate 0 OPEN — controlled implementation permitted; production promotion LOCKED.  
 **Source evidence:** CForex `main` @ `900882154cab3b9b74d0543b9bbf72a708a08134`.  
 **Target:** CFIP `main`.
 
