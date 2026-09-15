@@ -1,0 +1,35 @@
+name: Governance Contracts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/governance/**"
+      - "tools/governance/**"
+      - "tests/architecture/**"
+      - ".github/workflows/governance-contracts.yml"
+  pull_request:
+    paths:
+      - "docs/governance/**"
+      - "tools/governance/**"
+      - "tests/architecture/**"
+      - ".github/workflows/governance-contracts.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  governance-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Validate evolution control plane
+        run: python tools/governance/validate_evolution_control_plane.py
+      - name: Run governance architecture tests
+        run: |
+          python -m unittest tests/architecture/test_validate_evolution_control_plane.py
+          python -m unittest tests/architecture/test_validate_intelligence_memory_index.py
+          python -m unittest tests/architecture/test_validate_dataset_reconciliation_queue.py
