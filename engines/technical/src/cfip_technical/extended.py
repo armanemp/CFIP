@@ -147,6 +147,71 @@ def donchian_channels(
     )
 
 
+def aroon(
+    data: Sequence[OHLCV], period: int = 25
+) -> tuple[IndicatorResult, IndicatorResult]:
+    """Return Aroon-up and Aroon-down from complete rolling windows."""
+    _validate_period(period)
+    up: list[float | None] = [None] * len(data)
+    down: list[float | None] = [None] * len(data)
+    for index in range(period - 1, len(data)):
+        window = data[index - period + 1 : index + 1]
+        high_offset = max(range(period), key=lambda offset: window[offset].high)
+        low_offset = min(range(period), key=lambda offset: window[offset].low)
+        bars_since_high = period - 1 - high_offset
+        bars_since_low = period - 1 - low_offset
+        up[index] = 100.0 * (period - bars_since_high) / period
+        down[index] = 100.0 * (period - bars_since_low) / period
+    warmup = min(period - 1, len(data))
+    return (
+        IndicatorResult("aroon.up", period, tuple(up), warmup),
+        IndicatorResult("aroon.down", period, tuple(down), warmup),
+    )
+
+
+def money_flow_index(data: Sequence[OHLCV], period: int = 14) -> IndicatorResult:
+    """Return the volume-weighted money-flow oscillator in [0, 100]."""
+    _validate_period(period)
+    if any(item.volume is None for item in data):
+        raise ValueError("MFI requires volume on every observation")
+    values: list[float | None] = [None] * len(data)
+    typical = [(item.high + item.low + item.close) / 3.0 for item in data]
+    raw_flow = [typical[index] * float(data[index].volume or 0.0) for index in range(len(data))]
+    for index in range(period, len(data)):
+        positive = 0.0
+        negative = 0.0
+        for cursor in range(index - period + 1, index + 1):
+            if cursor == 0:
+                continue
+            if typical[cursor] > typical[cursor - 1]:
+                positive += raw_flow[cursor]
+            elif typical[cursor] < typical[cursor - 1]:
+                negative += raw_flow[cursor]
+        if negative == 0.0:
+            values[index] = 100.0 if positive > 0.0 else 50.0
+        else:
+            ratio = positive / negative
+            values[index] = 100.0 - (100.0 / (1.0 + ratio))
+    return IndicatorResult("mfi", period, tuple(values), min(period, len(data)))
+
+
+def chaikin_money_flow(data: Sequence[OHLCV], period: int = 20) -> IndicatorResult:
+    """Return the rolling Chaikin Money Flow ratio."""
+    _validate_period(period)
+    if any(item.volume is None for item in data):
+        raise ValueError("CMF requires volume on every observation")
+    values: list[float | None] = [None] * len(data)
+    flow: list[float] = []
+    for item in data:
+        spread = item.high - item.low
+        multiplier = 0.0 if spread == 0 else ((2.0 * item.close) - item.high - item.low) / spread
+        flow.append(multiplier * float(item.volume or 0.0))
+    for index in range(period - 1, len(data)):
+        volume = sum(float(data[cursor].volume or 0.0) for cursor in range(index - period + 1, index + 1))
+        values[index] = None if volume == 0.0 else sum(flow[index - period + 1 : index + 1]) / volume
+    return IndicatorResult("cmf", period, tuple(values), min(period - 1, len(data)))
+
+
 def adx(
     data: Sequence[OHLCV], period: int = 14
 ) -> tuple[IndicatorResult, IndicatorResult, IndicatorResult]:
