@@ -21,7 +21,6 @@ Documentation and engineering are one workflow. Report-only work is not acceptab
 - GitHub `main` is the canonical current state.
 - Source history is immutable evidence.
 - Historical reports are snapshots; current canonical documents govern current interpretation.
-- Never trust remembered HEADs, versions, progress percentages or prior conclusions until GitHub is rechecked.
 - Obsolete implementation paths and framework-specific legacy material are not part of the target architecture and must not be referenced, reproduced or reintroduced.
 
 ## 2. Mandatory startup sequence
@@ -204,7 +203,7 @@ Source migrations are immutable. In mutable target migrations, a correction belo
 
 Architecture CI must keep active validators for target contracts, API/WS census, event graph, migration graph, engine reconciliation, worker lifecycle, dependency direction, PIT/replay, frontend census, policy/config census, global-scale contracts, migration-control consistency, Platform Intelligence coverage and continuation-control integrity.
 
-Validators accelerate evidence; they do not constitute parity proof.
+Repository hygiene is an independent always-on CI gate: every pull request and every push to `main` must execute the complete-tree/path-aware hygiene validator. The hygiene validator is deliberately repository-wide rather than extension-limited, so new artifact types cannot bypass the control. Validators accelerate evidence; they do not constitute parity proof.
 
 ## 12. Required work phases
 
