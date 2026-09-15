@@ -8,8 +8,8 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Batch 79 begins target technical-analysis engineering with a dependency-free deterministic indicator package; this is target implementation, not parity evidence.
-- Batch 79 also adds focused indicator CI and reconciles the technical-engine namespace documentation with the current controlled-implementation rule.
+- Batch 79 began target technical-analysis engineering with a dependency-free deterministic indicator package; this remains target implementation, not parity evidence.
+- Batch 80 expands the technical foundation with Momentum, ROC, Stochastic, Williams %R, CCI, OBV, VWAP and Donchian Channels, and establishes the single deterministic `AnalysisConsensusService` boundary for normalized specialist evidence.
 - CFIP event transport, durable claim and durable state boundaries are asynchronous at the contract/dispatcher level.
 - `packages/eventing-postgres` provides a SQLAlchemy async adapter with atomic claim and monotonic fencing; live PostgreSQL execution and end-to-end broker composition remain unverified.
 - Current-head Admin Git hardening remains an explicit source delta; full write-path/test census remains open.
@@ -48,6 +48,8 @@ Evidence is required for stateless horizontal APIs, regional routing where justi
 
 Every registered capability has a Platform Intelligence boundary. Applicable hooks are `observe → context → reason → act → verify → learn → audit → safety`. Intelligence is cross-cutting and never a second domain authority. AI agents act only through governed application tools/policies and have no direct SQL/infrastructure authority. Autonomous changes require checkpoint, evidence, risk classification, isolation, independent verification, release gates, health guard and rollback. Runtime autonomy cannot modify its own governor, safety controls or evidence history.
 
+The authoritative analytical result boundary is the deterministic `AnalysisConsensusService`; specialist engines, including technical indicators, contribute evidence but cannot silently become an alternate final-decision authority.
+
 ## Dataset/reconciliation status
 
 - v0.19 declared 204 records; direct hash/count verification remains outstanding.
@@ -75,93 +77,7 @@ Every continuation performs: inspect both repos → source study → evidence gr
 
 ## Batch 58–74 registration
 
-### Batch 58–65
 Prior batch registrations remain immutable in this index history.
-
-### Batch 66
-- transport-neutral bounded durable-event dispatcher;
-- durable claim/state ports;
-- explicit transport failure classification;
-- bounded retry/dead-letter orchestration;
-- canonical first PostgreSQL migration revision.
-
-### Batch 67
-- `IdempotentEventConsumer` — transport-neutral at-least-once consumer boundary;
-- atomic durable consumer claim before handler execution to prevent concurrent duplicate handling;
-- explicit distinction between transport at-least-once delivery and domain-level idempotency;
-- consumer contract tests;
-- `alembic.ini` and `migrations/env.py` for executable environment-neutral migration execution;
-- isolated migration dependency manifest with stable Alembic/SQLAlchemy/Psycopg versions;
-- migration documentation updated with explicit runtime configuration and production-evidence gate.
-
-### Batch 68
-- transport-neutral partition position/checkpoint/lease contracts;
-- fencing-token model for stale-owner protection;
-- monotonic event-time watermark contract and deterministic tracker;
-- explicit bounded backpressure/degradation policy with critical-event protection;
-- realtime runtime tests;
-- PostgreSQL migration `0002_realtime_progress` for consumer dedupe, checkpoints and partition leases;
-- batch-68 documentation and intelligence training record.
-
-### Batch 69
-- `tools/architecture/validate_continuation_contract.py` as a machine-checkable guard over the canonical continuation-control stack;
-- `tests/architecture/test_validate_continuation_contract.py` covering control-stack presence, operating rules and missing-document detection;
-- continuation validation integrated into architecture CI;
-- controlled implementation semantics and production lock preserved;
-- transport-specific engineering kept unresolved where source evidence is insufficient.
-
-### Batch 70
-- canonical continuation prompt modernized to remove obsolete architecture references and tighten the repository hygiene rule;
-- active control index reconciled with the new hygiene policy;
-- `tools/architecture/validate_target_contracts.py` upgraded with repository-wide text hygiene scanning for obsolete architecture references, while encoding detection markers so the validator cannot reintroduce the forbidden terms itself;
-- `tests/architecture/test_validate_target_contracts.py` added for current-tree hygiene and negative detection;
-- architecture CI now executes the target-contract validator tests explicitly before the validator itself;
-- obsolete contradiction-sweep and early progress-report artifacts containing superseded architecture history removed from the active repository surface;
-- no business semantics were changed by the cleanup batch;
-- global-scale, PIT/replay, Platform Intelligence and Gate-0 controls remain intact.
-
-### Batch 71
-- upgraded repository hygiene from a text-extension allow-list to a complete current-tree byte scan plus path-name scan, excluding only repository/runtime cache internals;
-- expanded validator tests to cover text content, path names and extensionless files;
-- added `.github/workflows/repository-hygiene.yml` so the hygiene gate runs on every pull request and every push to `main`, rather than only on architecture-sensitive paths;
-- retained read-only workflow permissions and a bounded CI timeout;
-- no business semantics or source behavior were changed;
-- repository hygiene is now an always-on control, while source closure, parity, scale capacity and production readiness remain independently gated.
-
-### Batch 72
-- identified and corrected a stale standards document that still described the former blanket runtime lock, reconciling it with the current controlled-implementation rule;
-- added `RealtimeTelemetrySnapshot` to the technology-neutral contract package;
-- snapshot covers queue depth, capacity, consumer lag, event-time watermark, lateness, processing latency and bounded backpressure action;
-- explicitly kept telemetry observational and non-authoritative, preserving durable checkpoints, leases, event logs and domain state as correctness authorities;
-- exported the contract through the shared contracts package;
-- added focused realtime-runtime tests for valid snapshots and negative metric validation;
-- refreshed the standards document with current OpenTelemetry semantic-convention guidance and compatibility principles;
-- no broker-specific implementation or production telemetry backend was invented without source/integration evidence.
-
-### Batch 73
-- re-read current source runtime evidence and confirmed the source event path uses asynchronous NATS JetStream publication after a durable PostgreSQL outbox;
-- corrected the target `EventTransport` contract from synchronous to asynchronous to prevent blocking network I/O in the worker path;
-- converted `DurableEventDispatcher` to await transport publication while preserving lease-fenced durable state transitions;
-- updated dispatcher tests for the async boundary;
-- added `packages/eventing-nats` with stable `nats-py` 2.15.x dependency, concrete JetStream adapter, package export, README and focused tests;
-- preserved `Nats-Msg-Id` for event identity/deduplication and moved project-specific metadata to a non-reserved header namespace;
-- added ADR-018 documenting the async transport decision and adapter ownership;
-- updated the standards document with transport isolation and protocol-header guardrails;
-- reconciled `packages/README.md` with the current controlled-implementation status;
-- live broker/stream/consumer configuration, PostgreSQL runtime integration, durable checkpoint/lease integration and end-to-end worker composition remain unverified.
-
-### Batch 74
-- re-audited the async event-dispatch path after Batch 73 and found a remaining inconsistency: durable claim/state ports were synchronous while the source outbox and target transport were asynchronous;
-- converted `DurableEventClaimPort.claim_batch` to async;
-- converted `DurableEventStatePort.mark_published`, `mark_failed` and `mark_dead` to async;
-- updated `DurableEventDispatcher` to await all correctness-critical storage calls as well as transport I/O;
-- updated dispatcher tests to model the complete async boundary;
-- added ADR-019 defining the async durable event-state boundary and explicitly preserving transactional fencing/atomicity requirements;
-- updated the standards document to require async storage at the worker boundary while keeping database correctness transactional;
-- added OpenTelemetry messaging guidance for future producer/consumer/process/settle instrumentation and message-context propagation;
-- fixed the migration-control consistency validator after its current-head CI run exposed brittle exact-phrase assumptions that contradicted the canonical Gate-0 wording;
-- expanded validator tests for both canonical and legacy accepted wording while retaining fail-closed checks;
-- no production PostgreSQL adapter or live JetStream topology was claimed without executable integration evidence.
 
 ### Batch 75
 - initially identified fencing as a schema requirement, then reconciled the change with the canonical pre-Gate-1 migration ownership rule;
@@ -194,6 +110,17 @@ Prior batch registrations remain immutable in this index history.
 - corrected `engines/technical/README.md`, which previously claimed implementation was locked despite the current controlled-implementation rule;
 - classified the indicator slice as `TARGET-REQUIRED` engineering until source-specific semantics, canonical engine identities, golden fixtures and PIT/replay parity evidence are reconciled.
 
+### Batch 80
+- expanded `CAP-TECHNICAL` with deterministic Momentum, ROC, Stochastic %K/%D, Williams %R, CCI, OBV, VWAP and Donchian Channel primitives;
+- preserved explicit warm-up/missingness semantics and fail-closed volume requirements for OBV/VWAP;
+- expanded focused technical tests to cover bounded ranges, volume requirements, channel semantics and deterministic numerical behavior;
+- established `packages/analysis-runtime/src/cfip_analysis_runtime/consensus.py` as the single authoritative deterministic specialist-evidence aggregation boundary;
+- added typed `SpecialistEvidence` and `ConsensusResult` contracts with shared `data_revision`, weighted confidence, agreement, minimum-margin and minimum-confidence abstention rules;
+- added deterministic consensus tests covering reproducibility, disagreement abstention, revision consistency and invalid weights;
+- exported the consensus boundary through the analysis-runtime public API;
+- reconciled technical-engine documentation so indicators explicitly contribute evidence to the central consensus boundary instead of creating a competing final-decision authority;
+- no parity, golden-fixture closure, PIT/replay closure, runtime CI green claim or production-readiness claim is inferred from these implementations.
+
 ## Active evidence gaps
 
 1. Live PostgreSQL integration execution of the durable-event adapter.
@@ -208,3 +135,6 @@ Prior batch registrations remain immutable in this index history.
 10. Whole-repository dependency/hardcode/duplicate/contradiction closure.
 11. Global-scale capacity, tenant isolation, regional consistency and DR/RPO/RTO evidence.
 12. `CAP-TECHNICAL` source-specific indicator census, canonical engine registry composition and golden/PIT/replay fixtures.
+13. Consensus-to-indicator integration fixtures proving deterministic normalization from technical outputs into `SpecialistEvidence`.
+14. Consensus integration with structure/liquidity/regime/MTF/confluence/contradiction outputs and final decision/risk boundaries.
+15. Current-head execution of technical and analysis-runtime CI workflows.
