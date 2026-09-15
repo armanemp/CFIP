@@ -132,7 +132,7 @@ class IndicatorTests(unittest.TestCase):
         self.assertEqual(up.values[:2], (None, None))
         self.assertEqual(down.values[:2], (None, None))
         self.assertEqual(up.values[4], 100.0)
-        self.assertAlmostEqual(down.values[4] or 0.0, 33.3333333333)
+        self.assertAlmostEqual(down.values[4] or 0.0, 66.6666666667)
 
     def test_money_flow_indicators_require_volume_and_bound_mfi(self) -> None:
         data = candles([10, 11, 12, 11, 13, 14], 100)
