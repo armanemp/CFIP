@@ -3,11 +3,27 @@ from __future__ import annotations
 import math
 import unittest
 
-from cfip_technical import OHLCV, atr, bollinger_bands, ema, macd, rsi, sma
+from cfip_technical import (
+    OHLCV,
+    atr,
+    bollinger_bands,
+    cci,
+    donchian_channels,
+    ema,
+    macd,
+    momentum,
+    obv,
+    roc,
+    rsi,
+    sma,
+    stochastic,
+    vwap,
+    williams_r,
+)
 
 
-def candles(closes: list[float]) -> list[OHLCV]:
-    return [OHLCV(value, value + 1, value - 1, value) for value in closes]
+def candles(closes: list[float], volume: float | None = None) -> list[OHLCV]:
+    return [OHLCV(value, value + 1, value - 1, value, volume) for value in closes]
 
 
 class IndicatorTests(unittest.TestCase):
@@ -53,6 +69,39 @@ class IndicatorTests(unittest.TestCase):
         self.assertIsNotNone(signal.values[33])
         self.assertIsNotNone(histogram.values[33])
         self.assertTrue(math.isclose(histogram.values[33] or 0.0, (line.values[33] or 0.0) - (signal.values[33] or 0.0)))
+
+    def test_momentum_and_roc_are_revision_safe_primitives(self) -> None:
+        data = candles([100, 102, 105, 110])
+        self.assertEqual(momentum(data, 2).values, (None, None, 5, 8))
+        self.assertAlmostEqual(roc(data, 2).values[-1] or 0.0, 7.8431372549)
+
+    def test_stochastic_and_williams_r_have_bounded_ranges(self) -> None:
+        data = candles([10, 11, 12, 11, 13, 12])
+        k, d = stochastic(data, 3, 2)
+        wr = williams_r(data, 3)
+        self.assertTrue(all(value is None or 0.0 <= value <= 100.0 for value in k.values))
+        self.assertTrue(all(value is None or 0.0 <= value <= 100.0 for value in d.values))
+        self.assertTrue(all(value is None or -100.0 <= value <= 0.0 for value in wr.values))
+
+    def test_cci_and_donchian_channels(self) -> None:
+        data = candles([1, 2, 3, 4, 5])
+        cci_result = cci(data, 3)
+        upper, middle, lower = donchian_channels(data, 3)
+        self.assertIsNotNone(cci_result.values[-1])
+        self.assertEqual(upper.values[-1], 6)
+        self.assertEqual(lower.values[-1], 3)
+        self.assertEqual(middle.values[-1], 4.5)
+
+    def test_obv_and_vwap_require_volume_and_are_deterministic(self) -> None:
+        data = candles([10, 11, 9], 100)
+        obv_result = obv(data)
+        vwap_result = vwap(data)
+        self.assertEqual(obv_result.values, (100.0, 200.0, 100.0))
+        self.assertIsNotNone(vwap_result.values[-1])
+        with self.assertRaises(ValueError):
+            obv(candles([1, 2, 3]))
+        with self.assertRaises(ValueError):
+            vwap(candles([1, 2, 3]))
 
     def test_invalid_inputs_fail_closed(self) -> None:
         with self.assertRaises(ValueError):
