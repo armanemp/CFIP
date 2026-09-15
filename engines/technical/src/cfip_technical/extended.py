@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import Sequence
 
+from .indicators import atr, ema, rsi
 from .models import IndicatorResult, OHLCV
 
 
@@ -212,16 +213,109 @@ def chaikin_money_flow(data: Sequence[OHLCV], period: int = 20) -> IndicatorResu
     return IndicatorResult("cmf", period, tuple(values), min(period - 1, len(data)))
 
 
+def ichimoku(
+    data: Sequence[OHLCV],
+    conversion_period: int = 9,
+    base_period: int = 26,
+    span_period: int = 52,
+) -> tuple[IndicatorResult, IndicatorResult, IndicatorResult, IndicatorResult, IndicatorResult]:
+    """Return Ichimoku conversion, base, leading spans and lagging close.
+
+    The leading spans are returned at the observation where their source
+    values are known; chart/rendering layers may apply the conventional visual
+    displacement without changing analytical event-time semantics.
+    """
+    for period in (conversion_period, base_period, span_period):
+        _validate_period(period)
+    if not conversion_period <= base_period <= span_period:
+        raise ValueError("Ichimoku periods must satisfy conversion <= base <= span")
+    length = len(data)
+    conversion: list[float | None] = [None] * length
+    base: list[float | None] = [None] * length
+    span_a: list[float | None] = [None] * length
+    span_b: list[float | None] = [None] * length
+    lagging: list[float | None] = [None] * length
+    for index in range(conversion_period - 1, length):
+        window = data[index - conversion_period + 1 : index + 1]
+        conversion[index] = (max(item.high for item in window) + min(item.low for item in window)) / 2.0
+    for index in range(base_period - 1, length):
+        window = data[index - base_period + 1 : index + 1]
+        base[index] = (max(item.high for item in window) + min(item.low for item in window)) / 2.0
+        if conversion[index] is not None:
+            span_a[index] = (conversion[index] + base[index]) / 2.0
+    for index in range(span_period - 1, length):
+        window = data[index - span_period + 1 : index + 1]
+        span_b[index] = (max(item.high for item in window) + min(item.low for item in window)) / 2.0
+    for index in range(base_period - 1, length):
+        lagging[index] = data[index].close
+    return (
+        IndicatorResult("ichimoku.conversion", conversion_period, tuple(conversion), min(conversion_period - 1, length)),
+        IndicatorResult("ichimoku.base", base_period, tuple(base), min(base_period - 1, length)),
+        IndicatorResult("ichimoku.span_a", base_period, tuple(span_a), min(base_period - 1, length)),
+        IndicatorResult("ichimoku.span_b", span_period, tuple(span_b), min(span_period - 1, length)),
+        IndicatorResult("ichimoku.lagging", base_period, tuple(lagging), min(base_period - 1, length)),
+    )
+
+
+def keltner_channels(
+    data: Sequence[OHLCV], period: int = 20, multiplier: float = 2.0
+) -> tuple[IndicatorResult, IndicatorResult, IndicatorResult]:
+    """Return EMA-center Keltner channels using Wilder ATR."""
+    _validate_period(period)
+    if not multiplier >= 0.0:
+        raise ValueError("multiplier must be >= 0")
+    center = ema(data, period)
+    range_result = atr(data, period)
+    upper: list[float | None] = [None] * len(data)
+    lower: list[float | None] = [None] * len(data)
+    for index, (middle, range_value) in enumerate(zip(center.values, range_result.values)):
+        if middle is not None and range_value is not None:
+            upper[index] = middle + multiplier * range_value
+            lower[index] = middle - multiplier * range_value
+    warmup = max(center.warmup, range_result.warmup)
+    return (
+        IndicatorResult("keltner.upper", period, tuple(upper), warmup),
+        IndicatorResult("keltner.middle", period, center.values, center.warmup),
+        IndicatorResult("keltner.lower", period, tuple(lower), warmup),
+    )
+
+
+def stochastic_rsi(
+    data: Sequence[OHLCV], rsi_period: int = 14, stochastic_period: int = 14, signal_period: int = 3
+) -> tuple[IndicatorResult, IndicatorResult]:
+    """Return Stochastic RSI and its SMA signal in [0, 100]."""
+    _validate_period(rsi_period)
+    _validate_period(stochastic_period)
+    _validate_period(signal_period)
+    rsi_result = rsi(data, rsi_period)
+    values: list[float | None] = [None] * len(data)
+    for index in range(len(data)):
+        if index < rsi_period + stochastic_period - 1:
+            continue
+        window = rsi_result.values[index - stochastic_period + 1 : index + 1]
+        if any(value is None for value in window):
+            continue
+        low = min(value for value in window if value is not None)
+        high = max(value for value in window if value is not None)
+        current = rsi_result.values[index]
+        if current is not None:
+            values[index] = 50.0 if high == low else 100.0 * (current - low) / (high - low)
+    signal: list[float | None] = [None] * len(data)
+    first_signal = rsi_period + stochastic_period + signal_period - 3
+    for index in range(first_signal, len(data)):
+        window = values[index - signal_period + 1 : index + 1]
+        if all(value is not None for value in window):
+            signal[index] = sum(value for value in window if value is not None) / signal_period
+    return (
+        IndicatorResult("stochastic_rsi", rsi_period, tuple(values), min(rsi_period + stochastic_period - 1, len(data))),
+        IndicatorResult("stochastic_rsi.signal", signal_period, tuple(signal), min(first_signal, len(data))),
+    )
+
+
 def adx(
     data: Sequence[OHLCV], period: int = 14
 ) -> tuple[IndicatorResult, IndicatorResult, IndicatorResult]:
-    """Return Wilder +DI, -DI and ADX with explicit warm-up semantics.
-
-    The first directional movement observation is derived from the first
-    candle-to-candle transition. Wilder's smoothed TR/+DM/-DM are seeded from
-    the first ``period`` transitions, and ADX is then seeded from ``period``
-    DX observations. No synthetic observations are introduced.
-    """
+    """Return Wilder +DI, -DI and ADX with explicit warm-up semantics."""
     _validate_period(period)
     length = len(data)
     plus_di: list[float | None] = [None] * length
@@ -233,30 +327,21 @@ def adx(
             IndicatorResult("adx.minus_di", period, tuple(minus_di), min(period, length)),
             IndicatorResult("adx", period, tuple(adx_values), min(2 * period - 1, length)),
         )
-
     true_ranges: list[float] = []
     plus_dm: list[float] = []
     minus_dm: list[float] = []
     for index in range(1, length):
         current = data[index]
         previous = data[index - 1]
-        true_ranges.append(
-            max(
-                current.high - current.low,
-                abs(current.high - previous.close),
-                abs(current.low - previous.close),
-            )
-        )
+        true_ranges.append(max(current.high - current.low, abs(current.high - previous.close), abs(current.low - previous.close)))
         up_move = current.high - previous.high
         down_move = previous.low - current.low
         plus_dm.append(up_move if up_move > down_move and up_move > 0 else 0.0)
         minus_dm.append(down_move if down_move > up_move and down_move > 0 else 0.0)
-
     smoothed_tr = sum(true_ranges[:period])
     smoothed_plus = sum(plus_dm[:period])
     smoothed_minus = sum(minus_dm[:period])
     dx_values: list[float | None] = [None] * length
-
     def update(index: int) -> None:
         nonlocal smoothed_tr, smoothed_plus, smoothed_minus
         if index > period:
@@ -273,11 +358,9 @@ def adx(
         minus_di[index] = minus
         denominator = plus + minus
         dx_values[index] = 0.0 if denominator == 0 else 100.0 * abs(plus - minus) / denominator
-
     update(period)
     for index in range(period + 1, length):
         update(index)
-
     first_adx = 2 * period - 1
     if first_adx < length:
         seed = [dx_values[index] for index in range(period, first_adx + 1)]
@@ -286,11 +369,9 @@ def adx(
             adx_values[first_adx] = smoothed_adx
             for index in range(first_adx + 1, length):
                 current_dx = dx_values[index]
-                if current_dx is None:
-                    continue
-                smoothed_adx = ((smoothed_adx * (period - 1)) + current_dx) / period
-                adx_values[index] = smoothed_adx
-
+                if current_dx is not None:
+                    smoothed_adx = ((smoothed_adx * (period - 1)) + current_dx) / period
+                    adx_values[index] = smoothed_adx
     return (
         IndicatorResult("adx.plus_di", period, tuple(plus_di), min(period, length)),
         IndicatorResult("adx.minus_di", period, tuple(minus_di), min(period, length)),
