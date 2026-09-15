@@ -9,6 +9,7 @@ The physical repository structure is part of the engineering contract. A family 
 ```text
 src/cfip_technical/
 ├── base.py                         # shared validation/series helpers only
+├── catalog.py                      # versioned metadata registry; no calculations
 ├── indicators/
 │   ├── __init__.py                 # canonical public family namespace
 │   ├── core.py                     # SMA, EMA, RSI, ATR, Bollinger, MACD
@@ -20,6 +21,10 @@ src/cfip_technical/
 ```
 
 `tools/architecture/validate_indicator_structure.py` and its regression test enforce this relationship in CI. This control exists specifically to prevent documentation/directory presence from being mistaken for implementation completeness.
+
+## Canonical metadata registry
+
+`cfip_technical.catalog` is the single metadata registry for the current target indicator set. Each descriptor records `(indicator_id, version)`, canonical implementation owner, outputs, required market fields, target defaults, volume requirements and the explicit-missing warm-up policy. The registry contains no numerical implementation and cannot become a second calculation authority. Source-specific defaults and semantics remain `UNVERIFIED` until source census and golden fixtures close them.
 
 ## Current target indicator families
 
