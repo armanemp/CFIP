@@ -34,9 +34,9 @@ class ControlledDocumentationValidatorTests(unittest.TestCase):
         for path in required:
             self.assertTrue(path.is_file(), path)
 
-    def test_ecp_marker_accepts_abbreviation_or_full_expansion(self) -> None:
+    def test_ecp_marker_contract_accepts_abbreviation_or_full_expansion(self) -> None:
         module = self._module()
-        self.assertIn(("ECP", "Evolution Control Plane"), module.required_marker_groups)
+        self.assertIn(("ECP", "Evolution Control Plane"), module.REQUIRED_MARKER_GROUPS)
 
 
 if __name__ == "__main__":
