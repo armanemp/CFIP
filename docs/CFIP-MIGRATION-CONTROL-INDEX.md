@@ -7,16 +7,16 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Batch 73 implementation checkpoint: `e797e48b1544fdefe09b6a61dccf19a682c25b00e`; subsequent canonical documentation reconciliation commits are part of the same batch.
-- Current source study confirms the source worker uses an asynchronous NATS JetStream publisher after a durable PostgreSQL outbox.
-- CFIP now contains a concrete NATS transport adapter behind the transport-neutral event port; live broker/stream/consumer integration remains unverified.
+- Batch 74 continues directly from the Batch 73 event-transport checkpoint and removes a remaining async storage-boundary mismatch.
+- Current source study confirms the source worker uses asynchronous NATS JetStream publication after a durable PostgreSQL outbox.
+- CFIP event transport, durable claim and durable state boundaries are now asynchronous at the contract/dispatcher level; concrete PostgreSQL runtime integration remains unverified.
 - Current-head Admin Git hardening remains an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
 - CFIP production promotion: **LOCKED**.
 
 ## Canonical document order
 
-Read the key prompt, full continuation contract, this index, master plan, architecture guide, source-study integration, active Gate-0 register, capability registry, source-evidence matrix, parity matrix, source tree, carry-forward baseline, dataset inventory, ADRs, D3/PIT contract, Platform Intelligence matrix, standards review, evidence addenda, ECP, training lifecycle, dataset/memory contracts, latest checkpoint/progress/training-cycle artifacts, and active governance validators/workflows before canonical status claims.
+Read the key prompt, full continuation contract, this index, master plan, architecture guide, source-study integration, active Gate-0 register, capability registry, source-evidence matrix, parity matrix, source tree, carry-forward baseline, dataset inventory, ADRs, D3/PIT contract, Platform Intelligence matrix, standards review, evidence addenda, ECP, training lifecycle, dataset/memory contracts, latest progress/checkpoint/training-cycle artifacts, and active governance validators/workflows before canonical status claims.
 
 The active controlled-implementation register supersedes the former blanket runtime coding lock. Obsolete architecture-history documents are not part of the active evidence surface.
 
@@ -71,7 +71,7 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58–73 registration
+## Batch 58–74 registration
 
 ### Batch 58–65
 Prior batch registrations remain immutable in this index history.
@@ -148,13 +148,24 @@ Prior batch registrations remain immutable in this index history.
 - reconciled `packages/README.md` with the current controlled-implementation status;
 - live broker/stream/consumer configuration, PostgreSQL runtime integration, durable checkpoint/lease integration and end-to-end worker composition remain unverified.
 
+### Batch 74
+- re-audited the async event-dispatch path after Batch 73 and found a remaining inconsistency: durable claim/state ports were synchronous while the source outbox and target transport were asynchronous;
+- converted `DurableEventClaimPort.claim_batch` to async;
+- converted `DurableEventStatePort.mark_published`, `mark_failed` and `mark_dead` to async;
+- updated `DurableEventDispatcher` to await all correctness-critical storage calls as well as transport I/O;
+- updated dispatcher tests to model the complete async boundary;
+- added ADR-019 defining the async durable event-state boundary and explicitly preserving transactional fencing/atomicity requirements;
+- updated the standards document to require async storage at the worker boundary while keeping database correctness transactional;
+- added OpenTelemetry messaging guidance for future producer/consumer/process/settle instrumentation and message-context propagation;
+- no production PostgreSQL adapter or live JetStream topology was claimed without executable integration evidence.
+
 ## Active evidence gaps
 
 1. Exhaustive event-family/subject/consumer registry and replay/retention classification.
 2. Live JetStream stream/consumer configuration and integration tests.
 3. PostgreSQL durable claim/state runtime integration with transactional fencing.
 4. Realtime checkpoint/lease recovery and replay integration.
-5. Production telemetry emission and backend integration.
+5. Production telemetry emission and backend integration, including messaging context propagation.
 6. Current-head Admin Git write-path/test census.
 7. Raw-byte dataset hash/count reconciliation.
 8. Whole-repository dependency/hardcode/duplicate/contradiction closure.
