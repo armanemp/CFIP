@@ -6,15 +6,8 @@ results with explicit warm-up semantics. They are target implementations and
 are not parity claims until source evidence and golden fixtures are reconciled.
 """
 
-from .indicators import (
-    IndicatorResult,
-    atr,
-    bollinger_bands,
-    ema,
-    macd,
-    rsi,
-    sma,
-)
+from .extended import cci, donchian_channels, momentum, obv, roc, stochastic, vwap, williams_r
+from .indicators import IndicatorResult, atr, bollinger_bands, ema, macd, rsi, sma
 from .models import OHLCV
 
 __all__ = [
@@ -22,8 +15,16 @@ __all__ = [
     "OHLCV",
     "atr",
     "bollinger_bands",
+    "cci",
+    "donchian_channels",
     "ema",
     "macd",
+    "momentum",
+    "obv",
+    "roc",
     "rsi",
     "sma",
+    "stochastic",
+    "vwap",
+    "williams_r",
 ]
