@@ -15,55 +15,60 @@ IndicatorFamily = Literal["core", "oscillator", "trend", "volume"]
 
 @dataclass(frozen=True, slots=True)
 class IndicatorDescriptor:
-    """Stable metadata for one canonical indicator output."""
+    """Stable metadata for one canonical indicator family/output set."""
 
     indicator_id: str
+    version: str
     family: IndicatorFamily
     implementation: str
+    outputs: tuple[str, ...]
     required_fields: tuple[str, ...]
-    default_parameters: tuple[tuple[str, int | float], ...]
-    output_arity: int = 1
+    default_parameters: tuple[tuple[str, int | float], ...] = ()
     volume_required: bool = False
+    warmup_policy: str = "explicit_missing"
 
     def __post_init__(self) -> None:
-        if not self.indicator_id.strip():
-            raise ValueError("indicator_id is required")
-        if not self.implementation.strip():
-            raise ValueError("implementation is required")
-        if self.output_arity <= 0:
-            raise ValueError("output_arity must be > 0")
-        if len({name for name, _ in self.default_parameters}) != len(self.default_parameters):
+        if not self.indicator_id.strip() or not self.version.strip():
+            raise ValueError("indicator_id and version are required")
+        if not self.implementation.strip() or not self.outputs:
+            raise ValueError("implementation and outputs are required")
+        if not self.required_fields:
+            raise ValueError("required_fields are required")
+        if len(set(self.outputs)) != len(self.outputs):
+            raise ValueError("indicator outputs must be unique")
+        if len(set(name for name, _ in self.default_parameters)) != len(self.default_parameters):
             raise ValueError("default parameter names must be unique")
+        if self.warmup_policy != "explicit_missing":
+            raise ValueError("unsupported warmup policy")
 
 
 _INDICATORS: tuple[IndicatorDescriptor, ...] = (
-    IndicatorDescriptor("sma", "core", "cfip_technical.indicators.core.sma", ("close",), (("period", 20),)),
-    IndicatorDescriptor("ema", "core", "cfip_technical.indicators.core.ema", ("close",), (("period", 20),)),
-    IndicatorDescriptor("rsi", "core", "cfip_technical.indicators.core.rsi", ("close",), (("period", 14),)),
-    IndicatorDescriptor("atr", "core", "cfip_technical.indicators.core.atr", ("high", "low", "close"), (("period", 14),)),
-    IndicatorDescriptor("bollinger_bands", "core", "cfip_technical.indicators.core.bollinger_bands", ("close",), (("period", 20), ("deviations", 2.0)), 3),
-    IndicatorDescriptor("macd", "core", "cfip_technical.indicators.core.macd", ("close",), (("fast_period", 12), ("slow_period", 26), ("signal_period", 9)), 3),
-    IndicatorDescriptor("momentum", "oscillator", "cfip_technical.indicators.oscillators.momentum", ("close",), (("period", 10),)),
-    IndicatorDescriptor("roc", "oscillator", "cfip_technical.indicators.oscillators.roc", ("close",), (("period", 12),)),
-    IndicatorDescriptor("stochastic", "oscillator", "cfip_technical.indicators.oscillators.stochastic", ("high", "low", "close"), (("period", 14), ("signal_period", 3)), 2),
-    IndicatorDescriptor("williams_r", "oscillator", "cfip_technical.indicators.oscillators.williams_r", ("high", "low", "close"), (("period", 14),)),
-    IndicatorDescriptor("cci", "oscillator", "cfip_technical.indicators.oscillators.cci", ("high", "low", "close"), (("period", 20),)),
-    IndicatorDescriptor("money_flow_index", "oscillator", "cfip_technical.indicators.oscillators.money_flow_index", ("high", "low", "close", "volume"), (("period", 14),), volume_required=True),
-    IndicatorDescriptor("stochastic_rsi", "oscillator", "cfip_technical.indicators.oscillators.stochastic_rsi", ("close",), (("rsi_period", 14), ("stochastic_period", 14), ("signal_period", 3)), 2),
-    IndicatorDescriptor("donchian_channels", "trend", "cfip_technical.indicators.trend.donchian_channels", ("high", "low"), (("period", 20),), 3),
-    IndicatorDescriptor("aroon", "trend", "cfip_technical.indicators.trend.aroon", ("high", "low"), (("period", 25),), 2),
-    IndicatorDescriptor("adx", "trend", "cfip_technical.indicators.trend.adx", ("high", "low", "close"), (("period", 14),), 3),
-    IndicatorDescriptor("ichimoku", "trend", "cfip_technical.indicators.trend.ichimoku", ("high", "low", "close"), (("conversion_period", 9), ("base_period", 26), ("span_period", 52)), 5),
-    IndicatorDescriptor("keltner_channels", "trend", "cfip_technical.indicators.trend.keltner_channels", ("high", "low", "close"), (("period", 20), ("multiplier", 2.0)), 3),
-    IndicatorDescriptor("obv", "volume", "cfip_technical.indicators.volume.obv", ("close", "volume"), ((),), volume_required=True),
-    IndicatorDescriptor("vwap", "volume", "cfip_technical.indicators.volume.vwap", ("high", "low", "close", "volume"), ((),), volume_required=True),
-    IndicatorDescriptor("chaikin_money_flow", "volume", "cfip_technical.indicators.volume.chaikin_money_flow", ("high", "low", "close", "volume"), (("period", 20),), volume_required=True),
+    IndicatorDescriptor("sma", "0.1.0", "core", "cfip_technical.indicators.core.sma", ("sma",), ("close",), (("period", 20),)),
+    IndicatorDescriptor("ema", "0.1.0", "core", "cfip_technical.indicators.core.ema", ("ema",), ("close",), (("period", 20),)),
+    IndicatorDescriptor("rsi", "0.1.0", "core", "cfip_technical.indicators.core.rsi", ("rsi",), ("close",), (("period", 14),)),
+    IndicatorDescriptor("atr", "0.1.0", "core", "cfip_technical.indicators.core.atr", ("atr",), ("high", "low", "close"), (("period", 14),)),
+    IndicatorDescriptor("bollinger_bands", "0.1.0", "core", "cfip_technical.indicators.core.bollinger_bands", ("bollinger.middle", "bollinger.upper", "bollinger.lower"), ("close",), (("period", 20), ("deviations", 2.0))),
+    IndicatorDescriptor("macd", "0.1.0", "core", "cfip_technical.indicators.core.macd", ("macd.line", "macd.signal", "macd.histogram"), ("close",), (("fast_period", 12), ("slow_period", 26), ("signal_period", 9))),
+    IndicatorDescriptor("momentum", "0.1.0", "oscillator", "cfip_technical.indicators.oscillators.momentum", ("momentum",), ("close",), (("period", 10),)),
+    IndicatorDescriptor("roc", "0.1.0", "oscillator", "cfip_technical.indicators.oscillators.roc", ("roc",), ("close",), (("period", 12),)),
+    IndicatorDescriptor("stochastic", "0.1.0", "oscillator", "cfip_technical.indicators.oscillators.stochastic", ("stochastic.k", "stochastic.d"), ("high", "low", "close"), (("period", 14), ("signal_period", 3))),
+    IndicatorDescriptor("williams_r", "0.1.0", "oscillator", "cfip_technical.indicators.oscillators.williams_r", ("williams.r",), ("high", "low", "close"), (("period", 14),)),
+    IndicatorDescriptor("cci", "0.1.0", "oscillator", "cfip_technical.indicators.oscillators.cci", ("cci",), ("high", "low", "close"), (("period", 20),)),
+    IndicatorDescriptor("money_flow_index", "0.1.0", "oscillator", "cfip_technical.indicators.oscillators.money_flow_index", ("mfi",), ("high", "low", "close", "volume"), (("period", 14),), True),
+    IndicatorDescriptor("stochastic_rsi", "0.1.0", "oscillator", "cfip_technical.indicators.oscillators.stochastic_rsi", ("stochastic_rsi", "stochastic_rsi.signal"), ("close",), (("rsi_period", 14), ("stochastic_period", 14), ("signal_period", 3))),
+    IndicatorDescriptor("donchian_channels", "0.1.0", "trend", "cfip_technical.indicators.trend.donchian_channels", ("donchian.upper", "donchian.middle", "donchian.lower"), ("high", "low"), (("period", 20),)),
+    IndicatorDescriptor("aroon", "0.1.0", "trend", "cfip_technical.indicators.trend.aroon", ("aroon.up", "aroon.down"), ("high", "low"), (("period", 25),)),
+    IndicatorDescriptor("adx", "0.1.0", "trend", "cfip_technical.indicators.trend.adx", ("adx.plus_di", "adx.minus_di", "adx"), ("high", "low", "close"), (("period", 14),)),
+    IndicatorDescriptor("ichimoku", "0.1.0", "trend", "cfip_technical.indicators.trend.ichimoku", ("ichimoku.conversion", "ichimoku.base", "ichimoku.span_a", "ichimoku.span_b", "ichimoku.lagging"), ("high", "low", "close"), (("conversion_period", 9), ("base_period", 26), ("span_period", 52))),
+    IndicatorDescriptor("keltner_channels", "0.1.0", "trend", "cfip_technical.indicators.trend.keltner_channels", ("keltner.upper", "keltner.middle", "keltner.lower"), ("high", "low", "close"), (("period", 20), ("multiplier", 2.0))),
+    IndicatorDescriptor("obv", "0.1.0", "volume", "cfip_technical.indicators.volume.obv", ("obv",), ("close", "volume"), (), True),
+    IndicatorDescriptor("vwap", "0.1.0", "volume", "cfip_technical.indicators.volume.vwap", ("vwap",), ("high", "low", "close", "volume"), (), True),
+    IndicatorDescriptor("chaikin_money_flow", "0.1.0", "volume", "cfip_technical.indicators.volume.chaikin_money_flow", ("cmf",), ("high", "low", "close", "volume"), (("period", 20),), True),
 )
 
-# A single immutable lookup prevents callers from mutating the registry.
-_BY_ID = {item.indicator_id: item for item in _INDICATORS}
-if len(_BY_ID) != len(_INDICATORS):
-    raise RuntimeError("indicator registry contains duplicate indicator IDs")
+_BY_KEY = {(item.indicator_id, item.version): item for item in _INDICATORS}
+if len(_BY_KEY) != len(_INDICATORS):
+    raise RuntimeError("indicator registry contains duplicate (indicator_id, version) keys")
 
 
 def all_indicators() -> tuple[IndicatorDescriptor, ...]:
@@ -72,13 +77,13 @@ def all_indicators() -> tuple[IndicatorDescriptor, ...]:
     return _INDICATORS
 
 
-def get_indicator(indicator_id: str) -> IndicatorDescriptor:
+def get_indicator(indicator_id: str, version: str = "0.1.0") -> IndicatorDescriptor:
     """Resolve one canonical descriptor or fail closed."""
 
     try:
-        return _BY_ID[indicator_id]
+        return _BY_KEY[(indicator_id, version)]
     except KeyError as exc:
-        raise KeyError(f"unknown technical indicator: {indicator_id}") from exc
+        raise KeyError(f"unknown technical indicator: {indicator_id}@{version}") from exc
 
 
 __all__ = ["IndicatorDescriptor", "IndicatorFamily", "all_indicators", "get_indicator"]
