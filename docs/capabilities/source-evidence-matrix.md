@@ -1,6 +1,6 @@
 # CFIP Source Evidence Matrix
 
-**Source repository:** `armanemp/CForex` `main` v0.9.154  
+**Source repository:** `armanemp/CForex` `main` — historical evidence snapshot v0.9.154 plus current-HEAD delta register  
 **Target repository:** `armanemp/CFIP` `main`  
 **Purpose:** record where target architecture decisions are grounded in executable/source evidence. This is not a claim that CFIP has implemented the capability.
 
@@ -41,10 +41,11 @@ When evidence conflicts, stop target implementation and reconcile the higher-con
 | `packages/application/src/fi_application/analysis/service.py` | `AnalysisExecutionService` registers V1 engines, persists requested/validating/running/terminal states when a repository is supplied, computes canonical SHA-256 parameter/input/engine hashes and emits analysis lifecycle events when a publisher is supplied | Source has a concrete durable V1 analysis execution path; CFIP must preserve canonical provenance production and lifecycle semantics, while separately reconciling this path with the V2 trading runtime. |
 | `packages/infrastructure/src/fi_infrastructure/analysis.py` | `SqlAlchemyAnalysisRunRepository` provides PostgreSQL create/update/get, idempotent create and row-locking update for `analysis_runs` | Durable analysis-run persistence is implemented at source infrastructure level; integration into each execution path still requires tracing. |
 | `packages/infrastructure/src/fi_infrastructure/db/models.py` | `AnalysisRunRow` persists engine identity/version, status, input snapshot, parameters, data revision, correlation/causation, result JSONB and timestamps | CFIP must preserve durable run state and temporal context; provenance hashes are currently part of the serialized result contract rather than dedicated hash columns. |
-| `packages/application/src/fi_application/trading/workspace.py` | Demo/replay workspace snapshots are UTC-minute cached, deterministic, carry `as_of` and a SHA-256-derived revision, and expose candles to the analysis engine evidence route | Revision propagation is source-evidenced, but this demo snapshot must not be mistaken for authoritative persisted PIT reconstruction. |
-| `engines/backtest/src/fi_engine_backtest/engine.py` | `backtest.replay@1.1.0` deterministically evaluates one-step return-sign persistence using only prior return history and emits revision-linked evidence | Engine-level backtest evidence exists, but full platform replay/live/backtest equivalence remains a separate closure requirement. |
+| `apps/application` workspace evidence | Demo/replay workspace snapshots are UTC-minute cached, deterministic, carry `as_of` and a SHA-256-derived revision, and expose candles to the analysis engine evidence route | Revision propagation is source-evidenced, but this demo snapshot must not be mistaken for authoritative persisted PIT reconstruction. |
+| `engines/backtest` | `backtest.replay@1.1.0` deterministically evaluates one-step return-sign persistence using only prior return history and emits revision-linked evidence | Engine-level backtest evidence exists, but full platform replay/live/backtest equivalence remains a separate closure requirement. |
 | `tests/unit/analysis_engine/test_engine_runtime.py` | Direct tests for deterministic momentum/provenance, health accounting, timeout counting and latency health thresholds | Runtime behavior has direct executable verification that must be carried into the target test/parity plan. |
 | `tests/unit/analysis_engine/test_fabric_failure_policy.py` | Direct fail-closed negative test | Failure semantics are part of the capability contract, not optional operational behavior. |
+| Current CForex HEAD `900882154cab3b9b74d0543b9bbf72a708a08134` | Governed Admin Git hardening: strict refs, commit validation, bounded output/timeouts, credential redaction, operation IDs, non-interactive Git environment, OTel operation tracing, authorization boundary and typed failures | CFIP must treat Admin Git as a governed application capability with least privilege, bounded execution, secret-safe telemetry and explicit policy/rollback semantics. See `docs/architecture/CFIP-SOURCE-DELTA-59-ADMIN-GIT.md`. |
 
 ## Verified API evidence pass — D1
 
@@ -113,6 +114,10 @@ Detailed evidence: `docs/evidence/CFIP-ENGINE-EVIDENCE.md` and `docs/evidence/CF
 
 **D4 status: advanced, materially closer to closure, but not closed.** Remaining closure work is primarily V1/V2 relationship, PIT/replay reconstruction/equivalence, per-engine fixtures, telemetry/health persistence, and cross-document reconciliation rather than basic durable-run existence.
 
+## Current-head source drift register
+
+The v0.9.154 source baseline is retained as historical evidence. Current CForex `main` has advanced to `900882154cab3b9b74d0543b9bbf72a708a08134`; therefore current-source claims must reference the current-head delta register until the full intervening source history is reconciled. The first verified delta is governed Admin Git hardening. This does not replace the historical baseline or authorize CFIP runtime implementation.
+
 ## Known evidence gaps to resolve before parity closure
 
 - Complete API endpoint catalog with owning capability/context, including the remainder of `trading.py` and all mounted router modules.
@@ -129,5 +134,6 @@ Detailed evidence: `docs/evidence/CFIP-ENGINE-EVIDENCE.md` and `docs/evidence/CF
 - Complete hardcode/policy classification.
 - Complete external provider/broker/model/research adapter inventory.
 - Complete operational SLO, retention, partitioning and recovery requirements.
+- Complete current-head source-delta enumeration and capability classification from the historical v0.9.154 baseline to current `main`.
 
 These gaps are intentionally tracked rather than inferred. D1–D4 are materially advanced, but **Gate 0 remains open and no CFIP implementation status is advanced by these evidence passes**.
