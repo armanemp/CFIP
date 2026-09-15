@@ -92,9 +92,14 @@ class DispatchRetryPolicy:
 
 
 class EventTransport(Protocol):
-    """Minimal transport port with explicit adapter-level failure classification."""
+    """Async transport port with explicit adapter-level failure classification.
 
-    def publish(self, event: EventEnvelope) -> DispatchFailure | None:
+    Async is intentional: the canonical source transport uses an asynchronous
+    JetStream client, and blocking the worker loop around network I/O would
+    undermine bounded concurrency and graceful backpressure.
+    """
+
+    async def publish(self, event: EventEnvelope) -> DispatchFailure | None:
         """Return ``None`` on acceptance or a classified failure without mutating durable state."""
 
 
