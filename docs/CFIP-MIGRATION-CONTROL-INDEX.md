@@ -9,13 +9,15 @@
 - Historical CFIP source snapshot: CForex v0.9.154.
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
 - Historical v0.9.154 evidence is retained and must not be rewritten as current source truth.
-- Current-head Admin Git hardening is now reconciled as an explicit source delta; full source-delta closure remains open.
-- Gate 0: **OPEN**.
-- CFIP production business runtime: **0% / LOCKED**.
+- Current-head Admin Git hardening is reconciled as an explicit source delta; full source-delta closure remains open.
+- Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
+- CFIP production promotion: **LOCKED**.
 
 ## Canonical document order
 
-Read the key prompt, full continuation contract, this index, Amendment 47, master plan, architecture guide, source-study integration, Gate-0 register, capability registry, source-evidence matrix, parity matrix, source tree, carry-forward baseline, dataset inventory, ADRs, D3/PIT contract, Platform Intelligence matrix, standards review, evidence addenda, ECP, training lifecycle, dataset/memory contracts, latest checkpoint/progress/contradiction/training-cycle artifacts, and active governance validators/workflows before canonical status claims.
+Read the key prompt, full continuation contract, this index, Amendment 47, master plan, architecture guide, source-study integration, **active Gate-0 register `docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md`**, capability registry, source-evidence matrix, parity matrix, source tree, carry-forward baseline, dataset inventory, ADRs, D3/PIT contract, Platform Intelligence matrix, standards review, evidence addenda, ECP, training lifecycle, dataset/memory contracts, latest checkpoint/progress/contradiction/training-cycle artifacts, and active governance validators/workflows before canonical status claims.
+
+`docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md` remains immutable historical evidence. The controlled-implementation register is its current operating successor and explicitly supersedes the former blanket runtime coding lock.
 
 The current CForex repository remains the executable behavioral source of truth until parity closure. A remembered version or historical report never overrides the current GitHub HEAD.
 
@@ -33,9 +35,9 @@ PIT correctness; provenance/lineage/revision/causal ordering; live/replay/backte
 
 ## Migration gates
 
-Gate 0 = source closure. Gate 1 = foundation. Gate 2 = identity/data. Gate 3 = analytical kernel. Gate 4 = decision/simulation. Gate 5 = AI/research/learning. Gate 6 = product surface. Gate 7 = governance/operations. Gate 8 = whole-system parity.
+Gate 0 = source closure with controlled parallel engineering. Gate 1 = foundation. Gate 2 = identity/data. Gate 3 = analytical kernel. Gate 4 = decision/simulation. Gate 5 = AI/research/learning. Gate 6 = product surface. Gate 7 = governance/operations. Gate 8 = whole-system parity.
 
-No gate is inferred from directory presence, document count or progress percentages.
+No gate is inferred from directory presence, document count, code volume or progress percentages.
 
 ## Global-scale requirements
 
@@ -58,6 +60,14 @@ No dataset is training-eligible merely because its manifest declares a count/has
 
 `docs/architecture/CFIP-SOURCE-DRIFT-58.md` records the HEAD drift. `docs/architecture/CFIP-SOURCE-DELTA-59-ADMIN-GIT.md` records the first behaviorally material current-head delta: governed Admin Git hardening. It is classified as `PRESERVE + IMPROVE` for the governance boundary, with complete write-path and test census still required.
 
+## Gate-0 controlled implementation rule
+
+The former blanket rule "CFIP runtime implementation remains 0% / LOCKED until Gate 0 closure" is superseded. The current rule is:
+
+**Implementation is permitted; production promotion is locked.**
+
+Every implementation must be evidence-backed, contract-first, reversible, tested, independently verifiable where risk requires, observable and tied to an ECP change identity. Unresolved source behavior remains explicitly unresolved. Live trading, irreversible high-impact changes, parity promotion and production readiness remain gated.
+
 ## Continuation protocol
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
@@ -77,4 +87,9 @@ Every continuation performs: inspect both repos → source study → evidence gr
 - `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-59.md`
 - `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-59.md`
 
-Next continuation must prioritize exhaustive current-source delta closure and raw dataset reconciliation over report-only expansion.
+### Batch 60
+- `docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md`
+- controlled Gate-0 implementation policy added to the continuation contract
+- production/promotion/live-execution restrictions explicitly retained
+
+Next continuation must begin actual source-evidenced target implementation in parallel with D1–D11 closure, prioritizing the highest-confidence vertical slices and the remaining raw dataset reconciliation. Documentation-only expansion is no longer the default when executable work is safely actionable.
