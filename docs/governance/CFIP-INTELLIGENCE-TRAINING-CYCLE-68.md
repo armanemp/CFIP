@@ -1,7 +1,8 @@
 # CFIP Intelligence Training Cycle 68
 
 Date: 2026-09-15  
-Scope: realtime flow-control and project-system learning
+Scope: realtime flow-control and project-system learning  
+Gate: Gate 0 OPEN — controlled implementation permitted; production promotion LOCKED
 
 ## Lifecycle
 
