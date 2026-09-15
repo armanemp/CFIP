@@ -13,12 +13,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "engines" / "technical" / "src" / "cfip_technical"
+INDICATOR_PACKAGE = PACKAGE / "indicators"
 FAMILIES = {
     "core.py": {"sma", "ema", "rsi", "atr", "bollinger_bands", "macd"},
     "oscillators.py": {"momentum", "roc", "stochastic", "williams_r", "cci", "money_flow_index", "stochastic_rsi"},
     "trend.py": {"adx", "aroon", "donchian_channels", "ichimoku", "keltner_channels"},
     "volume.py": {"obv", "vwap", "chaikin_money_flow"},
 }
+EXPECTED_INDICATOR_FILES = {"__init__.py", *FAMILIES}
 
 
 def _functions(path: Path) -> set[str]:
@@ -37,8 +39,20 @@ def _imports(path: Path) -> list[ast.ImportFrom]:
 
 def validate() -> list[str]:
     errors: list[str] = []
+
+    if not INDICATOR_PACKAGE.is_dir():
+        errors.append(f"missing canonical indicator package: {INDICATOR_PACKAGE}")
+        return errors
+
+    actual_files = {path.name for path in INDICATOR_PACKAGE.iterdir() if path.is_file()}
+    unexpected_files = sorted(actual_files - EXPECTED_INDICATOR_FILES)
+    if unexpected_files:
+        errors.append(
+            "unexpected files in canonical indicator package: " + ", ".join(unexpected_files)
+        )
+
     for filename, expected in FAMILIES.items():
-        path = PACKAGE / "indicators" / filename
+        path = INDICATOR_PACKAGE / filename
         if not path.is_file():
             errors.append(f"missing canonical family module: {path}")
             continue
@@ -46,6 +60,14 @@ def validate() -> list[str]:
         missing = sorted(expected - found)
         if missing:
             errors.append(f"{path}: missing implementation functions: {', '.join(missing)}")
+        unexpected_public = sorted(
+            name for name in found if not name.startswith("_") and name not in expected
+        )
+        if unexpected_public:
+            errors.append(
+                f"{path}: unexpected public functions outside canonical ownership: "
+                + ", ".join(unexpected_public)
+            )
         for import_node in _imports(path):
             if import_node.module and "extended" in import_node.module:
                 errors.append(f"{path}: canonical family must not import obsolete extended module")
