@@ -1,0 +1,17 @@
+[project]
+name = "cfip-eventing-postgres"
+version = "0.1.0"
+description = "Async PostgreSQL durability adapter for CFIP durable event dispatch"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+  "cfip-contracts",
+  "SQLAlchemy==2.0.52",
+  "psycopg[binary]==3.3.5",
+]
+
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
