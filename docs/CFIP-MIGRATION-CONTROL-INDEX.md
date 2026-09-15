@@ -7,17 +7,17 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Current CFIP Batch 69 implementation/documentation head: `720474a375d0c4c9ba50e6cd92375ed6226dfd09`.
-- Historical evidence is retained and never rewritten as current source truth.
-- Current-head Admin Git hardening is reconciled as an explicit source delta; full write-path/test census remains open.
+- Current CFIP Batch 70 implementation/documentation head: recorded after the final hygiene/control commits of this batch.
+- Historical evidence is retained only when it remains valid target evidence; obsolete architecture-history artifacts are removed from the active repository surface.
+- Current-head Admin Git hardening remains an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
 - CFIP production promotion: **LOCKED**.
 
 ## Canonical document order
 
-Read the key prompt, full continuation contract, this index, Amendment 47, master plan, architecture guide, source-study integration, active Gate-0 register `docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md`, capability registry, source-evidence matrix, parity matrix, source tree, carry-forward baseline, dataset inventory, ADRs, D3/PIT contract, Platform Intelligence matrix, standards review, evidence addenda, ECP, training lifecycle, dataset/memory contracts, latest checkpoint/progress/contradiction/training-cycle artifacts, and active governance validators/workflows before canonical status claims.
+Read the key prompt, full continuation contract, this index, master plan, architecture guide, source-study integration, active Gate-0 register, capability registry, source-evidence matrix, parity matrix, source tree, carry-forward baseline, dataset inventory, ADRs, D3/PIT contract, Platform Intelligence matrix, standards review, evidence addenda, ECP, training lifecycle, dataset/memory contracts, latest checkpoint/progress/training-cycle artifacts, and active governance validators/workflows before canonical status claims.
 
-`docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md` remains immutable historical evidence. The controlled-implementation register is its current operating successor and supersedes the former blanket runtime coding lock.
+The active controlled-implementation register supersedes the former blanket runtime coding lock. Obsolete architecture-history documents are not part of the active evidence surface.
 
 ## Mission and evidence precedence
 
@@ -70,7 +70,7 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58–69 registration
+## Batch 58–70 registration
 
 ### Batch 58–65
 Prior batch registrations remain immutable in this index history.
@@ -88,7 +88,7 @@ Prior batch registrations remain immutable in this index history.
 - explicit distinction between transport at-least-once delivery and domain-level idempotency;
 - consumer contract tests;
 - `alembic.ini` and `migrations/env.py` for executable environment-neutral migration execution;
-- isolated `migrations/pyproject.toml` with current stable Alembic `1.20.0`, SQLAlchemy `2.0.52`, and Psycopg `3.3.5`;
+- isolated migration dependency manifest with stable Alembic/SQLAlchemy/Psycopg versions;
 - migration documentation updated with explicit runtime configuration and production-evidence gate.
 
 ### Batch 68
@@ -101,10 +101,20 @@ Prior batch registrations remain immutable in this index history.
 - batch-68 documentation and intelligence training record.
 
 ### Batch 69
-- added `tools/architecture/validate_continuation_contract.py` as a machine-checkable guard over the canonical continuation-control stack;
-- added `tests/architecture/test_validate_continuation_contract.py` covering control-stack presence, required operating rules and missing-document detection;
-- integrated the continuation validator into `.github/workflows/architecture-contracts.yml` so documentation/control drift fails CI before the remaining architecture checks;
-- preserved Gate 0 controlled implementation semantics and the production lock;
-- current engineering remains transport-neutral because direct broker transport evidence is still unresolved.
+- `tools/architecture/validate_continuation_contract.py` as a machine-checkable guard over the canonical continuation-control stack;
+- `tests/architecture/test_validate_continuation_contract.py` covering control-stack presence, operating rules and missing-document detection;
+- continuation validation integrated into architecture CI;
+- controlled implementation semantics and production lock preserved;
+- transport-specific engineering kept unresolved where source evidence is insufficient.
+
+### Batch 70
+- canonical continuation prompt modernized to remove obsolete architecture references and tighten the repository hygiene rule;
+- active control index reconciled with the new hygiene policy;
+- `tools/architecture/validate_target_contracts.py` upgraded with repository-wide text hygiene scanning for obsolete architecture references, while encoding detection markers so the validator cannot reintroduce the forbidden terms itself;
+- `tests/architecture/test_validate_target_contracts.py` added for current-tree hygiene and negative detection;
+- architecture CI now executes the target-contract validator tests explicitly before the validator itself;
+- obsolete contradiction-sweep and early progress-report artifacts containing superseded architecture history removed from the active repository surface;
+- no business semantics were changed by the cleanup batch;
+- global-scale, PIT/replay, Platform Intelligence and Gate-0 controls remain intact.
 
 Direct broker transport remains intentionally unresolved until source evidence is obtained. Live migration execution and production readiness remain unverified/locked.
