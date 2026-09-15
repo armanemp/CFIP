@@ -24,7 +24,7 @@ src/cfip_technical/
 
 ## Canonical metadata registry
 
-`cfip_technical.catalog` is the single metadata registry for the current target indicator set. Each descriptor records `(indicator_id, version)`, canonical implementation owner, outputs, required market fields, target defaults, volume requirements and the explicit-missing warm-up policy. The registry contains no numerical implementation and cannot become a second calculation authority. Source-specific defaults and semantics remain `UNVERIFIED` until source census and golden fixtures close them.
+`cfip_technical.catalog` is the single metadata registry for the current target indicator set. Each descriptor records `(indicator_id, version)`, canonical implementation owner, outputs, required market fields, target defaults, volume requirements and the explicit-missing warm-up policy. The registry contains no numerical implementation and cannot become a second calculation authority. Source-specific defaults and semantics remain `UNVERIFIED` until source census and golden fixtures close them. Registry contract tests run with the technical indicator verification suite.
 
 ## Current target indicator families
 
