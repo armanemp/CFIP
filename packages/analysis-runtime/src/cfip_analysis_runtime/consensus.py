@@ -30,8 +30,12 @@ class SpecialistEvidence:
             raise ValueError("source_id is required")
         if self.direction not in {"bullish", "bearish", "neutral"}:
             raise ValueError("unsupported direction")
-        for name, value in (("strength", self.strength), ("confidence", self.confidence), ("weight", self.weight)):
-            if not isfinite(value) or not 0.0 <= value <= 1.0:
+        for name, value in (
+            ("strength", self.strength),
+            ("confidence", self.confidence),
+            ("weight", self.weight),
+        ):
+            if not isfinite(value) or value < 0.0 or value > 1.0:
                 raise ValueError(f"{name} must be finite and between 0 and 1")
         if self.weight <= 0:
             raise ValueError("weight must be > 0")
@@ -41,7 +45,12 @@ class SpecialistEvidence:
 
 @dataclass(frozen=True, slots=True)
 class ConsensusResult:
-    """Reproducible aggregate result with explicit abstention/disagreement."""
+    """Reproducible aggregate result with explicit abstention/disagreement.
+
+    ``score`` is signed directional pressure in ``[-1, 1]``. ``agreement`` is
+    the dominant directional share among non-neutral contributions, so the two
+    fields retain distinct semantics instead of being aliases of one another.
+    """
 
     direction: Direction
     score: float
@@ -71,8 +80,12 @@ class AnalysisConsensusService:
         revisions = {item.data_revision for item in evidence}
         if len(revisions) != 1:
             raise ValueError("all specialist evidence must use the same data_revision")
-        revision = next(iter(revisions))
 
+        source_ids = [item.source_id for item in evidence]
+        if len(source_ids) != len(set(source_ids)):
+            raise ValueError("source_id must be unique within one consensus set")
+
+        revision = next(iter(revisions))
         totals = {"bullish": 0.0, "bearish": 0.0, "neutral": 0.0}
         confidence_mass = 0.0
         for item in evidence:
@@ -81,39 +94,40 @@ class AnalysisConsensusService:
             confidence_mass += item.weight * item.confidence
 
         total_weight = sum(item.weight for item in evidence)
+        directional_mass = totals["bullish"] + totals["bearish"]
         dominant = max(totals, key=totals.__getitem__)
         ordered = sorted(totals.values(), reverse=True)
         dominant_mass = ordered[0]
         runner_up = ordered[1]
-        normalized_score = dominant_mass / sum(totals.values()) if sum(totals.values()) else 0.0
-        agreement = dominant_mass / (sum(totals.values()) or 1.0)
         confidence = confidence_mass / total_weight
-        margin = dominant_mass / (total_weight or 1.0) - runner_up / (total_weight or 1.0)
+        if directional_mass:
+            score = (totals["bullish"] - totals["bearish"]) / directional_mass
+            dominant_directional_mass = max(totals["bullish"], totals["bearish"])
+            agreement = dominant_directional_mass / directional_mass
+        else:
+            score = 0.0
+            agreement = 0.0
+        margin = (dominant_mass - runner_up) / total_weight
 
-        abstained = (
-            dominant == "neutral"
-            or confidence < self._minimum_confidence
-            or margin < self._minimum_margin
-        )
-        if abstained:
-            reason = "insufficient_confidence" if confidence < self._minimum_confidence else "insufficient_margin"
-            return ConsensusResult(
-                direction="neutral",
-                score=normalized_score,
-                confidence=confidence,
-                agreement=agreement,
-                contributors=tuple(item.source_id for item in evidence),
-                data_revision=revision,
-                abstained=True,
-                reason=reason,
-            )
+        if directional_mass == 0.0:
+            reason = "no_directional_evidence"
+        elif confidence < self._minimum_confidence:
+            reason = "insufficient_confidence"
+        elif margin < self._minimum_margin:
+            reason = "insufficient_margin"
+        elif dominant == "neutral":
+            reason = "neutral_consensus"
+        else:
+            reason = None
 
+        abstained = reason is not None
         return ConsensusResult(
-            direction=dominant,
-            score=normalized_score,
+            direction="neutral" if abstained else dominant,
+            score=score,
             confidence=confidence,
             agreement=agreement,
-            contributors=tuple(item.source_id for item in evidence),
+            contributors=tuple(sorted(source_ids)),
             data_revision=revision,
-            abstained=False,
+            abstained=abstained,
+            reason=reason,
         )
