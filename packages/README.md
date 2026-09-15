@@ -8,6 +8,9 @@ Gate 0 status: controlled implementation is permitted when source-evidenced, con
 
 - `contracts` — transport-neutral event and realtime contracts.
 - `eventing-dispatcher` — bounded, lease-fenced durable dispatch orchestration.
+- `eventing-postgres` — async PostgreSQL durability adapter with atomic `SKIP LOCKED` claim and monotonic fencing.
 - `eventing-nats` — concrete NATS JetStream transport adapter behind `EventTransport`.
 
 Concrete infrastructure dependencies stay behind adapter packages; domain and contract packages remain technology-neutral.
+
+The PostgreSQL adapter currently has deterministic contract/SQL compilation coverage. Live database concurrency, stale-owner races and end-to-end broker composition remain explicit integration evidence requirements.
