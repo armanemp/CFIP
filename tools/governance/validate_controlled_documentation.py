@@ -35,35 +35,28 @@ def main() -> int:
         if not document.is_file():
             fail(f"canonical document is missing: {document.relative_to(ROOT)}")
 
-    # Any markdown file carrying a batch identifier must be non-empty and must
-    # declare a gate/status context. This catches accidentally committed
-    # marker-only governance artifacts before they become project truth.
-    governance_dirs = (ROOT / "docs", ROOT / "docs" / "governance")
+    # Scan each markdown file exactly once. Batch-tagged governance documents
+    # must be substantive and carry explicit gate context.
     seen: dict[int, list[Path]] = {}
-    for directory in governance_dirs:
-        if not directory.is_dir():
+    for path in (ROOT / "docs").rglob("*.md"):
+        match = BATCH_DOC_RE.search(path.name)
+        if not match:
             continue
-        for path in directory.glob("*.md"):
-            match = BATCH_DOC_RE.search(path.name)
-            if not match:
-                continue
-            batch = int(match.group(1))
-            if path.stat().st_size == 0:
-                fail(f"empty batch document: {path.relative_to(ROOT)}")
-            text = path.read_text(encoding="utf-8")
-            if "Gate" not in text and "gate" not in text:
-                fail(f"batch document has no gate context: {path.relative_to(ROOT)}")
-            seen.setdefault(batch, []).append(path)
+        batch = int(match.group(1))
+        if path.stat().st_size == 0:
+            fail(f"empty batch document: {path.relative_to(ROOT)}")
+        text = path.read_text(encoding="utf-8")
+        if "Gate" not in text and "gate" not in text:
+            fail(f"batch document has no gate context: {path.relative_to(ROOT)}")
+        seen.setdefault(batch, []).append(path)
 
-    # Duplicate discovery is advisory at file-name level: multiple documents
-    # for one batch are expected, but the same path must never be enumerated
-    # twice by overlapping scan roots.
+    # A path can only occur once in the recursive scan. Multiple documents in
+    # the same batch are expected and are not treated as duplicates.
     for batch, paths in seen.items():
         relative = [str(path.relative_to(ROOT)) for path in paths]
         if len(relative) != len(set(relative)):
-            fail(f"duplicate governance path discovered for batch {batch}")
+            fail(f"duplicate documentation path discovered for batch {batch}")
 
-    # The control index must continue to state the immutable source baseline.
     required_markers = (
         "armanemp/CForex",
         "v0.9.154",
