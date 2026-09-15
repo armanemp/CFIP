@@ -8,7 +8,7 @@
 
 - CFIP pre-Batch-58 HEAD: `d04043875083090a63dfeaa637a579d5f8e05518`.
 - Observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- The historical source baseline `v0.9.154` remains a controlled evidence snapshot, but is **not** the current CForex HEAD. Source drift must be reconciled before Gate 0 closure.
+- Historical source baseline `v0.9.154` remains a controlled evidence snapshot, but is not the current CForex HEAD. Source drift must be reconciled before Gate 0 closure.
 - Gate 0: **OPEN**.
 - CFIP production business runtime: **0% / LOCKED**.
 
@@ -64,6 +64,9 @@ Every continuation performs: inspect both repos → source study → evidence gr
 ## Batch 58 registration
 
 - `docs/governance/CFIP-ECP-CHECKPOINT-58.md` — source-drift/reconciliation checkpoint.
+- `docs/architecture/CFIP-SOURCE-DRIFT-58.md` — verified source-HEAD drift register.
+- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-58.md` — Batch 58 progress.
 - `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-57.md` — corrected current contradiction sweep.
+- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-58.md` — governed intelligence-training cycle.
 
-Next batch must add progress/training-cycle evidence only after its underlying source and target state is rechecked; reporting never substitutes for closure.
+Next batch must continue evidence-backed source closure; reporting never substitutes for closure.
