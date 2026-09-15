@@ -1,6 +1,6 @@
 # Technical Engine Namespace
 
-This namespace owns deterministic, dependency-free technical indicator primitives used by the technical-analysis capability. Current target primitives are:
+This namespace owns deterministic, dependency-free technical indicator primitives used by the technical-analysis capability. Current target indicator families are:
 
 - SMA
 - EMA
@@ -16,6 +16,9 @@ This namespace owns deterministic, dependency-free technical indicator primitive
 - OBV
 - VWAP
 - Donchian Channels
+- Aroon Up/Down
+- Money Flow Index (MFI)
+- Chaikin Money Flow (CMF)
 - ADX (+DI/-DI, Wilder smoothing)
 
 The public implementation lives under `src/cfip_technical` and is deliberately independent of API, broker, database and transport concerns. Inputs are ordered OHLCV observations; outputs retain explicit warm-up gaps so callers cannot silently consume incomplete values. Volume-dependent indicators fail closed when volume is unavailable rather than fabricating a substitute.
