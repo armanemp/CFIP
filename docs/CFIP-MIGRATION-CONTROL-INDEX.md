@@ -37,8 +37,10 @@ Read these documents in this order at the start of every migration continuation:
 22. `docs/evidence/CFIP-SOURCE-CLOSURE-BATCH-33-MIGRATION-HYGIENE-AND-SCHEMA-CANONICALIZATION.md` — canonical migration/schema ownership rule.
 23. `docs/architecture/CFIP-EVIDENCE-DRIVEN-SPEED-AND-CLOSURE-PROTOCOL.md` — parallel closure and migration-change discipline.
 24. `docs/governance/CFIP-EVOLUTION-CONTROL-PLANE.md` — internal project-control/Git governance and autonomous change lifecycle.
-25. `docs/governance/CFIP-INTELLIGENCE-TRAINING-LIFECYCLE.md` — continuous governed intelligence training/evaluation lifecycle.
-26. Latest progress report and latest contradiction sweep.
+25. `docs/governance/CFIP-ECP-DATA-CONTRACT.md` — machine-readable ECP/training evidence boundary and source-integrity rules.
+26. `docs/governance/CFIP-INTELLIGENCE-TRAINING-LIFECYCLE.md` — continuous governed intelligence training/evaluation lifecycle.
+27. `data/training/CFIP-CFOREX-TRAINING-DATASET-INDEX-v0.1.json` — source training-dataset carry-forward identity, hashes, counts and materialization status.
+28. Latest progress report and latest contradiction sweep.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -95,6 +97,7 @@ The current CForex release truth records **101 required release gates with 100 P
 - Current external standards are reviewed as evidence inputs; no standard review may silently turn into a mandatory vendor/framework dependency.
 - Project-control state is evidence-driven and append-oriented; it cannot hide failed changes by rewriting history.
 - Material CForex capabilities already proven useful in the source must be explicitly classified for CFIP as `PRESERVE`, `IMPROVE`, `REPLACE` or `INTENTIONALLY-DIVERGE`.
+- Training/evaluation dataset materialization requires source hash and record-count reconciliation; a declared count is never treated as verified without direct evidence.
 
 ## 6. Migration gates
 
@@ -201,16 +204,17 @@ At every continuation:
 7. inspect canonical migration ownership before any schema change;
 8. inspect current ECP project-control state before any autonomous change;
 9. reconcile the CForex carry-forward baseline against source evidence and target capabilities;
-10. make the smallest coherent set of changes that advances the gate;
-11. verify architecture, tests, security, contracts and operational behavior;
-12. update evidence and capability status;
-13. re-read the resulting repository state from GitHub;
-14. never claim parity without executable comparison evidence;
-15. perform a contradiction and duplicate-artifact sweep across the controlled documentation stack;
-16. perform a current standards check for material improvements without introducing novelty-only dependencies;
-17. verify that every capability remains covered by the Platform Intelligence matrix and that no intelligence hook bypasses domain authority;
-18. run the governed intelligence-learning/evaluation lifecycle over newly verified evidence where applicable;
-19. report exact changes, verification, progress and blockers.
+10. reconcile source training/evaluation manifests against dataset blobs before materialization;
+11. make the smallest coherent set of changes that advances the gate;
+12. verify architecture, tests, security, contracts and operational behavior;
+13. update evidence and capability status;
+14. re-read the resulting repository state from GitHub;
+15. never claim parity without executable comparison evidence;
+16. perform a contradiction and duplicate-artifact sweep across the controlled documentation stack;
+17. perform a current standards check for material improvements without introducing novelty-only dependencies;
+18. verify that every capability remains covered by the Platform Intelligence matrix and that no intelligence hook bypasses domain authority;
+19. run the governed intelligence-learning/evaluation lifecycle over newly verified evidence where applicable;
+20. report exact changes, verification, progress and blockers.
 
 Documentation and safe Gate-0-compatible engineering are parallel tracks. The previous documentation-first sequencing restriction is removed by Amendment 47; neither documentation completeness nor engineering work may be used as an excuse to postpone the other when the work can be progressed safely and independently.
 
