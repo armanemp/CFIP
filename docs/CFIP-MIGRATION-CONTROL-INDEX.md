@@ -50,6 +50,15 @@ Read these documents in this order at the start of every migration continuation:
 35. `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-54.md` and `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-54.md` — Batch 54 progress and contradiction evidence.
 36. `docs/CFIP-ECP-CHECKPOINT-55.md` — Batch 55 governed checkpoint.
 37. `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-55.md` and `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-55.md` — Batch 55 progress and contradiction evidence.
+38. `docs/CFIP-ECP-CHECKPOINT-56.md` — Batch 56 governed checkpoint.
+39. `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-56.md` and `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-56.md` — Batch 56 progress and contradiction evidence.
+40. `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-56.md` — Batch 56 governed intelligence-training cycle.
+41. `docs/CFIP-ECP-CHECKPOINT-57.md` — Batch 57 governed checkpoint.
+42. `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-57.md` and `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-57.md` — Batch 57 progress and contradiction evidence.
+43. `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-57.md` — Batch 57 governed intelligence-training cycle.
+44. `tools/governance/validate_controlled_documentation.py` — machine-checkable controlled-documentation integrity validator.
+45. `tools/governance/validate_evolution_control_plane.py` — machine-checkable ECP lifecycle validator.
+46. `.github/workflows/documentation-contracts.yml` and `.github/workflows/governance-contracts.yml` — isolated governance/documentation contract gates.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -245,7 +254,7 @@ Documentation, source inspection, evidence extraction, reconciliation and govern
 
 ## 13. Integrated project rule
 
-The key prompt, continuation contract, architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register, carry-forward baseline, intelligence-memory contract, dataset-reconciliation protocol/queue, Batch 55 checkpoint/progress/contradiction evidence and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
+The key prompt, continuation contract, architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register, carry-forward baseline, intelligence-memory contract, dataset-reconciliation protocol/queue, Batch 55/56/57 checkpoint/progress/contradiction evidence, intelligence-training cycles and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
 
 ## 14. Execution-lifecycle evidence rule
 
