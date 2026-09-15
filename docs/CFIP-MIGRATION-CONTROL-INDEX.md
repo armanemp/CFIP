@@ -7,7 +7,7 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Current CFIP batch-66 implementation head: `87f9fa32e26a256e004589f8e9171429ff16d603`.
+- Current CFIP batch-67 implementation head: `e12572ac25349d30d5608361cb822fc451baef1e`.
 - Historical evidence is retained and never rewritten as current source truth.
 - Current-head Admin Git hardening is reconciled as an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
@@ -70,21 +70,25 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58–66 registration
+## Batch 58–67 registration
 
 ### Batch 58–65
 Prior batch registrations remain immutable in this index history.
 
 ### Batch 66
-- `packages/eventing-dispatcher/` — transport-neutral bounded durable-event dispatcher
-- `DurableEventClaimPort` — technology-neutral claim boundary
-- explicit transport failure classification via `DispatchFailure | None`
-- bounded retry/dead-letter orchestration with lease-fenced acknowledgements
-- PostgreSQL outbox claim adapter now supports an owned transaction when no caller connection is supplied, while preserving caller-transaction participation
-- `migrations/README.md` — canonical PostgreSQL migration ownership rules
-- `migrations/versions/0001_analysis_execution_outbox.py` — deployable first executable PostgreSQL schema revision for analysis + outbox
-- dispatcher package test configuration and failure-mode tests
-- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-66.md`
-- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-66.md`
+- transport-neutral bounded durable-event dispatcher;
+- durable claim/state ports;
+- explicit transport failure classification;
+- bounded retry/dead-letter orchestration;
+- canonical first PostgreSQL migration revision.
 
-The next executable boundary is the canonical broker adapter plus idempotent realtime consumer and partition/checkpoint/watermark semantics. Migration ownership is now explicit for the first runtime slice; future domains must extend the append-only migration chain rather than relying on `create_schema()` helpers.
+### Batch 67
+- `IdempotentEventConsumer` — transport-neutral at-least-once consumer boundary;
+- atomic durable consumer claim before handler execution to prevent concurrent duplicate handling;
+- explicit distinction between transport at-least-once delivery and domain-level idempotency;
+- consumer contract tests;
+- `alembic.ini` and `migrations/env.py` for executable environment-neutral migration execution;
+- isolated `migrations/pyproject.toml` with current stable Alembic `1.20.0`, SQLAlchemy `2.0.52`, and Psycopg `3.3.5`;
+- migration documentation updated with explicit runtime configuration and production-evidence gate.
+
+The next executable boundary is source-derived broker transport plus durable consumer checkpoint/partition ownership/watermark/backpressure semantics. The migration stream is now executable in principle, but live database execution evidence remains open.
