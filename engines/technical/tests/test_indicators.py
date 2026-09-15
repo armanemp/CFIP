@@ -171,11 +171,11 @@ class IndicatorTests(unittest.TestCase):
         self.assertGreater(upper.values[-1] or 0.0, middle.values[-1] or 0.0)
         self.assertLess(lower.values[-1] or 0.0, middle.values[-1] or 0.0)
 
-    def test_stochastic_rsi_is_bounded_and_has_signal_warmup(self) -> None:
+    def test_stochastic_rsi_is_bounded_with_float_tolerance_and_has_signal_warmup(self) -> None:
         data = candles([float(10 + ((index * 3) % 7)) for index in range(40)])
         value, signal = stochastic_rsi(data, 3, 4, 2)
-        self.assertTrue(all(item is None or 0.0 <= item <= 100.0 for item in value.values))
-        self.assertTrue(all(item is None or 0.0 <= item <= 100.0 for item in signal.values))
+        self.assertTrue(all(item is None or (-1e-9 <= item <= 100.0 + 1e-9) for item in value.values))
+        self.assertTrue(all(item is None or (-1e-9 <= item <= 100.0 + 1e-9) for item in signal.values))
         self.assertIsNotNone(value.values[-1])
         self.assertIsNotNone(signal.values[-1])
 
