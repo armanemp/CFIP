@@ -10,8 +10,19 @@ from .eventing import (
     DurableEventStatus,
     EventTransport,
 )
+from .realtime import (
+    BackpressureAction,
+    BackpressureDecision,
+    ConsumerCheckpoint,
+    PartitionLease,
+    PartitionPosition,
+    Watermark,
+)
 
 __all__ = [
+    "BackpressureAction",
+    "BackpressureDecision",
+    "ConsumerCheckpoint",
     "DispatchFailure",
     "DispatchRetryPolicy",
     "DurableEventClaimPort",
@@ -21,4 +32,7 @@ __all__ = [
     "EventEnvelope",
     "EventTransport",
     "EventType",
+    "PartitionLease",
+    "PartitionPosition",
+    "Watermark",
 ]
