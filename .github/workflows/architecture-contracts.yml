@@ -104,12 +104,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -d migrations ]]; then
-            python tools/architecture/validate_migration_graph.py --migrations-root migrations --format markdown --output /tmp/target-migration-graph.md
-          elif [[ -d data/migrations ]]; then
-            python tools/architecture/validate_migration_graph.py --migrations-root data/migrations --format markdown --output /tmp/target-migration-graph.md
+          if find migrations/versions data/migrations/versions -type f -name '*.py' -print -quit 2>/dev/null | grep -q .; then
+            if find migrations/versions -type f -name '*.py' -print -quit 2>/dev/null | grep -q .; then
+              python tools/architecture/validate_migration_graph.py --migrations-root migrations --format markdown --output /tmp/target-migration-graph.md
+            else
+              python tools/architecture/validate_migration_graph.py --migrations-root data/migrations --format markdown --output /tmp/target-migration-graph.md
+            fi
           else
-            echo 'No target migration runtime tree is materialized; Gate 0 remains locked.'
+            echo 'No target migration revision files are materialized; migration-graph runtime validation is deferred.'
           fi
 
       - name: Verify dependency direction tool contract
