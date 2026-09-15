@@ -4,12 +4,16 @@ on:
   pull_request:
     paths:
       - 'engines/technical/**'
+      - 'tools/architecture/validate_indicator_structure.py'
+      - 'tests/architecture/test_validate_indicator_structure.py'
       - '.github/workflows/technical-indicators.yml'
   push:
     branches:
       - main
     paths:
       - 'engines/technical/**'
+      - 'tools/architecture/validate_indicator_structure.py'
+      - 'tests/architecture/test_validate_indicator_structure.py'
       - '.github/workflows/technical-indicators.yml'
 
 permissions:
@@ -34,8 +38,14 @@ jobs:
       - name: Install technical package
         run: python -m pip install --no-deps ./engines/technical
 
-      - name: Compile technical package
-        run: python -m compileall -q engines/technical/src engines/technical/tests
+      - name: Compile technical package and architecture guard
+        run: python -m compileall -q engines/technical/src engines/technical/tests tools/architecture tests/architecture
+
+      - name: Validate canonical indicator structure
+        run: python tools/architecture/validate_indicator_structure.py
 
       - name: Run indicator tests
         run: python -m unittest discover -s engines/technical/tests -p 'test_*.py' -v
+
+      - name: Run indicator structure regression test
+        run: python -m unittest tests.architecture.test_validate_indicator_structure -v
