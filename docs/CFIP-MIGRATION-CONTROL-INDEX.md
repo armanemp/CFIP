@@ -75,11 +75,96 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58–74 registration
+## Batch 58–65
 
 Prior batch registrations remain immutable in this index history.
 
-### Batch 75
+## Batch 66
+- transport-neutral bounded durable-event dispatcher;
+- durable claim/state ports;
+- explicit transport failure classification;
+- bounded retry/dead-letter orchestration;
+- canonical first PostgreSQL migration revision.
+
+## Batch 67
+- `IdempotentEventConsumer` — transport-neutral at-least-once consumer boundary;
+- atomic durable consumer claim before handler execution to prevent concurrent duplicate handling;
+- explicit distinction between transport at-least-once delivery and domain-level idempotency;
+- consumer contract tests;
+- `alembic.ini` and `migrations/env.py` for executable environment-neutral migration execution;
+- isolated migration dependency manifest with stable Alembic/SQLAlchemy/Psycopg versions;
+- migration documentation updated with explicit runtime configuration and production-evidence gate.
+
+## Batch 68
+- transport-neutral partition position/checkpoint/lease contracts;
+- fencing-token model for stale-owner protection;
+- monotonic event-time watermark contract and deterministic tracker;
+- explicit bounded backpressure/degradation policy with critical-event protection;
+- realtime runtime tests;
+- PostgreSQL migration `0002_realtime_progress` for consumer dedupe, checkpoints and partition leases;
+- batch-68 documentation and intelligence training record.
+
+## Batch 69
+- `tools/architecture/validate_continuation_contract.py` as a machine-checkable guard over the canonical continuation-control stack;
+- `tests/architecture/test_validate_continuation_contract.py` covering control-stack presence, operating rules and missing-document detection;
+- continuation validation integrated into architecture CI;
+- controlled implementation semantics and production lock preserved;
+- transport-specific engineering kept unresolved where source evidence is insufficient.
+
+## Batch 70
+- canonical continuation prompt modernized to remove obsolete architecture references and tighten the repository hygiene rule;
+- active control index reconciled with the new hygiene policy;
+- `tools/architecture/validate_target_contracts.py` upgraded with repository-wide text hygiene scanning for obsolete architecture references, while encoding detection markers so the validator cannot reintroduce the forbidden terms itself;
+- `tests/architecture/test_validate_target_contracts.py` added for current-tree hygiene and negative detection;
+- architecture CI now executes the target-contract validator tests explicitly before the validator itself;
+- obsolete contradiction-sweep and early progress-report artifacts containing superseded architecture history removed from the active repository surface;
+- no business semantics were changed by the cleanup batch;
+- global-scale, PIT/replay, Platform Intelligence and Gate-0 controls remain intact.
+
+## Batch 71
+- upgraded repository hygiene from a text-extension allow-list to a complete current-tree byte scan plus path-name scan, excluding only repository/runtime cache internals;
+- expanded validator tests to cover text content, path names and extensionless files;
+- added `.github/workflows/repository-hygiene.yml` so the hygiene gate runs on every pull request and every push to `main`, rather than only on architecture-sensitive paths;
+- retained read-only workflow permissions and a bounded CI timeout;
+- no business semantics or source behavior were changed;
+- repository hygiene is now an always-on control, while source closure, parity, scale capacity and production readiness remain independently gated.
+
+## Batch 72
+- identified and corrected a stale standards document that still described the former blanket runtime lock, reconciling it with the current controlled-implementation rule;
+- added `RealtimeTelemetrySnapshot` to the technology-neutral contract package;
+- snapshot covers queue depth, capacity, consumer lag, event-time watermark, lateness, processing latency and bounded backpressure action;
+- explicitly kept telemetry observational and non-authoritative, preserving durable checkpoints, leases, event logs and domain state as correctness authorities;
+- exported the contract through the shared contracts package;
+- added focused realtime-runtime tests for valid snapshots and negative metric validation;
+- refreshed the standards document with current OpenTelemetry semantic-convention guidance and compatibility principles;
+- no broker-specific implementation or production telemetry backend was invented without source/integration evidence.
+
+## Batch 73
+- re-read current source runtime evidence and confirmed the source event path uses asynchronous NATS JetStream publication after a durable PostgreSQL outbox;
+- corrected the target `EventTransport` contract from synchronous to asynchronous to prevent blocking network I/O in the worker path;
+- converted `DurableEventDispatcher` to await transport publication while preserving lease-fenced durable state transitions;
+- updated dispatcher tests for the async boundary;
+- added `packages/eventing-nats` with stable `nats-py` 2.15.x dependency, concrete JetStream adapter, package export, README and focused tests;
+- preserved `Nats-Msg-Id` for event identity/deduplication and moved project-specific metadata to a non-reserved header namespace;
+- added ADR-018 documenting the async transport decision and adapter ownership;
+- updated the standards document with transport isolation and protocol-header guardrails;
+- reconciled `packages/README.md` with the current controlled-implementation status;
+- live broker/stream/consumer configuration, PostgreSQL runtime integration, durable checkpoint/lease integration and end-to-end worker composition remain unverified.
+
+## Batch 74
+- re-audited the async event-dispatch path after Batch 73 and found a remaining inconsistency: durable claim/state ports were synchronous while the source outbox and target transport were asynchronous;
+- converted `DurableEventClaimPort.claim_batch` to async;
+- converted `DurableEventStatePort.mark_published`, `mark_failed` and `mark_dead` to async;
+- updated `DurableEventDispatcher` to await all correctness-critical storage calls as well as transport I/O;
+- updated dispatcher tests to model the complete async boundary;
+- added ADR-019 defining the async durable event-state boundary and explicitly preserving transactional fencing/atomicity requirements;
+- updated the standards document to require async storage at the worker boundary while keeping database correctness transactional;
+- added OpenTelemetry messaging guidance for future producer/consumer/process/settle instrumentation and message-context propagation;
+- fixed the migration-control consistency validator after its current-head CI run exposed brittle exact-phrase assumptions that contradicted the canonical Gate-0 wording;
+- expanded validator tests for both canonical and legacy accepted wording while retaining fail-closed checks;
+- no production PostgreSQL adapter or live JetStream topology was claimed without executable integration evidence.
+
+## Batch 75
 - initially identified fencing as a schema requirement, then reconciled the change with the canonical pre-Gate-1 migration ownership rule;
 - removed the provisional standalone migration and consolidated `fencing_token`, its positive check constraint and dispatchability index into canonical migration `0001_analysis_execution_outbox`;
 - strengthened `DurableEventRecord` and `DurableEventStatePort` so every durable transition carries an explicit fencing token;
@@ -92,7 +177,7 @@ Prior batch registrations remain immutable in this index history.
 - added ADR-020 for the PostgreSQL fencing decision and reconciled the Gate-0 speed/closure protocol so controlled runtime implementation is permitted while production promotion remains locked;
 - no production readiness or live integration claim is inferred from package presence or SQL compilation alone.
 
-### Batch 78
+## Batch 78
 - re-read the concrete PostgreSQL adapter and found that its existing tests covered table compilation and row mapping but did not lock the critical SQL shape of the atomic claim and fenced transition paths;
 - added regression coverage for `FOR UPDATE SKIP LOCKED`, bounded claim ordering, attempt increment and fencing-token advancement;
 - added regression coverage ensuring fenced state transitions retain worker, token, processing-state and lease predicates;
@@ -100,7 +185,7 @@ Prior batch registrations remain immutable in this index history.
 - retained the runtime evidence boundary explicitly so SQL compilation cannot be misreported as database integration;
 - current architecture and repository-hygiene CI for the previous canonical head both completed successfully; this batch intentionally triggers fresh CI for the new test commit.
 
-### Batch 79
+## Batch 79
 - started the `CAP-TECHNICAL` target implementation with a pure Python technical-indicator package under `engines/technical`;
 - added typed immutable `OHLCV` and `IndicatorResult` models with finite-value, OHLC-bound and warm-up validation;
 - implemented deterministic SMA, EMA, Wilder RSI, Wilder ATR, Bollinger Bands and EMA-based MACD primitives without framework/database/broker dependencies;
@@ -110,7 +195,7 @@ Prior batch registrations remain immutable in this index history.
 - corrected `engines/technical/README.md`, which previously claimed implementation was locked despite the current controlled-implementation rule;
 - classified the indicator slice as `TARGET-REQUIRED` engineering until source-specific semantics, canonical engine identities, golden fixtures and PIT/replay parity evidence are reconciled.
 
-### Batch 80
+## Batch 80
 - expanded `CAP-TECHNICAL` with deterministic Momentum, ROC, Stochastic %K/%D, Williams %R, CCI, OBV, VWAP and Donchian Channel primitives;
 - preserved explicit warm-up/missingness semantics and fail-closed volume requirements for OBV/VWAP;
 - expanded focused technical tests to cover bounded ranges, volume requirements, channel semantics and deterministic numerical behavior;
