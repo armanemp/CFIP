@@ -43,7 +43,11 @@ Read these documents in this order at the start of every migration continuation:
 28. `data/training/CFIP-CFOREX-TRAINING-DATASET-INDEX-v0.1.json` — source training-dataset carry-forward identity, hashes, counts and materialization status.
 29. `docs/governance/CFIP-INTELLIGENCE-MEMORY-CONTRACT.md` — durable Platform Intelligence memory, temporal retrieval, provenance and lifecycle contract.
 30. `data/training/CFIP-INTELLIGENCE-MEMORY-INDEX-v0.1.json` — machine-readable governed intelligence-memory index; initially empty by design.
-31. `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-53.md` and `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-53.md` — latest progress and contradiction evidence.
+31. `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-53.md` and `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-53.md` — previous progress and contradiction evidence.
+32. `docs/governance/CFIP-DATASET-RECONCILIATION-PROTOCOL.md` — source dataset evidence-state and reconciliation rules.
+33. `data/training/CFIP-DATASET-RECONCILIATION-QUEUE-v0.1.json` — machine-readable dataset reconciliation work queue and eligibility state.
+34. `docs/CFIP-ECP-CHECKPOINT-54.md` — Batch 54 governed checkpoint.
+35. `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-54.md` and `docs/CFIP-DOCUMENTATION-CONTRADICTION-SWEEP-54.md` — latest progress and contradiction evidence.
 
 The current `armanemp/CForex` repository remains the executable behavioral source of truth until parity closure.
 
@@ -239,7 +243,7 @@ Documentation, source inspection, evidence extraction, reconciliation and govern
 
 ## 13. Integrated project rule
 
-The key prompt, continuation contract, architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register, carry-forward baseline, intelligence-memory contract and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
+The key prompt, continuation contract, architecture guide, master plan, source-study integration guide, capability registry, source-evidence matrix, parity matrix, source tree, canonical Gate 0 register, carry-forward baseline, intelligence-memory contract, dataset-reconciliation protocol/queue and ADR set form one controlled system. If two documents disagree, evidence precedence in this index applies; the control index must be updated before implementation proceeds.
 
 ## 14. Execution-lifecycle evidence rule
 
@@ -252,5 +256,3 @@ The execution-lifecycle evidence records the current stronger evidence for analy
 ## 15. Migration hygiene rule
 
 For the current mutable CFIP target migration set, a schema correction or completion that belongs to an existing logical migration must be applied by editing that original migration. A new corrective migration must not be created for the same logical change. This rule prevents duplicate ownership and keeps schema history aligned with the canonical evidence graph. A genuinely new schema evolution remains separately identifiable by scope and evidence.
-
-CForex source migrations remain immutable source evidence and are never rewritten as part of CFIP migration work.
