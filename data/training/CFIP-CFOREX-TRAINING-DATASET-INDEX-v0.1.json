@@ -1,0 +1,56 @@
+{
+  "schema_version": "0.1",
+  "dataset_family": "cforex-governed-platform-knowledge",
+  "purpose": "Controlled carry-forward index for source training/evaluation datasets. This index is evidence metadata, not a claim that every source artifact is already materialized in CFIP.",
+  "source_repository": "armanemp/CForex",
+  "source_ref": "main",
+  "source_baseline": "v0.9.154",
+  "entries": [
+    {
+      "manifest_path": "data/training/SEED-DATASET-MANIFEST-v0.19.json",
+      "dataset_path": "data/training/governed_platform_knowledge_v0.19.jsonl",
+      "source_manifest_sha": "536129183563fe94ba77f574dee274221941b807",
+      "declared_record_count": 204,
+      "source_type": "synthetic_seed",
+      "synthetic_only": true,
+      "promotion_allowed": false,
+      "model_mutation_allowed": false,
+      "materialization_status": "SOURCE_EVIDENCE_ONLY"
+    },
+    {
+      "manifest_path": "data/training/SEED-DATASET-MANIFEST-v0.20.json",
+      "dataset_path": "data/training/governed_platform_knowledge_v0.20.jsonl",
+      "source_manifest_sha": "c347a0a5dab70a0e0c5a201d93aae55a254225ca",
+      "declared_record_count": 222,
+      "source_type": "synthetic_seed",
+      "synthetic_only": true,
+      "promotion_allowed": false,
+      "model_mutation_allowed": false,
+      "materialization_status": "SOURCE_EVIDENCE_ONLY"
+    },
+    {
+      "manifest_path": "data/training/SEED-DATASET-MANIFEST-v0.21.json",
+      "dataset_path": "data/training/governed_platform_knowledge_v0.21.jsonl",
+      "source_dataset_sha": "9d006d25ba19878ebc8cf4760dbddf287a367f48",
+      "source_manifest_sha": "93f852e2acb8cffc13200890f679102812abb880",
+      "declared_record_count": 330,
+      "source_type": "synthetic_seed",
+      "synthetic_only": true,
+      "promotion_allowed": false,
+      "model_mutation_allowed": false,
+      "materialization_status": "BLOCKED_PENDING_SOURCE_INTEGRITY_RECONCILIATION",
+      "integrity_note": "The source manifest declares 330 records. Direct source-blob evidence currently exposes 108 JSONL records. CFIP must not silently materialize a partial dataset or treat the declared count as verified until the source discrepancy is resolved."
+    }
+  ],
+  "governance": {
+    "training_requires_provenance": true,
+    "training_requires_rights": true,
+    "training_requires_point_in_time_scope": true,
+    "training_requires_evaluation": true,
+    "synthetic_data_is_not_market_truth": true,
+    "automatic_model_mutation": false,
+    "automatic_production_mutation": false,
+    "source_evidence_is_immutable": true,
+    "materialization_requires_hash_and_record_count_verification": true
+  }
+}
