@@ -12,12 +12,14 @@ class FakeStore:
         self.published: list[str] = []
         self.failed: list[str] = []
         self.dead: list[str] = []
+        self.tokens: list[int] = []
 
     async def claim_batch(self, *, worker_id: str, limit: int, lease_seconds: int) -> list[DurableEventRecord]:
         return self.records[:limit]
 
-    async def mark_published(self, record_id, *, worker_id: str, published_at: datetime) -> bool:
+    async def mark_published(self, record_id, *, worker_id: str, fencing_token: int, published_at: datetime) -> bool:
         self.published.append(str(record_id))
+        self.tokens.append(fencing_token)
         return True
 
     async def mark_failed(
@@ -25,14 +27,24 @@ class FakeStore:
         record_id,
         *,
         worker_id: str,
+        fencing_token: int,
         available_at: datetime,
         error: DispatchFailure,
     ) -> bool:
         self.failed.append(str(record_id))
+        self.tokens.append(fencing_token)
         return True
 
-    async def mark_dead(self, record_id, *, worker_id: str, error: DispatchFailure) -> bool:
+    async def mark_dead(
+        self,
+        record_id,
+        *,
+        worker_id: str,
+        fencing_token: int,
+        error: DispatchFailure,
+    ) -> bool:
         self.dead.append(str(record_id))
+        self.tokens.append(fencing_token)
         return True
 
 
@@ -61,6 +73,7 @@ def record(attempts: int = 1) -> DurableEventRecord:
         event=EventEnvelope(event_type=EventType.ANALYSIS_RUN_COMPLETED, producer="test", payload={}),
         dedupe_key=str(uuid4()),
         attempts=attempts,
+        fencing_token=7,
     )
 
 
@@ -70,6 +83,7 @@ def test_dispatch_publishes_and_fences_ack() -> None:
     result = run_dispatch(dispatcher, worker_id="worker-1", now=datetime.now(UTC))
     assert result == result.__class__(claimed=1, published=1, retried=0, dead_lettered=0, lease_lost=0)
     assert len(store.published) == 1
+    assert store.tokens == [7]
 
 
 def test_dispatch_retries_retryable_failure() -> None:
