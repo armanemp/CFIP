@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import asdict
 from datetime import datetime
 from typing import Any
 
@@ -18,7 +17,9 @@ from .models import EngineExecutionContext
 
 def _canonical(value: Any) -> Any:
     if isinstance(value, datetime):
-        return value.astimezone().isoformat()
+        if value.tzinfo is None:
+            raise ValueError("datetime must be timezone-aware")
+        return value.isoformat()
     if isinstance(value, dict):
         return {str(key): _canonical(item) for key, item in sorted(value.items(), key=lambda pair: str(pair[0]))}
     if isinstance(value, (list, tuple)):
@@ -38,5 +39,5 @@ def execution_fingerprint(context: EngineExecutionContext, engine_id: str, versi
         "observations": _canonical(list(context.observations)),
         "correlation_id": context.correlation_id,
     }
-    encoded = json.dumps(_canonical(payload), ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+    encoded = json.dumps(_canonical(payload), ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
