@@ -2,7 +2,7 @@
 
 **Target:** `armanemp/CFIP`  
 **Source:** `armanemp/CForex`  
-**Current target HEAD at report finalization:** `0cbd92d762b302e2a3f2d0ffe54a87626cf1d80e`  
+**Current target HEAD at report finalization:** `a78b6bd4d20d4346fb609aac55e993680708d42d`  
 **Current source HEAD:** `900882154cab3b9b74d0543b9bbf72a708a08134`  
 **Gate 0:** OPEN — controlled implementation permitted  
 **Production promotion:** LOCKED  
@@ -10,187 +10,135 @@
 
 ## Executive status
 
-Batch 91 continued the project as an actual engineering batch rather than a documentation-only batch. The target technical indicator engine was expanded, the single consensus boundary was hardened, a governed Platform Intelligence lifecycle runtime foundation was added, the physical engine manifest was reconciled, stale Gate-0 semantics were corrected, and the technical structural validator was fixed after current-head CI exposed a real defect.
+Batch 91 continued actual engineering and architecture reconciliation in parallel. Technical indicators were expanded, the unified consensus boundary was hardened, a governed Platform Intelligence lifecycle foundation was added, structural cleanup was enforced, stale Gate-0/source-tree wording was reconciled, and a real CI defect in the indicator structure validator was root-caused and fixed.
 
-The most important architectural correction is that **source inventory is no longer treated as a requirement to recreate empty target namespaces**. README-only placeholder analytical-engine directories and redundant compatibility facades remain removed. Canonical ownership is now expressed by executable family modules, explicit registries and structural guards.
+The target tree is now explicitly **implementation-driven rather than source-directory-driven**. Source inventories remain migration evidence; they are not instructions to create empty target directories. README-only analytical-engine placeholders and redundant technical compatibility facades remain removed.
 
-## Applied in Batch 91
+## Applied
 
-### A. Technical indicators
+### Technical indicators
 
-Added four new canonical indicator families/output sets:
+Added DEMA, TEMA, TRIX and Parabolic SAR as canonical implementations. The registry now contains 24 descriptor/family identities. Multi-output families remain represented as one canonical identity where appropriate.
 
-- DEMA — double exponential moving average.
-- TEMA — triple exponential moving average.
-- TRIX — triple-smoothed percentage rate of change.
-- Parabolic SAR — deterministic step/maximum acceleration-factor trend implementation.
+### Unified consensus
 
-The catalog now contains **24 registered indicator families/output sets**. Public exports, canonical family modules and technical tests were updated. The implementation remains target engineering and **does not claim source parity**.
+`AnalysisConsensusService` now has deterministic conflict classification, explanation trace, duplicate-source protection, revision binding and existing abstention safeguards. `IndicatorEvidenceAdapter` gained explicit TRIX semantic mapping and continues to fail closed for unsupported/context-dependent semantics.
 
-### B. Unified result/consensus engine
+### Platform Intelligence
 
-`AnalysisConsensusService` was strengthened with:
+Added `packages/intelligence-runtime` as a dependency-free lifecycle-contract boundary for `observe → context → reason → act → verify → learn → audit → safety`. An action event requires prior safety evidence in the same trace. The package has no direct SQL, infrastructure, trade or arbitrary agent execution authority.
 
-- deterministic conflict classification: `aligned`, `mixed`, `neutral`;
-- deterministic explanation trace containing directional mass, confidence, agreement, margin and conflict class;
-- duplicate `source_id` rejection within one consensus set;
-- preserved revision binding and explicit abstention semantics.
+### Structure and documentation
 
-`IndicatorEvidenceAdapter` now also has an explicit TRIX mapping. Unsupported/context-dependent outputs still fail closed instead of being given an invented trading interpretation.
+- Removed unused README-only engine namespaces in the prior cleanup and retained no new placeholders.
+- Reconciled `CFIP-TARGET-FILE-MANIFEST.md` so source engine census is explicitly separated from target physical implementation.
+- Reconciled `CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md` to controlled-implementation semantics.
+- Added and activated `CFIP-CONTROL-AMENDMENT-91.md`.
+- Updated `CFIP-KEY-CONTINUATION-PROMPT.md` to activate Amendment 91.
+- Updated `engines/technical/README.md` and canonical indicator exports.
+- Fixed `validate_indicator_structure.py` so ownership checks are based on module-level functions and current family ownership.
+- Reconciled `docs/CFIP-SOURCE-TREE.md` so it no longer incorrectly states that runtime implementation is categorically locked during Gate 0.
 
-### C. Platform Intelligence
+## Verification
 
-Added `packages/intelligence-runtime` as a dependency-free governed lifecycle contract:
+- CFIP `main` was re-read after the final documentation reconciliation and is at `a78b6bd4d20d4346fb609aac55e993680708d42d`.
+- CForex `main` remains `900882154cab3b9b74d0543b9bbf72a708a08134`.
+- GitHub search found no current `TODO`, `FIXME`, `NotImplementedError` or literal `placeholder` code marker requiring immediate implementation; remaining placeholder terminology is governance/documentation language describing the prohibited pattern.
+- The previous Technical Indicators CI failure was diagnosed as a structural-validator defect; the validator was corrected. A fresh successful final-head Technical Indicators run is still required and is not claimed here.
 
-`observe → context → reason → act → verify → learn → audit → safety`
+## Applied / Verified / Open boundary
 
-The runtime records immutable, policy-bound lifecycle events. An `act` event requires a prior explicit `safety` event in the same trace. The package does **not** execute SQL, infrastructure mutations, trades or arbitrary agent actions; domain services and governed application tools remain authoritative.
+| State | Meaning in this report |
+|---|---|
+| Applied | Change is committed to GitHub `main`. |
+| Verified | Current GitHub state or a concrete executable/inspection result was directly checked. |
+| Open | Evidence is missing or a gate is intentionally not closed. |
 
-A focused CI workflow and unit tests were added.
+### Explicit Open evidence
 
-### D. Repository/architecture structure
+- Fresh Technical Indicators CI after the final validator fix.
+- Fresh Intelligence Runtime CI on the final head.
+- Source-parity evidence for all target indicators, including DEMA/TEMA/TRIX/Parabolic SAR.
+- Independent golden numerical fixtures, warm-up/missingness and tolerance policy.
+- Consensus end-to-end composition, provenance/quality, calibration and outcome attribution.
+- Live PostgreSQL concurrency/fencing/recovery.
+- NATS topology and outbox-to-JetStream E2E.
+- PIT/replay end-to-end correctness.
+- Global capacity/load methodology, tenancy, residency and DR/RPO/RTO evidence.
+- Full frontend/product workflow integration.
+- Whole-repository semantic contradiction closure.
 
-The target file manifest was reconciled so that:
+## Current indicator inventory
 
-- `engines/technical` is the current executable analytical-engine foundation;
-- the CForex 14 namespace / 15 runtime-engine census remains migration evidence rather than a demand for 14 empty target folders;
-- placeholder README-only engine directories are explicitly prohibited unless they become an actual architecture contract/implementation owner;
-- the new intelligence runtime package is recorded as a controlled target addition.
+| Family/output set | State |
+|---|---|
+| SMA, EMA, DEMA, TEMA | Implemented / parity open |
+| RSI, ATR | Implemented / parity open |
+| Bollinger Bands, MACD | Implemented / parity open |
+| Momentum, ROC, TRIX | Implemented / parity open |
+| Stochastic, Williams %R, CCI | Implemented / parity open |
+| MFI, Stochastic RSI | Implemented / parity open |
+| Donchian, Aroon, ADX | Implemented / parity open |
+| Ichimoku, Keltner, Parabolic SAR | Implemented / parity open |
+| OBV, VWAP, CMF | Implemented / parity open |
 
-### E. Gate/documentation reconciliation
+**Registry cardinality:** 24 canonical descriptor identities. This grouped presentation deliberately avoids confusing output count with registry identity count.
 
-- `CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md` was corrected to make Gate 0 semantics internally consistent: controlled implementation is permitted; production promotion remains locked.
-- `CFIP-CONTROL-AMENDMENT-91.md` was added and activated.
-- `CFIP-KEY-CONTINUATION-PROMPT.md` now explicitly activates Amendment 91.
-- `engines/technical/README.md` now reflects the exact physical tree and 24-indicator catalog.
-- `CFIP-TARGET-FILE-MANIFEST.md` now distinguishes source census from target physical materialization.
+## D1–D11
 
-## Applied vs Verified vs Open
+| Domain | Current state | Primary remaining closure |
+|---|---|---|
+| D1 API/WS | ADVANCED / OPEN | exhaustive lifecycle/auth/entitlement evidence |
+| D2 Events | ADVANCED / INTEGRATION OPEN | live DB/NATS lifecycle, ordering, recovery |
+| D3 Data/PIT | ADVANCED / OPEN | authoritative revision/PIT reconstruction + dataset integrity |
+| D4 Engines | ADVANCED / STRUCTURE VERIFIED / PARITY OPEN | source parity + golden + PIT/replay + runtime composition |
+| D5 Workers | ADVANCED / OPEN | checkpoint/lease/recovery/capacity evidence |
+| D6 Frontend | IN PROGRESS / OPEN | product workflow/realtime/i18n/a11y/performance |
+| D7 Tests | STRONGER / OPEN | system-wide integration/race/security/performance |
+| D8 Policy/Config | IN PROGRESS / OPEN | exhaustive hardcode/invariant/tenant/entitlement classification |
+| D9 Adapters | ADVANCED / OPEN | provider/broker/model/research lifecycle evidence |
+| D10 Operations | IN PROGRESS / OPEN | capacity/SLO/DR/residency/security evidence |
+| D11 Reconciliation | STRONGER / OPEN | whole-repository contradiction closure |
 
-### Applied
-
-- 24-indicator canonical target catalog and implementation slice.
-- DEMA/TEMA/TRIX/Parabolic SAR code and focused tests.
-- Consensus conflict/explanation hardening.
-- TRIX semantic evidence policy.
-- Platform Intelligence lifecycle package, tests and focused workflow.
-- Gate-0 register reconciliation.
-- Amendment 91 and continuation activation.
-- Target file manifest reconciliation.
-- Technical README and canonical export reconciliation.
-- Indicator structural validator correction.
-
-### Verified
-
-- GitHub `main` HEAD is exactly `0cbd92d762b302e2a3f2d0ffe54a87626cf1d80e` at report finalization.
-- CForex `main` HEAD is exactly `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Current-head GitHub history shows the applied commits in this batch, including the final architecture-validator fix and this reconciled progress report.
-- A current Technical Indicators workflow failure was inspected and its root cause was identified: the structural guard had not been expanded for the newly added public functions and incorrectly treated a nested RSI helper as a top-level implementation. The validator has now been corrected to inspect module-level function owners and the expanded family sets.
-
-### Open / not yet verified
-
-- A fresh successful Technical Indicators workflow on the final HEAD is **not yet claimed** after the validator fix.
-- A fresh successful Intelligence Runtime workflow on the final HEAD is **not yet claimed**.
-- DEMA/TEMA/TRIX/Parabolic SAR source-parity evidence is open.
-- Golden numerical fixtures and source-specific warm-up/default/tie-breaking evidence remain open.
-- Consensus integration with real engine outputs, provenance/quality, calibration and outcome attribution remains open.
-- Live PostgreSQL concurrency/fencing/recovery evidence remains open.
-- NATS topology and outbox-to-JetStream E2E evidence remains open.
-- PIT/replay end-to-end evidence remains open.
-- Global-scale capacity, residency and DR/RPO/RTO evidence remains open.
-- Frontend workflow and full product integration remain open.
-- Full repository semantic reconciliation remains open.
-
-## Technical indicator inventory — current target
-
-| # | Family/output set | State |
-|---:|---|---|
-| 1 | SMA | Implemented / parity open |
-| 2 | EMA | Implemented / parity open |
-| 3 | DEMA | Implemented this batch / parity open |
-| 4 | TEMA | Implemented this batch / parity open |
-| 5 | RSI | Implemented / parity open |
-| 6 | ATR | Implemented / parity open |
-| 7 | Bollinger Bands | Implemented / parity open |
-| 8 | MACD | Implemented / parity open |
-| 9 | Momentum | Implemented / parity open |
-| 10 | ROC | Implemented / parity open |
-| 11 | TRIX | Implemented this batch / parity open |
-| 12 | Stochastic %K/%D | Implemented / parity open |
-| 13 | Williams %R | Implemented / parity open |
-| 14 | CCI | Implemented / parity open |
-| 15 | MFI | Implemented / parity open |
-| 16 | Stochastic RSI | Implemented / parity open |
-| 17 | Donchian Channels | Implemented / parity open |
-| 18 | Aroon | Implemented / parity open |
-| 19 | ADX +DI/-DI | Implemented / parity open |
-| 20 | Ichimoku | Implemented / parity open |
-| 21 | Keltner Channels | Implemented / parity open |
-| 22 | Parabolic SAR | Implemented this batch / parity open |
-| 23 | OBV | Implemented / parity open |
-| 24 | VWAP | Implemented / parity open |
-| 25 | CMF | Implemented / parity open |
-
-**Counting note:** the registry contains 24 descriptors because multi-output families (for example MACD, Stochastic, Ichimoku, Keltner and ADX) are represented by one family descriptor. The table above is a concrete output-family presentation and therefore has 25 rows; it is not a registry-cardinality claim.
-
-## D1–D11 progress
-
-| Domain | Status | Current evidence | Main open gap |
-|---|---|---|---|
-| D1 API/WS | ADVANCED / OPEN | architecture/contracts | exhaustive lifecycle/auth/entitlement verification |
-| D2 Events | ADVANCED / INTEGRATION OPEN | async contracts + PostgreSQL/NATS adapters | live concurrency/topology/E2E/recovery |
-| D3 Data/PIT | ADVANCED / OPEN | PIT/revision contracts | authoritative reconstruction/dataset verification |
-| D4 Engines | ADVANCED / STRUCTURE VERIFIED / PARITY OPEN | canonical technical tree + registry + evidence adapter | source parity/golden/PIT/replay/integration |
-| D5 Workers | ADVANCED / OPEN | worker lifecycle/realtime contracts | runtime recovery/capacity/lease evidence |
-| D6 Frontend | IN PROGRESS / OPEN | architecture contracts | feature workflow/realtime/i18n/a11y/performance |
-| D7 Tests | STRONGER / OPEN | indicator/consensus/SQL/architecture tests | whole-system integration/race/security/performance |
-| D8 Policy/config | IN PROGRESS / OPEN | governance/continuation contracts | exhaustive classification |
-| D9 Adapters | ADVANCED / OPEN | PostgreSQL/NATS concrete adapters | live provider/model/broker lifecycle |
-| D10 Operations | IN PROGRESS / OPEN | telemetry/global-scale contracts | capacity/DR/residency/SLO evidence |
-| D11 Reconciliation | STRONGER / OPEN | manifest/Gate-0/structure reconciled | whole-repo contradiction closure |
-
-## Overall progress state
+## Overall state
 
 | Area | State |
 |---|---|
 | Governance | STRONGER / ACTIVE |
-| Gate 0 | OPEN |
-| Production promotion | LOCKED |
-| Repository structure hygiene | STRONGER / ENFORCED |
-| Technical indicators | 24 registry families / IMPLEMENTED / PARITY UNVERIFIED |
-| Indicator canonical ownership | VERIFIED by structural contract; latest-head CI rerun pending |
-| Indicator registry | IMPLEMENTED / VERIFIED by contract tests on prior evidence; fresh final-head workflow pending |
-| Indicator → Evidence Adapter | IMPLEMENTED / OPEN for broader semantic coverage |
+| Repository structure | ENFORCED / cleaner |
+| Technical indicators | 24 canonical registry identities / IMPLEMENTED / PARITY UNVERIFIED |
+| Indicator ownership | STRUCTURE CONTRACTED / validator fixed; fresh CI pending |
+| Indicator evidence adapter | IMPLEMENTED / broader semantics OPEN |
 | Unified consensus | IMPLEMENTED / integration OPEN |
-| Platform Intelligence | CONTRACTED + lifecycle runtime FOUNDATION / integration OPEN |
+| Platform Intelligence | FOUNDATION IMPLEMENTED / integration OPEN |
 | Events | ADVANCED / integration OPEN |
-| PostgreSQL durability | IMPLEMENTED / live runtime unverified |
+| PostgreSQL durability | IMPLEMENTED / live unverified |
 | Realtime | ADVANCED / integration OPEN |
 | PIT/replay | ADVANCED / OPEN |
 | Workers | ADVANCED / OPEN |
 | Frontend | IN PROGRESS |
 | Security | IN PROGRESS |
-| Observability | STRONGER / integration OPEN |
 | Global-scale architecture | CONTRACTED |
 | Global-scale capacity | UNPROVEN |
-| DR/RPO/RTO | UNPROVEN |
 | Data residency | REQUIRED / UNPROVEN |
+| DR/RPO/RTO | UNPROVEN |
 | Production readiness | LOCKED |
 
-## Next parallel tracks
+## Acceleration plan
 
-1. Re-run and verify Technical Indicators on the exact final HEAD after the validator fix.
-2. Verify the new Intelligence Runtime workflow on the exact final HEAD.
-3. Run source census for the next indicator wave and create independent golden fixtures before claiming parity.
-4. Standardize warm-up/missingness and numerical tolerance contracts across all technical families.
-5. Add consensus provenance/quality/conflict trace fixtures and contextual multi-output composition.
-6. Expand Platform Intelligence coverage matrix into real runtime integration points across API, workers, events, learning, research, governance and operations.
-7. Execute PostgreSQL concurrency/fencing/recovery tests and NATS outbox-to-JetStream E2E.
-8. Continue whole-repository placeholder/duplicate/ownership audit without recreating source-only namespaces.
-9. Continue global-scale capacity, tenancy, residency and DR evidence work.
+To materially increase throughput without sacrificing correctness, the next batches should run as parallel evidence/engineering lanes rather than serial feature work:
 
-## Final status for Batch 91
+1. **Indicator lane:** source census + golden fixtures + next canonical families.
+2. **Consensus lane:** provenance/quality/contextual multi-output composition + outcome/calibration contracts.
+3. **Intelligence lane:** capability-wide coverage matrix and governed integration points.
+4. **Infrastructure lane:** live PostgreSQL fencing/concurrency/recovery and NATS E2E.
+5. **Architecture lane:** automated repository structure/duplicate/ownership/documentation contradiction scans.
+6. **Scale lane:** representative load methodology, tenant isolation, regional routing, residency and DR contracts.
 
-**Applied:** substantial technical + intelligence + governance + structure work.  
-**Verified:** GitHub state and the root cause of the current technical CI defect.  
-**Not claimed:** final-head CI success, parity, production readiness, global capacity or live-runtime safety.
+No lane may convert static presence or prior CI into current-head verification.
+
+## Batch conclusion
+
+**Applied:** substantial code + architecture + governance + documentation work.  
+**Verified:** final GitHub state, source HEAD and the root cause/fix of the prior structural CI defect.  
+**Open:** final-head CI success, parity, live integration, global-scale capacity, production readiness and full repository closure.
