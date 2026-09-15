@@ -8,18 +8,16 @@
 
 - Historical CFIP source snapshot: CForex v0.9.154.
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Historical v0.9.154 evidence is retained and must not be rewritten as current source truth.
-- Current-head Admin Git hardening is reconciled as an explicit source delta; full source-delta closure remains open.
+- Historical evidence is retained and never rewritten as current source truth.
+- Current-head Admin Git hardening is reconciled as an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
 - CFIP production promotion: **LOCKED**.
 
 ## Canonical document order
 
-Read the key prompt, full continuation contract, this index, Amendment 47, master plan, architecture guide, source-study integration, **active Gate-0 register `docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md`**, capability registry, source-evidence matrix, parity matrix, source tree, carry-forward baseline, dataset inventory, ADRs, D3/PIT contract, Platform Intelligence matrix, standards review, evidence addenda, ECP, training lifecycle, dataset/memory contracts, latest checkpoint/progress/contradiction/training-cycle artifacts, and active governance validators/workflows before canonical status claims.
+Read the key prompt, full continuation contract, this index, Amendment 47, master plan, architecture guide, source-study integration, active Gate-0 register `docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md`, capability registry, source-evidence matrix, parity matrix, source tree, carry-forward baseline, dataset inventory, ADRs, D3/PIT contract, Platform Intelligence matrix, standards review, evidence addenda, ECP, training lifecycle, dataset/memory contracts, latest checkpoint/progress/contradiction/training-cycle artifacts, and active governance validators/workflows before canonical status claims.
 
-`docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md` remains immutable historical evidence. The controlled-implementation register is its current operating successor and explicitly supersedes the former blanket runtime coding lock.
-
-The current CForex repository remains the executable behavioral source of truth until parity closure. A remembered version or historical report never overrides the current GitHub HEAD.
+`docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md` remains immutable historical evidence. The controlled-implementation register is its current operating successor and supersedes the former blanket runtime coding lock.
 
 ## Mission and evidence precedence
 
@@ -72,7 +70,7 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58/59 registration
+## Batch 58–64 registration
 
 ### Batch 58
 - `docs/governance/CFIP-ECP-CHECKPOINT-58.md`
@@ -93,10 +91,19 @@ Every continuation performs: inspect both repos → source study → evidence gr
 - production/promotion/live-execution restrictions explicitly retained
 
 ### Batch 63
-- `packages/analysis-postgres/` — first PostgreSQL durable analysis-execution adapter
+- `packages/analysis-postgres/` — PostgreSQL durable analysis-execution adapter
 - `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-63.md`
 - `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-63.md`
-- current stable dependency review: SQLAlchemy 2.0.52 + Psycopg 3.3.5
-- PostgreSQL migration ownership, transactional outbox and live integration evidence remain open
+- stable dependency review: SQLAlchemy 2.0.52 + Psycopg 3.3.5
 
-Next continuation must continue the executable vertical slice: PostgreSQL durable repository → transactional outbox in the same transaction boundary → dispatcher/lease recovery → canonical event publication → realtime consumer, while parallel source census, PIT/replay, global-scale, frontend and Platform Intelligence closure continue. Documentation-only expansion is not the default when safe executable work is available.
+### Batch 64
+- PostgreSQL transactional outbox adapter
+- separate durable-record and event identity
+- database dedupe invariant
+- bounded `FOR UPDATE SKIP LOCKED` claiming
+- expired-lease recovery
+- explicit `cfip-contracts` package dependency
+- `docs/CFIP-DOCUMENTATION-PROGRESS-REPORT-64.md`
+- `docs/governance/CFIP-INTELLIGENCE-TRAINING-CYCLE-64.md`
+
+Next continuation must continue the executable vertical slice: application unit-of-work → PostgreSQL execution + outbox atomicity → transport-neutral dispatcher → lease-fenced publish/retry/dead-letter semantics → canonical event publication → realtime consumer, while parallel source census, PIT/replay, global-scale, frontend and Platform Intelligence closure continue. Documentation-only expansion is not the default when safe executable work is available.
