@@ -8,9 +8,9 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Batch 75 advances the durable event path from asynchronous contracts to a concrete PostgreSQL adapter with atomic claim and explicit monotonic fencing.
+- Batch 78 adds SQL-shape regression coverage around the concrete PostgreSQL durable-event adapter without pretending that compilation equals live database verification.
 - CFIP event transport, durable claim and durable state boundaries are asynchronous at the contract/dispatcher level.
-- `packages/eventing-postgres` now provides a SQLAlchemy async adapter; live PostgreSQL execution and end-to-end broker composition remain unverified.
+- `packages/eventing-postgres` provides a SQLAlchemy async adapter with atomic claim and monotonic fencing; live PostgreSQL execution and end-to-end broker composition remain unverified.
 - Current-head Admin Git hardening remains an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
 - CFIP production promotion: **LOCKED**.
@@ -175,15 +175,24 @@ Prior batch registrations remain immutable in this index history.
 - added ADR-020 for the PostgreSQL fencing decision and reconciled the Gate-0 speed/closure protocol so controlled runtime implementation is permitted while production promotion remains locked;
 - no production readiness or live integration claim is inferred from package presence or SQL compilation alone.
 
+### Batch 78
+- re-read the concrete PostgreSQL adapter and found that its existing tests covered table compilation and row mapping but did not lock the critical SQL shape of the atomic claim and fenced transition paths;
+- added regression coverage for `FOR UPDATE SKIP LOCKED`, bounded claim ordering, attempt increment and fencing-token advancement;
+- added regression coverage ensuring fenced state transitions retain worker, token, processing-state and lease predicates;
+- kept these tests deliberately SQL-compilation-level: they prove statement shape, not live PostgreSQL concurrency or transactional behavior;
+- retained the runtime evidence boundary explicitly so SQL compilation cannot be misreported as database integration;
+- current architecture and repository-hygiene CI for the previous canonical head both completed successfully; this batch intentionally triggers fresh CI for the new test commit.
+
 ## Active evidence gaps
 
 1. Live PostgreSQL integration execution of the durable-event adapter.
-2. End-to-end outbox → PostgreSQL claim → dispatcher → JetStream publish → fenced state transition.
-3. Exhaustive event-family/subject/consumer registry and replay/retention classification.
-4. Live JetStream stream/consumer configuration and integration tests.
-5. Realtime checkpoint/lease recovery and replay integration.
-6. Production telemetry emission and backend integration, including messaging context propagation.
-7. Current-head Admin Git write-path/test census.
-8. Raw-byte dataset hash/count reconciliation.
-9. Whole-repository dependency/hardcode/duplicate/contradiction closure.
-10. Global-scale capacity, tenant isolation, regional consistency and DR/RPO/RTO evidence.
+2. Concurrent PostgreSQL claim/fencing race tests with multiple workers.
+3. End-to-end outbox → PostgreSQL claim → dispatcher → JetStream publish → fenced state transition.
+4. Exhaustive event-family/subject/consumer registry and replay/retention classification.
+5. Live JetStream stream/consumer configuration and integration tests.
+6. Realtime checkpoint/lease recovery and replay integration.
+7. Production telemetry emission and backend integration, including messaging context propagation.
+8. Current-head Admin Git write-path/test census.
+9. Raw-byte dataset hash/count reconciliation.
+10. Whole-repository dependency/hardcode/duplicate/contradiction closure.
+11. Global-scale capacity, tenant isolation, regional consistency and DR/RPO/RTO evidence.
