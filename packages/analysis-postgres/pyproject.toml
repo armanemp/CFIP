@@ -5,10 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "cfip-analysis-postgres"
 version = "0.1.0"
-description = "CFIP PostgreSQL durability adapter for governed analysis execution"
+description = "CFIP PostgreSQL durability adapter for governed analysis execution and events"
 requires-python = ">=3.14,<3.15"
 dependencies = [
   "cfip-analysis-runtime>=0.1,<0.2",
+  "cfip-contracts>=0.1,<0.2",
   "SQLAlchemy==2.0.52",
   "psycopg[binary,pool]==3.3.5",
 ]
@@ -17,5 +18,5 @@ dependencies = [
 packages = ["src/cfip_analysis_postgres"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src", "../analysis-runtime/src"]
+pythonpath = ["src", "../analysis-runtime/src", "../contracts/src"]
 testpaths = ["tests"]
