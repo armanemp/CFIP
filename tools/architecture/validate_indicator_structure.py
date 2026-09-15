@@ -19,8 +19,8 @@ FAMILIES = {
     "volume.py": {"obv", "vwap", "chaikin_money_flow"},
 }
 COMPATIBILITY = {
-    PACKAGE / "indicators.py": {"cfip_technical.indicators"},
-    PACKAGE / "extended.py": {"cfip_technical.indicators"},
+    PACKAGE / "indicators.py": "cfip_technical.indicators",
+    PACKAGE / "extended.py": "cfip_technical.indicators",
 }
 
 
@@ -38,6 +38,14 @@ def _imports(path: Path) -> list[ast.ImportFrom]:
     return [node for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)]
 
 
+def _is_canonical_indicator_import(node: ast.ImportFrom) -> bool:
+    """Accept relative imports targeting the canonical package or its families."""
+
+    if node.level != 1:
+        return False
+    return node.module == "indicators" or bool(node.module and node.module.startswith("indicators."))
+
+
 def validate() -> list[str]:
     errors: list[str] = []
     for filename, expected in FAMILIES.items():
@@ -50,18 +58,17 @@ def validate() -> list[str]:
         if missing:
             errors.append(f"{path}: missing implementation functions: {', '.join(missing)}")
         for import_node in _imports(path):
-            if import_node.module in {"..extended", ".extended"} or (import_node.module and "extended" in import_node.module):
+            if import_node.module and "extended" in import_node.module:
                 errors.append(f"{path}: canonical family must not import compatibility extended module")
-    for path, allowed_modules in COMPATIBILITY.items():
+    for path, expected_namespace in COMPATIBILITY.items():
         if not path.is_file():
             errors.append(f"missing compatibility facade: {path}")
             continue
         functions = _functions(path)
         if functions:
             errors.append(f"{path}: compatibility facade contains executable function definitions: {', '.join(sorted(functions))}")
-        imported = {node.module or "" for node in _imports(path)}
-        if not any(module.endswith(".indicators") or module == ".indicators" for module in imported):
-            errors.append(f"{path}: compatibility facade does not import canonical indicator namespace")
+        if not any(_is_canonical_indicator_import(node) for node in _imports(path)):
+            errors.append(f"{path}: compatibility facade does not import canonical indicator namespace {expected_namespace}")
     return errors
 
 
