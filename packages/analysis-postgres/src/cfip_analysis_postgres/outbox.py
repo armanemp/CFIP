@@ -13,6 +13,8 @@ from sqlalchemy.engine import Connection, Engine
 from cfip_contracts.eventing import DispatchFailure, DurableEventRecord, DurableEventStatus
 from cfip_contracts.events import EventEnvelope
 
+auto_claim_connection = Connection | None
+
 outbox_metadata = MetaData()
 
 durable_events = Table(
@@ -56,14 +58,23 @@ class PostgreSQLTransactionalOutbox:
 
     def claim_batch(
         self,
-        connection: Connection,
+        connection: Connection | None = None,
         *,
         worker_id: str,
-        now: datetime | None = None,
         limit: int = 100,
         lease_seconds: int = 60,
+        now: datetime | None = None,
     ) -> list[DurableEventRecord]:
-        """Claim a bounded batch, including expired leases for recovery."""
+        """Claim a bounded batch; optionally participate in a caller transaction."""
+        if connection is None:
+            with self._engine.begin() as owned_connection:
+                return self.claim_batch(
+                    owned_connection,
+                    worker_id=worker_id,
+                    limit=limit,
+                    lease_seconds=lease_seconds,
+                    now=now,
+                )
         worker_id = worker_id.strip()
         if not worker_id:
             raise ValueError("worker_id is required")
@@ -124,24 +135,11 @@ class PostgreSQLTransactionalOutbox:
                     self._table.c.locked_by == worker_id,
                     self._table.c.locked_until > now,
                 )
-                .values(
-                    status=DurableEventStatus.PUBLISHED.value,
-                    published_at=published_at,
-                    last_error=None,
-                    locked_by=None,
-                    locked_until=None,
-                )
+                .values(status=DurableEventStatus.PUBLISHED.value, published_at=published_at, last_error=None, locked_by=None, locked_until=None)
             )
         return result.rowcount == 1
 
-    def mark_failed(
-        self,
-        record_id: UUID,
-        *,
-        worker_id: str,
-        available_at: datetime,
-        error: DispatchFailure,
-    ) -> bool:
+    def mark_failed(self, record_id: UUID, *, worker_id: str, available_at: datetime, error: DispatchFailure) -> bool:
         """Return a leased record to FAILED without allowing stale workers to mutate it."""
         worker_id = worker_id.strip()
         if not worker_id:
@@ -156,13 +154,7 @@ class PostgreSQLTransactionalOutbox:
                     self._table.c.locked_by == worker_id,
                     self._table.c.locked_until > datetime.now(UTC),
                 )
-                .values(
-                    status=DurableEventStatus.FAILED.value,
-                    available_at=available_at,
-                    last_error=f"{error.error_code}: {error.message}",
-                    locked_by=None,
-                    locked_until=None,
-                )
+                .values(status=DurableEventStatus.FAILED.value, available_at=available_at, last_error=f"{error.error_code}: {error.message}", locked_by=None, locked_until=None)
             )
         return result.rowcount == 1
 
@@ -180,12 +172,7 @@ class PostgreSQLTransactionalOutbox:
                     self._table.c.locked_by == worker_id,
                     self._table.c.locked_until > datetime.now(UTC),
                 )
-                .values(
-                    status=DurableEventStatus.DEAD.value,
-                    last_error=f"{error.error_code}: {error.message}",
-                    locked_by=None,
-                    locked_until=None,
-                )
+                .values(status=DurableEventStatus.DEAD.value, last_error=f"{error.error_code}: {error.message}", locked_by=None, locked_until=None)
             )
         return result.rowcount == 1
 
