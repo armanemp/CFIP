@@ -5,7 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
-from cfip_contracts import DispatchFailure, DispatchRetryPolicy, DurableEventClaimPort, DurableEventStatePort, EventTransport
+from cfip_contracts import (
+    DispatchFailure,
+    DispatchRetryPolicy,
+    DurableEventClaimPort,
+    DurableEventStatePort,
+    EventTransport,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -20,9 +26,9 @@ class DispatchBatchResult:
 class DurableEventDispatcher:
     """Publish leased events and apply bounded, fenced state transitions.
 
-    The dispatcher is async because real transports perform network I/O. Durable
-    claim/state ports remain synchronous until their storage integration requires
-    an async contract, keeping the correctness boundary independent of transport.
+    All correctness-critical storage calls and broker I/O are asynchronous. This
+    keeps database/network waits from blocking the worker event loop and leaves
+    concurrency/backpressure policy at the worker boundary.
     """
 
     def __init__(
@@ -55,7 +61,7 @@ class DurableEventDispatcher:
         if current.tzinfo is None or current.utcoffset() is None:
             raise ValueError("now must be timezone-aware")
 
-        records = self._claim_store.claim_batch(
+        records = await self._claim_store.claim_batch(
             worker_id=worker_id,
             limit=limit,
             lease_seconds=lease_seconds,
@@ -71,7 +77,7 @@ class DurableEventDispatcher:
                     True,
                 )
             if failure is None:
-                changed = self._state_store.mark_published(
+                changed = await self._state_store.mark_published(
                     record.id,
                     worker_id=worker_id,
                     published_at=current,
@@ -79,7 +85,7 @@ class DurableEventDispatcher:
                 published += int(changed)
                 lease_lost += int(not changed)
             elif failure.retryable and not self._retry_policy.exhausted(record.attempts):
-                changed = self._state_store.mark_failed(
+                changed = await self._state_store.mark_failed(
                     record.id,
                     worker_id=worker_id,
                     available_at=current + self._retry_policy.next_delay(record.attempts),
@@ -88,7 +94,7 @@ class DurableEventDispatcher:
                 retried += int(changed)
                 lease_lost += int(not changed)
             else:
-                changed = self._state_store.mark_dead(
+                changed = await self._state_store.mark_dead(
                     record.id,
                     worker_id=worker_id,
                     error=failure,
