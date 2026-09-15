@@ -13,8 +13,6 @@ from sqlalchemy.engine import Connection, Engine
 from cfip_contracts.eventing import DispatchFailure, DurableEventRecord, DurableEventStatus
 from cfip_contracts.events import EventEnvelope
 
-auto_claim_connection = Connection | None
-
 outbox_metadata = MetaData()
 
 durable_events = Table(
@@ -68,13 +66,7 @@ class PostgreSQLTransactionalOutbox:
         """Claim a bounded batch; optionally participate in a caller transaction."""
         if connection is None:
             with self._engine.begin() as owned_connection:
-                return self.claim_batch(
-                    owned_connection,
-                    worker_id=worker_id,
-                    limit=limit,
-                    lease_seconds=lease_seconds,
-                    now=now,
-                )
+                return self.claim_batch(owned_connection, worker_id=worker_id, limit=limit, lease_seconds=lease_seconds, now=now)
         worker_id = worker_id.strip()
         if not worker_id:
             raise ValueError("worker_id is required")
@@ -89,53 +81,35 @@ class PostgreSQLTransactionalOutbox:
             and_(self._table.c.status == DurableEventStatus.PROCESSING.value, self._table.c.locked_until <= current),
         )
         rows = connection.execute(
-            select(self._table)
-            .where(eligible, self._table.c.available_at <= current)
-            .order_by(self._table.c.created_at, self._table.c.id)
-            .limit(limit)
-            .with_for_update(skip_locked=True)
+            select(self._table).where(eligible, self._table.c.available_at <= current)
+            .order_by(self._table.c.created_at, self._table.c.id).limit(limit).with_for_update(skip_locked=True)
         ).mappings().all()
         claimed: list[DurableEventRecord] = []
         for row in rows:
             attempts = row["attempts"] + 1
             connection.execute(
-                update(self._table)
-                .where(self._table.c.id == row["id"])
-                .values(
-                    status=DurableEventStatus.PROCESSING.value,
-                    attempts=attempts,
-                    locked_by=worker_id,
-                    locked_until=lease_until,
+                update(self._table).where(self._table.c.id == row["id"]).values(
+                    status=DurableEventStatus.PROCESSING.value, attempts=attempts,
+                    locked_by=worker_id, locked_until=lease_until,
                 )
             )
-            claimed.append(
-                _row_to_record(
-                    row,
-                    status=DurableEventStatus.PROCESSING,
-                    attempts=attempts,
-                    locked_by=worker_id,
-                    locked_until=lease_until,
-                )
-            )
+            claimed.append(_row_to_record(row, status=DurableEventStatus.PROCESSING, attempts=attempts, locked_by=worker_id, locked_until=lease_until))
         return claimed
 
     def mark_published(self, record_id: UUID, *, worker_id: str, published_at: datetime) -> bool:
-        """Publish-acknowledge only while the worker still owns its lease."""
+        """Acknowledge publication only while the worker still owns its lease."""
         worker_id = worker_id.strip()
         if not worker_id:
             raise ValueError("worker_id is required")
         published_at = _require_aware(published_at, "published_at")
-        now = datetime.now(UTC)
         with self._engine.begin() as connection:
             result = connection.execute(
-                update(self._table)
-                .where(
+                update(self._table).where(
                     self._table.c.id == record_id,
                     self._table.c.status == DurableEventStatus.PROCESSING.value,
                     self._table.c.locked_by == worker_id,
-                    self._table.c.locked_until > now,
-                )
-                .values(status=DurableEventStatus.PUBLISHED.value, published_at=published_at, last_error=None, locked_by=None, locked_until=None)
+                    self._table.c.locked_until > datetime.now(UTC),
+                ).values(status=DurableEventStatus.PUBLISHED.value, published_at=published_at, last_error=None, locked_by=None, locked_until=None)
             )
         return result.rowcount == 1
 
@@ -147,14 +121,12 @@ class PostgreSQLTransactionalOutbox:
         available_at = _require_aware(available_at, "available_at")
         with self._engine.begin() as connection:
             result = connection.execute(
-                update(self._table)
-                .where(
+                update(self._table).where(
                     self._table.c.id == record_id,
                     self._table.c.status == DurableEventStatus.PROCESSING.value,
                     self._table.c.locked_by == worker_id,
                     self._table.c.locked_until > datetime.now(UTC),
-                )
-                .values(status=DurableEventStatus.FAILED.value, available_at=available_at, last_error=f"{error.error_code}: {error.message}", locked_by=None, locked_until=None)
+                ).values(status=DurableEventStatus.FAILED.value, available_at=available_at, last_error=f"{error.error_code}: {error.message}", locked_by=None, locked_until=None)
             )
         return result.rowcount == 1
 
@@ -165,14 +137,12 @@ class PostgreSQLTransactionalOutbox:
             raise ValueError("worker_id is required")
         with self._engine.begin() as connection:
             result = connection.execute(
-                update(self._table)
-                .where(
+                update(self._table).where(
                     self._table.c.id == record_id,
                     self._table.c.status == DurableEventStatus.PROCESSING.value,
                     self._table.c.locked_by == worker_id,
                     self._table.c.locked_until > datetime.now(UTC),
-                )
-                .values(status=DurableEventStatus.DEAD.value, last_error=f"{error.error_code}: {error.message}", locked_by=None, locked_until=None)
+                ).values(status=DurableEventStatus.DEAD.value, last_error=f"{error.error_code}: {error.message}", locked_by=None, locked_until=None)
             )
         return result.rowcount == 1
 
@@ -185,48 +155,24 @@ def _require_aware(value: datetime, name: str) -> datetime:
 
 def _record_to_row(record: DurableEventRecord) -> dict[str, Any]:
     return {
-        "id": record.id,
-        "event_id": record.event.event_id,
-        "event_type": record.event.event_type,
-        "producer": record.event.producer,
-        "version": record.event.version,
-        "occurred_at": record.event.occurred_at,
-        "correlation_id": record.event.correlation_id,
-        "causation_id": record.event.causation_id,
-        "payload": dict(record.event.payload),
-        "dedupe_key": record.dedupe_key,
-        "status": record.status.value,
-        "attempts": record.attempts,
-        "available_at": record.available_at,
-        "created_at": record.created_at,
-        "published_at": record.published_at,
-        "last_error": record.last_error,
-        "locked_by": record.locked_by,
+        "id": record.id, "event_id": record.event.event_id, "event_type": record.event.event_type,
+        "producer": record.event.producer, "version": record.event.version, "occurred_at": record.event.occurred_at,
+        "correlation_id": record.event.correlation_id, "causation_id": record.event.causation_id,
+        "payload": dict(record.event.payload), "dedupe_key": record.dedupe_key, "status": record.status.value,
+        "attempts": record.attempts, "available_at": record.available_at, "created_at": record.created_at,
+        "published_at": record.published_at, "last_error": record.last_error, "locked_by": record.locked_by,
         "locked_until": record.locked_until,
     }
 
 
 def _row_to_record(row: Any, **overrides: Any) -> DurableEventRecord:
     event = EventEnvelope(
-        event_id=UUID(str(row["event_id"])),
-        event_type=row["event_type"],
-        producer=row["producer"],
-        version=row["version"],
-        occurred_at=row["occurred_at"],
-        correlation_id=UUID(str(row["correlation_id"])),
-        causation_id=row["causation_id"],
-        payload=row["payload"],
+        event_id=UUID(str(row["event_id"])), event_type=row["event_type"], producer=row["producer"], version=row["version"],
+        occurred_at=row["occurred_at"], correlation_id=UUID(str(row["correlation_id"])), causation_id=row["causation_id"], payload=row["payload"],
     )
     return DurableEventRecord(
-        id=UUID(str(row["id"])),
-        event=event,
-        dedupe_key=row["dedupe_key"],
-        status=overrides.get("status", DurableEventStatus(row["status"])),
-        attempts=overrides.get("attempts", row["attempts"]),
-        available_at=row["available_at"],
-        created_at=row["created_at"],
-        published_at=row["published_at"],
-        last_error=row["last_error"],
-        locked_by=overrides.get("locked_by", row["locked_by"]),
-        locked_until=overrides.get("locked_until", row["locked_until"]),
+        id=UUID(str(row["id"])), event=event, dedupe_key=row["dedupe_key"],
+        status=overrides.get("status", DurableEventStatus(row["status"])), attempts=overrides.get("attempts", row["attempts"]),
+        available_at=row["available_at"], created_at=row["created_at"], published_at=row["published_at"], last_error=row["last_error"],
+        locked_by=overrides.get("locked_by", row["locked_by"]), locked_until=overrides.get("locked_until", row["locked_until"]),
     )
