@@ -24,6 +24,16 @@ class MigrationGraphTests(unittest.TestCase):
             self.assertEqual([], errors)
             self.assertEqual([], warnings)
 
+    def test_migration_package_initializer_is_ignored(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "__init__.py").write_text("# package marker\n", encoding="utf-8")
+            (root / "001.py").write_text("revision='a'\ndown_revision=None\n", encoding="utf-8")
+            migrations = module.scan(root)
+            self.assertEqual(["001.py"], [item.path for item in migrations])
+            errors, _ = module.validate(migrations)
+            self.assertEqual([], errors)
+
     def test_missing_parent_fails(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
