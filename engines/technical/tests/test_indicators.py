@@ -11,6 +11,7 @@ from cfip_technical import (
     bollinger_bands,
     chaikin_money_flow,
     cci,
+    dema,
     donchian_channels,
     ema,
     ichimoku,
@@ -19,11 +20,14 @@ from cfip_technical import (
     money_flow_index,
     momentum,
     obv,
+    parabolic_sar,
     roc,
     rsi,
     sma,
     stochastic,
     stochastic_rsi,
+    tema,
+    trix,
     vwap,
     williams_r,
 )
@@ -44,6 +48,17 @@ class IndicatorTests(unittest.TestCase):
         self.assertEqual(result.values[0:2], (None, None))
         for actual, expected in zip(result.values[2:], (2.0, 3.0, 4.0)):
             self.assertAlmostEqual(actual or 0.0, expected)
+
+    def test_dema_and_tema_preserve_recursive_warmup(self) -> None:
+        data = candles([float(index) for index in range(1, 20)])
+        double = dema(data, 3)
+        triple = tema(data, 3)
+        self.assertEqual(double.warmup, 4)
+        self.assertEqual(triple.warmup, 6)
+        self.assertTrue(all(value is None for value in double.values[:4]))
+        self.assertTrue(all(value is None for value in triple.values[:6]))
+        self.assertIsNotNone(double.values[-1])
+        self.assertIsNotNone(triple.values[-1])
 
     def test_rsi_wilder_handles_gain_and_loss_extremes(self) -> None:
         rising = rsi(candles([1, 2, 3, 4, 5, 6]), 3)
@@ -77,6 +92,13 @@ class IndicatorTests(unittest.TestCase):
         data = candles([100, 102, 105, 110])
         self.assertEqual(momentum(data, 2).values, (None, None, 5, 8))
         self.assertAlmostEqual(roc(data, 2).values[-1] or 0.0, 7.8431372549)
+
+    def test_trix_requires_three_complete_ema_layers(self) -> None:
+        data = candles([float(index) for index in range(1, 80)])
+        result = trix(data, 5)
+        self.assertEqual(result.warmup, 13)
+        self.assertTrue(all(value is None for value in result.values[:13]))
+        self.assertIsNotNone(result.values[-1])
 
     def test_stochastic_signal_uses_only_complete_k_values(self) -> None:
         data = candles([10, 11, 12, 11, 13, 12])
@@ -126,6 +148,14 @@ class IndicatorTests(unittest.TestCase):
         self.assertEqual(down.values[:2], (None, None))
         self.assertEqual(up.values[4], 100.0)
         self.assertAlmostEqual(down.values[4] or 0.0, 66.6666666667)
+
+    def test_parabolic_sar_is_bounded_to_recent_extremes(self) -> None:
+        data = [OHLCV(value, value + 1, value - 1, value) for value in [1, 2, 3, 4, 3, 2, 1, 2, 3]]
+        result = parabolic_sar(data)
+        self.assertEqual(result.values[0], None)
+        self.assertIsNotNone(result.values[1])
+        self.assertTrue(all(value is None or math.isfinite(value) for value in result.values))
+        self.assertGreater(result.values[-1] or 0.0, data[-1].low - 10.0)
 
     def test_money_flow_indicators_require_volume_and_bound_mfi(self) -> None:
         data = candles([10, 11, 12, 11, 13, 14], 100)
@@ -202,6 +232,10 @@ class IndicatorTests(unittest.TestCase):
             keltner_channels(candles([1, 2, 3]), 3, -1)
         with self.assertRaises(ValueError):
             stochastic_rsi(candles([1, 2, 3]), 0, 3, 2)
+        with self.assertRaises(ValueError):
+            parabolic_sar(candles([1, 2, 3]), 0.0, 0.2)
+        with self.assertRaises(ValueError):
+            parabolic_sar(candles([1, 2, 3]), 0.3, 0.2)
 
 
 if __name__ == "__main__":
