@@ -29,14 +29,18 @@ class FakeStore:
 
 
 class FakeTransport:
-    def __init__(self, error: Exception | None = None) -> None:
+    def __init__(self, error: Exception | None = None, failure: DispatchFailure | None = None) -> None:
         self.error = error
+        self.failure = failure
         self.events = []
 
-    def publish(self, event) -> None:
+    def publish(self, event):
         if self.error is not None:
             raise self.error
+        if self.failure is not None:
+            return self.failure
         self.events.append(event)
+        return None
 
 
 def record(attempts: int = 1) -> DurableEventRecord:
@@ -67,6 +71,18 @@ def test_dispatch_retries_retryable_failure() -> None:
     result = dispatcher.dispatch_once(worker_id="worker-1", now=datetime.now(UTC))
     assert result.retried == 1
     assert result.dead_lettered == 0
+
+
+def test_dispatch_honors_non_retryable_transport_failure() -> None:
+    store = FakeStore([record()])
+    dispatcher = DurableEventDispatcher(
+        claim_store=store,
+        state_store=store,
+        transport=FakeTransport(failure=DispatchFailure("schema.rejected", "invalid event", retryable=False)),
+    )
+    result = dispatcher.dispatch_once(worker_id="worker-1", now=datetime.now(UTC))
+    assert result.dead_lettered == 1
+    assert result.retried == 0
 
 
 def test_dispatch_dead_letters_when_attempt_budget_is_exhausted() -> None:
