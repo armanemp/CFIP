@@ -7,8 +7,9 @@
 ## Current evidence snapshot
 
 - Current observed CForex HEAD: `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Current CFIP head is advanced by Batch 72 realtime-observability contract work; exact HEAD is rechecked after every canonical write sequence.
-- Historical evidence is retained only when it remains valid target evidence; obsolete architecture-history artifacts are removed from the active repository surface.
+- Current observed CFIP HEAD: `62d477ee1fc6a067e3c337368d3dc4c1f7bf52e7` after Batch 73 event-transport work.
+- Current source study confirms the source worker uses an asynchronous NATS JetStream publisher after a durable PostgreSQL outbox.
+- CFIP now contains a concrete NATS transport adapter behind the transport-neutral event port; live broker/stream/consumer integration remains unverified.
 - Current-head Admin Git hardening remains an explicit source delta; full write-path/test census remains open.
 - Gate 0: **OPEN — controlled implementation permitted; production promotion locked**.
 - CFIP production promotion: **LOCKED**.
@@ -70,7 +71,7 @@ Every implementation must be evidence-backed, contract-first, reversible, tested
 
 Every continuation performs: inspect both repos → source study → evidence graph → contradiction/gap detection → safe Gate-0-compatible engineering → tests → verification → reconciliation → documentation → GitHub re-read → detailed report. Parallel reads are encouraged; canonical writes/status transitions are serialized. Current-head CI is reported only from fresh evidence.
 
-## Batch 58–72 registration
+## Batch 58–73 registration
 
 ### Batch 58–65
 Prior batch registrations remain immutable in this index history.
@@ -135,4 +136,25 @@ Prior batch registrations remain immutable in this index history.
 - refreshed the standards document with current OpenTelemetry semantic-convention guidance and compatibility principles;
 - no broker-specific implementation or production telemetry backend was invented without source/integration evidence.
 
-Direct broker transport remains intentionally unresolved until source evidence is obtained. PostgreSQL runtime integration, durable checkpoint/lease repository integration, recovery, capacity and production readiness remain unverified/locked.
+### Batch 73
+- re-read current source runtime evidence and confirmed the source event path uses asynchronous NATS JetStream publication after a durable PostgreSQL outbox;
+- corrected the target `EventTransport` contract from synchronous to asynchronous to prevent blocking network I/O in the worker path;
+- converted `DurableEventDispatcher` to await transport publication while preserving lease-fenced durable state transitions;
+- updated dispatcher tests for the async boundary;
+- added `packages/eventing-nats` with stable `nats-py` 2.15.x dependency, concrete JetStream adapter, package export, README and focused tests;
+- preserved `Nats-Msg-Id` for event identity/deduplication and moved project-specific metadata to a non-reserved header namespace;
+- added ADR-018 documenting the async transport decision and adapter ownership;
+- updated the standards document with transport isolation and protocol-header guardrails;
+- live broker/stream/consumer configuration, PostgreSQL runtime integration, durable checkpoint/lease integration and end-to-end worker composition remain unverified.
+
+## Active evidence gaps
+
+1. Exhaustive event-family/subject/consumer registry and replay/retention classification.
+2. Live JetStream stream/consumer configuration and integration tests.
+3. PostgreSQL durable claim/state runtime integration with transactional fencing.
+4. Realtime checkpoint/lease recovery and replay integration.
+5. Production telemetry emission and backend integration.
+6. Current-head Admin Git write-path/test census.
+7. Raw-byte dataset hash/count reconciliation.
+8. Whole-repository dependency/hardcode/duplicate/contradiction closure.
+9. Global-scale capacity, tenant isolation, regional consistency and DR/RPO/RTO evidence.
