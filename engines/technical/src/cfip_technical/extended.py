@@ -7,11 +7,9 @@ behavior and independent golden fixtures.
 
 from __future__ import annotations
 
-from math import isfinite
 from typing import Sequence
 
 from .models import IndicatorResult, OHLCV
-from .indicators import sma
 
 
 def _validate_period(period: int) -> None:
@@ -48,24 +46,22 @@ def stochastic(
         window = data[index - period + 1 : index + 1]
         highest = max(item.high for item in window)
         lowest = min(item.low for item in window)
-        if highest == lowest:
-            raw[index] = 50.0
-        else:
-            raw[index] = ((data[index].close - lowest) / (highest - lowest)) * 100.0
-    signal = sma(
-        [OHLCV(value or 0.0, value or 0.0, value or 0.0, value or 0.0) for value in raw],
-        signal_period,
-    )
-    # The helper above treats warm-up placeholders as observations. Re-mask the
-    # signal until enough genuine %K values exist to preserve missingness.
-    masked = list(signal.values)
-    first_raw = period - 1
-    first_signal = first_raw + signal_period - 1
-    for index in range(min(first_signal, len(masked))):
-        masked[index] = None
+        raw[index] = (
+            50.0
+            if highest == lowest
+            else ((data[index].close - lowest) / (highest - lowest)) * 100.0
+        )
+
+    signal: list[float | None] = [None] * len(data)
+    first_signal = (period - 1) + signal_period - 1
+    for index in range(first_signal, len(data)):
+        window = raw[index - signal_period + 1 : index + 1]
+        if all(value is not None for value in window):
+            signal[index] = sum(value for value in window if value is not None) / signal_period
+
     return (
         IndicatorResult("stochastic.k", period, tuple(raw), min(period - 1, len(data))),
-        IndicatorResult("stochastic.d", signal_period, tuple(masked), min(first_signal, len(data))),
+        IndicatorResult("stochastic.d", signal_period, tuple(signal), min(first_signal, len(data))),
     )
 
 
@@ -76,7 +72,11 @@ def williams_r(data: Sequence[OHLCV], period: int = 14) -> IndicatorResult:
         window = data[index - period + 1 : index + 1]
         highest = max(item.high for item in window)
         lowest = min(item.low for item in window)
-        values[index] = -100.0 if highest == lowest else ((highest - data[index].close) / (highest - lowest)) * -100.0
+        values[index] = (
+            -100.0
+            if highest == lowest
+            else ((highest - data[index].close) / (highest - lowest)) * -100.0
+        )
     return IndicatorResult("williams.r", period, tuple(values), min(period - 1, len(data)))
 
 
