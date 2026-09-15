@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Sequence
 
 from ..base import validate_period
-from ..indicators.core import rsi
+from ..indicators.core import _ema_values, rsi
 from ..models import IndicatorResult, OHLCV
 
 
@@ -25,6 +25,22 @@ def roc(data: Sequence[OHLCV], period: int = 12) -> IndicatorResult:
         if previous != 0:
             values[index] = ((data[index].close - previous) / previous) * 100.0
     return IndicatorResult("roc", period, tuple(values), min(period, len(data)))
+
+
+def trix(data: Sequence[OHLCV], period: int = 15) -> IndicatorResult:
+    """Triple-smoothed percentage rate of change of the close series."""
+    validate_period(period)
+    closes: tuple[float | None, ...] = tuple(item.close for item in data)
+    first = _ema_values(closes, period)
+    second = _ema_values(first, period)
+    third = _ema_values(second, period)
+    values: list[float | None] = [None] * len(data)
+    for index in range(1, len(data)):
+        previous, current = third[index - 1], third[index]
+        if previous is not None and current is not None and previous != 0.0:
+            values[index] = ((current - previous) / previous) * 100.0
+    warmup = min(3 * period - 2, len(data))
+    return IndicatorResult("trix", period, tuple(values), warmup)
 
 
 def stochastic(data: Sequence[OHLCV], period: int = 14, signal_period: int = 3) -> tuple[IndicatorResult, IndicatorResult]:
@@ -122,4 +138,4 @@ def stochastic_rsi(data: Sequence[OHLCV], rsi_period: int = 14, stochastic_perio
     )
 
 
-__all__ = ["cci", "money_flow_index", "momentum", "roc", "stochastic", "stochastic_rsi", "williams_r"]
+__all__ = ["cci", "money_flow_index", "momentum", "roc", "stochastic", "stochastic_rsi", "trix", "williams_r"]
