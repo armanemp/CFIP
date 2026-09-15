@@ -2,7 +2,7 @@
 
 **Target:** `armanemp/CFIP`  
 **Source:** `armanemp/CForex`  
-**Current target HEAD:** `3e2354f316c7973352fc6cd17225c3f6618bcf35`  
+**Current target HEAD at report finalization:** `0cbd92d762b302e2a3f2d0ffe54a87626cf1d80e`  
 **Current source HEAD:** `900882154cab3b9b74d0543b9bbf72a708a08134`  
 **Gate 0:** OPEN — controlled implementation permitted  
 **Production promotion:** LOCKED  
@@ -18,7 +18,7 @@ The most important architectural correction is that **source inventory is no lon
 
 ### A. Technical indicators
 
-Added three new canonical indicator families/output sets:
+Added four new canonical indicator families/output sets:
 
 - DEMA — double exponential moving average.
 - TEMA — triple exponential moving average.
@@ -82,9 +82,9 @@ The target file manifest was reconciled so that:
 
 ### Verified
 
-- GitHub `main` HEAD is exactly `3e2354f316c7973352fc6cd17225c3f6618bcf35`.
+- GitHub `main` HEAD is exactly `0cbd92d762b302e2a3f2d0ffe54a87626cf1d80e` at report finalization.
 - CForex `main` HEAD is exactly `900882154cab3b9b74d0543b9bbf72a708a08134`.
-- Current-head GitHub history shows the applied commits in this batch, including the final architecture-validator fix.
+- Current-head GitHub history shows the applied commits in this batch, including the final architecture-validator fix and this reconciled progress report.
 - A current Technical Indicators workflow failure was inspected and its root cause was identified: the structural guard had not been expanded for the newly added public functions and incorrectly treated a nested RSI helper as a top-level implementation. The validator has now been corrected to inspect module-level function owners and the expanded family sets.
 
 ### Open / not yet verified
@@ -131,7 +131,7 @@ The target file manifest was reconciled so that:
 | 24 | VWAP | Implemented / parity open |
 | 25 | CMF | Implemented / parity open |
 
-**Important counting note:** the registry contains 24 descriptors because MACD/Stochastic/Ichimoku/Keltner/ADX are represented as one family/output-set descriptor even though they expose multiple outputs. The inventory above is an output-family presentation and therefore lists the concrete grouped components; it is not a claim of 25 registry identities.
+**Counting note:** the registry contains 24 descriptors because multi-output families (for example MACD, Stochastic, Ichimoku, Keltner and ADX) are represented by one family descriptor. The table above is a concrete output-family presentation and therefore has 25 rows; it is not a registry-cardinality claim.
 
 ## D1–D11 progress
 
