@@ -27,8 +27,8 @@ class DurableEventDispatcher:
     """Publish leased events and apply bounded, fenced state transitions.
 
     All correctness-critical storage calls and broker I/O are asynchronous. This
-    keeps database/network waits from blocking the worker event loop and leaves
-    concurrency/backpressure policy at the worker boundary.
+    keeps database/network waits from blocking the worker event loop and makes
+    stale-owner rejection an explicit durable boundary.
     """
 
     def __init__(
@@ -80,6 +80,7 @@ class DurableEventDispatcher:
                 changed = await self._state_store.mark_published(
                     record.id,
                     worker_id=worker_id,
+                    fencing_token=record.fencing_token,
                     published_at=current,
                 )
                 published += int(changed)
@@ -88,6 +89,7 @@ class DurableEventDispatcher:
                 changed = await self._state_store.mark_failed(
                     record.id,
                     worker_id=worker_id,
+                    fencing_token=record.fencing_token,
                     available_at=current + self._retry_policy.next_delay(record.attempts),
                     error=failure,
                 )
@@ -97,6 +99,7 @@ class DurableEventDispatcher:
                 changed = await self._state_store.mark_dead(
                     record.id,
                     worker_id=worker_id,
+                    fencing_token=record.fencing_token,
                     error=failure,
                 )
                 dead_lettered += int(changed)
