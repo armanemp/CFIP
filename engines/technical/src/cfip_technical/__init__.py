@@ -1,53 +1,38 @@
 """Pure deterministic technical indicators.
 
-This package has no broker, database, framework or transport dependency.
-Indicator functions operate on ordered market observations and return immutable
-results with explicit warm-up semantics. They are target implementations and
-are not parity claims until source evidence and golden fixtures are reconciled.
+The public API is sourced from the canonical family namespace. Compatibility
+modules remain available for staged migration but do not own implementations.
 """
 
-from .extended import (
+from .indicators import (
+    IndicatorResult,
+    OHLCV,
     adx,
     aroon,
-    chaikin_money_flow,
+    atr,
+    bollinger_bands,
     cci,
+    chaikin_money_flow,
     donchian_channels,
+    ema,
     ichimoku,
     keltner_channels,
+    macd,
     money_flow_index,
     momentum,
     obv,
     roc,
+    rsi,
+    sma,
     stochastic,
     stochastic_rsi,
     vwap,
     williams_r,
 )
-from .indicators import IndicatorResult, atr, bollinger_bands, ema, macd, rsi, sma
-from .models import OHLCV
 
 __all__ = [
-    "IndicatorResult",
-    "OHLCV",
-    "adx",
-    "aroon",
-    "atr",
-    "bollinger_bands",
-    "chaikin_money_flow",
-    "cci",
-    "donchian_channels",
-    "ema",
-    "ichimoku",
-    "keltner_channels",
-    "macd",
-    "money_flow_index",
-    "momentum",
-    "obv",
-    "roc",
-    "rsi",
-    "sma",
-    "stochastic",
-    "stochastic_rsi",
-    "vwap",
-    "williams_r",
+    "IndicatorResult", "OHLCV", "adx", "aroon", "atr", "bollinger_bands", "cci",
+    "chaikin_money_flow", "donchian_channels", "ema", "ichimoku", "keltner_channels",
+    "macd", "money_flow_index", "momentum", "obv", "roc", "rsi", "sma", "stochastic",
+    "stochastic_rsi", "vwap", "williams_r",
 ]
