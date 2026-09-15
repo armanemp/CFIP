@@ -12,6 +12,7 @@ from math import isfinite
 from typing import Literal
 
 Direction = Literal["bullish", "bearish", "neutral"]
+ConflictClass = Literal["aligned", "mixed", "neutral"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -30,11 +31,7 @@ class SpecialistEvidence:
             raise ValueError("source_id is required")
         if self.direction not in {"bullish", "bearish", "neutral"}:
             raise ValueError("unsupported direction")
-        for name, value in (
-            ("strength", self.strength),
-            ("confidence", self.confidence),
-            ("weight", self.weight),
-        ):
+        for name, value in (("strength", self.strength), ("confidence", self.confidence), ("weight", self.weight)):
             if not isfinite(value) or value < 0.0 or value > 1.0:
                 raise ValueError(f"{name} must be finite and between 0 and 1")
         if self.weight <= 0:
@@ -45,12 +42,7 @@ class SpecialistEvidence:
 
 @dataclass(frozen=True, slots=True)
 class ConsensusResult:
-    """Reproducible aggregate result with explicit abstention/disagreement.
-
-    ``score`` is signed directional pressure in ``[-1, 1]``. ``agreement`` is
-    the dominant directional share among non-neutral contributions, so the two
-    fields retain distinct semantics instead of being aliases of one another.
-    """
+    """Reproducible aggregate result with explicit conflict and abstention."""
 
     direction: Direction
     score: float
@@ -60,6 +52,8 @@ class ConsensusResult:
     data_revision: str
     abstained: bool
     reason: str | None = None
+    conflict: ConflictClass = "neutral"
+    explanation: tuple[str, ...] = ()
 
 
 class AnalysisConsensusService:
@@ -76,11 +70,9 @@ class AnalysisConsensusService:
     def aggregate(self, evidence: tuple[SpecialistEvidence, ...]) -> ConsensusResult:
         if not evidence:
             raise ValueError("at least one specialist evidence item is required")
-
         revisions = {item.data_revision for item in evidence}
         if len(revisions) != 1:
             raise ValueError("all specialist evidence must use the same data_revision")
-
         source_ids = [item.source_id for item in evidence]
         if len(source_ids) != len(set(source_ids)):
             raise ValueError("source_id must be unique within one consensus set")
@@ -97,30 +89,39 @@ class AnalysisConsensusService:
         directional_mass = totals["bullish"] + totals["bearish"]
         dominant = max(totals, key=totals.__getitem__)
         ordered = sorted(totals.values(), reverse=True)
-        dominant_mass = ordered[0]
-        runner_up = ordered[1]
+        dominant_mass, runner_up = ordered[0], ordered[1]
         confidence = confidence_mass / total_weight
         if directional_mass:
             score = (totals["bullish"] - totals["bearish"]) / directional_mass
-            dominant_directional_mass = max(totals["bullish"], totals["bearish"])
-            agreement = dominant_directional_mass / directional_mass
+            agreement = max(totals["bullish"], totals["bearish"]) / directional_mass
         else:
             score = 0.0
             agreement = 0.0
         margin = (dominant_mass - runner_up) / total_weight
 
         if directional_mass == 0.0:
+            conflict: ConflictClass = "neutral"
             reason = "no_directional_evidence"
-        elif confidence < self._minimum_confidence:
-            reason = "insufficient_confidence"
-        elif margin < self._minimum_margin:
-            reason = "insufficient_margin"
         elif dominant == "neutral":
+            conflict = "neutral"
             reason = "neutral_consensus"
+        elif margin < self._minimum_margin:
+            conflict = "mixed"
+            reason = "insufficient_margin"
         else:
+            conflict = "aligned"
             reason = None
+        if reason is None and confidence < self._minimum_confidence:
+            reason = "insufficient_confidence"
 
         abstained = reason is not None
+        explanation = (
+            f"directional_mass={directional_mass:.6f}",
+            f"confidence={confidence:.6f}",
+            f"agreement={agreement:.6f}",
+            f"margin={margin:.6f}",
+            f"conflict={conflict}",
+        )
         return ConsensusResult(
             direction="neutral" if abstained else dominant,
             score=score,
@@ -130,4 +131,9 @@ class AnalysisConsensusService:
             data_revision=revision,
             abstained=abstained,
             reason=reason,
+            conflict=conflict,
+            explanation=explanation,
         )
+
+
+__all__ = ["AnalysisConsensusService", "ConflictClass", "ConsensusResult", "Direction", "SpecialistEvidence"]
