@@ -10,7 +10,7 @@ from sqlalchemy import Column, DateTime, Integer, MetaData, String, Table, Text,
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 from sqlalchemy.engine import Connection, Engine
 
-from cfip_contracts.eventing import DurableEventRecord, DurableEventStatus
+from cfip_contracts.eventing import DispatchFailure, DurableEventRecord, DurableEventStatus
 from cfip_contracts.events import EventEnvelope
 
 outbox_metadata = MetaData()
@@ -41,7 +41,7 @@ durable_events = Table(
 
 
 class PostgreSQLTransactionalOutbox:
-    """Persist durable events inside a caller-owned DB transaction."""
+    """Persist durable events and perform lease-fenced state transitions."""
 
     def __init__(self, engine: Engine, *, table: Table = durable_events) -> None:
         self._engine = engine
@@ -64,13 +64,14 @@ class PostgreSQLTransactionalOutbox:
         lease_seconds: int = 60,
     ) -> list[DurableEventRecord]:
         """Claim a bounded batch, including expired leases for recovery."""
-        if not worker_id.strip():
+        worker_id = worker_id.strip()
+        if not worker_id:
             raise ValueError("worker_id is required")
         if limit < 1:
             raise ValueError("limit must be >= 1")
         if lease_seconds < 1:
             raise ValueError("lease_seconds must be >= 1")
-        current = now or datetime.now(UTC)
+        current = _require_aware(now or datetime.now(UTC), "now")
         lease_until = current + timedelta(seconds=lease_seconds)
         eligible = or_(
             self._table.c.status.in_((DurableEventStatus.PENDING.value, DurableEventStatus.FAILED.value)),
@@ -89,10 +90,110 @@ class PostgreSQLTransactionalOutbox:
             connection.execute(
                 update(self._table)
                 .where(self._table.c.id == row["id"])
-                .values(status=DurableEventStatus.PROCESSING.value, attempts=attempts, locked_by=worker_id, locked_until=lease_until)
+                .values(
+                    status=DurableEventStatus.PROCESSING.value,
+                    attempts=attempts,
+                    locked_by=worker_id,
+                    locked_until=lease_until,
+                )
             )
-            claimed.append(_row_to_record(row, status=DurableEventStatus.PROCESSING, attempts=attempts, locked_by=worker_id, locked_until=lease_until))
+            claimed.append(
+                _row_to_record(
+                    row,
+                    status=DurableEventStatus.PROCESSING,
+                    attempts=attempts,
+                    locked_by=worker_id,
+                    locked_until=lease_until,
+                )
+            )
         return claimed
+
+    def mark_published(self, record_id: UUID, *, worker_id: str, published_at: datetime) -> bool:
+        """Publish-acknowledge only while the worker still owns its lease."""
+        worker_id = worker_id.strip()
+        if not worker_id:
+            raise ValueError("worker_id is required")
+        published_at = _require_aware(published_at, "published_at")
+        now = datetime.now(UTC)
+        with self._engine.begin() as connection:
+            result = connection.execute(
+                update(self._table)
+                .where(
+                    self._table.c.id == record_id,
+                    self._table.c.status == DurableEventStatus.PROCESSING.value,
+                    self._table.c.locked_by == worker_id,
+                    self._table.c.locked_until > now,
+                )
+                .values(
+                    status=DurableEventStatus.PUBLISHED.value,
+                    published_at=published_at,
+                    last_error=None,
+                    locked_by=None,
+                    locked_until=None,
+                )
+            )
+        return result.rowcount == 1
+
+    def mark_failed(
+        self,
+        record_id: UUID,
+        *,
+        worker_id: str,
+        available_at: datetime,
+        error: DispatchFailure,
+    ) -> bool:
+        """Return a leased record to FAILED without allowing stale workers to mutate it."""
+        worker_id = worker_id.strip()
+        if not worker_id:
+            raise ValueError("worker_id is required")
+        available_at = _require_aware(available_at, "available_at")
+        with self._engine.begin() as connection:
+            result = connection.execute(
+                update(self._table)
+                .where(
+                    self._table.c.id == record_id,
+                    self._table.c.status == DurableEventStatus.PROCESSING.value,
+                    self._table.c.locked_by == worker_id,
+                    self._table.c.locked_until > datetime.now(UTC),
+                )
+                .values(
+                    status=DurableEventStatus.FAILED.value,
+                    available_at=available_at,
+                    last_error=f"{error.error_code}: {error.message}",
+                    locked_by=None,
+                    locked_until=None,
+                )
+            )
+        return result.rowcount == 1
+
+    def mark_dead(self, record_id: UUID, *, worker_id: str, error: DispatchFailure) -> bool:
+        """Terminally dead-letter a record only while the lease is still valid."""
+        worker_id = worker_id.strip()
+        if not worker_id:
+            raise ValueError("worker_id is required")
+        with self._engine.begin() as connection:
+            result = connection.execute(
+                update(self._table)
+                .where(
+                    self._table.c.id == record_id,
+                    self._table.c.status == DurableEventStatus.PROCESSING.value,
+                    self._table.c.locked_by == worker_id,
+                    self._table.c.locked_until > datetime.now(UTC),
+                )
+                .values(
+                    status=DurableEventStatus.DEAD.value,
+                    last_error=f"{error.error_code}: {error.message}",
+                    locked_by=None,
+                    locked_until=None,
+                )
+            )
+        return result.rowcount == 1
+
+
+def _require_aware(value: datetime, name: str) -> datetime:
+    if value.tzinfo is None:
+        raise ValueError(f"{name} must be timezone-aware")
+    return value
 
 
 def _record_to_row(record: DurableEventRecord) -> dict[str, Any]:
