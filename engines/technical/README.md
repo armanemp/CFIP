@@ -2,6 +2,17 @@
 
 This namespace owns deterministic, dependency-free technical indicator primitives used by the technical-analysis capability.
 
+## Canonical source layout
+
+Indicator families are exposed through `src/cfip_technical/indicators/`:
+
+- `core.py` — foundational price indicators (SMA, EMA, RSI, ATR, Bollinger Bands, MACD)
+- `oscillators.py` — Momentum, ROC, Stochastic, Williams %R, CCI, MFI, Stochastic RSI
+- `trend.py` — Aroon, Donchian Channels, Ichimoku, Keltner Channels
+- `volume.py` — OBV, VWAP, Chaikin Money Flow
+
+`src/cfip_technical/base.py` is the current compatibility implementation boundary for the foundational primitives. `extended.py` is the compatibility implementation boundary for families not yet physically moved into their family modules. The family modules are therefore real package boundaries today, while the next structural phase will move the remaining implementations into those files and delete the compatibility-only bodies once golden fixtures protect their semantics.
+
 ## Current target indicator families
 
 - SMA
