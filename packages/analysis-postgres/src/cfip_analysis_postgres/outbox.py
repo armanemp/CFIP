@@ -6,7 +6,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import Column, DateTime, Integer, MetaData, String, Table, Text, UniqueConstraint, select, update
+from sqlalchemy import Column, DateTime, Integer, MetaData, String, Table, Text, UniqueConstraint, and_, or_, select, update
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PGUUID
 from sqlalchemy.engine import Connection, Engine
 
@@ -63,7 +63,7 @@ class PostgreSQLTransactionalOutbox:
         limit: int = 100,
         lease_seconds: int = 60,
     ) -> list[DurableEventRecord]:
-        """Claim a bounded batch using PostgreSQL row locks and leases."""
+        """Claim a bounded batch, including expired leases for recovery."""
         if not worker_id.strip():
             raise ValueError("worker_id is required")
         if limit < 1:
@@ -72,12 +72,13 @@ class PostgreSQLTransactionalOutbox:
             raise ValueError("lease_seconds must be >= 1")
         current = now or datetime.now(UTC)
         lease_until = current + timedelta(seconds=lease_seconds)
+        eligible = or_(
+            self._table.c.status.in_((DurableEventStatus.PENDING.value, DurableEventStatus.FAILED.value)),
+            and_(self._table.c.status == DurableEventStatus.PROCESSING.value, self._table.c.locked_until <= current),
+        )
         rows = connection.execute(
             select(self._table)
-            .where(
-                self._table.c.status.in_((DurableEventStatus.PENDING.value, DurableEventStatus.FAILED.value)),
-                self._table.c.available_at <= current,
-            )
+            .where(eligible, self._table.c.available_at <= current)
             .order_by(self._table.c.created_at, self._table.c.id)
             .limit(limit)
             .with_for_update(skip_locked=True)
