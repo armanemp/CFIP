@@ -19,6 +19,7 @@ REQUIRED_DOCS = (
     "docs/CFIP-MIGRATION-MASTER-PLAN.md",
     "docs/CFIP-ARCHITECTURE-GUIDE.md",
     "docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md",
+    "docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md",
     "docs/capabilities/CFIP-CAPABILITY-REGISTRY.md",
     "docs/capabilities/source-evidence-matrix.md",
     "docs/capabilities/parity-matrix.md",
@@ -54,37 +55,35 @@ def validate(root: Path) -> list[str]:
 
     control = docs.get("docs/CFIP-MIGRATION-CONTROL-INDEX.md", "")
     prompt = docs.get("docs/CFIP-CONTINUATION-PROMPT.md", "")
-    gate = docs.get("docs/CFIP-GATE-0-SOURCE-CLOSURE-FINAL.md", "")
+    gate = docs.get("docs/CFIP-GATE-0-SOURCE-CLOSURE-CONTROLLED-IMPLEMENTATION.md", "")
     manifest = docs.get("docs/evidence/CFIP-TARGET-FILE-MANIFEST.md", "")
 
     if control and "`armanemp/CForex` `main` v0.9.154" not in control:
         errors.append("control index does not identify CForex main v0.9.154 as source baseline")
-    if gate and "**Status:** OPEN" not in gate:
-        errors.append("Gate-0 register is not explicitly OPEN")
-    if gate and "**Runtime implementation:** LOCKED" not in gate:
-        errors.append("Gate-0 register does not explicitly lock runtime implementation")
-    if prompt and "CFIP production business runtime remains **0% / LOCKED**" not in prompt:
-        errors.append("continuation contract does not preserve the 0% / LOCKED runtime invariant")
+    if gate and "**Status:** **OPEN" not in gate:
+        errors.append("active Gate-0 register is not explicitly OPEN")
+    if gate and "Production promotion:** LOCKED" not in gate:
+        errors.append("active Gate-0 register does not explicitly lock production promotion")
+    if gate and "Implementation restriction:** removed" not in gate:
+        errors.append("active Gate-0 register does not explicitly permit controlled implementation")
+    if prompt and "controlled implementation is PERMITTED" not in prompt:
+        errors.append("continuation contract does not permit controlled Gate-0 implementation")
+    if prompt and "Production promotion remains LOCKED" not in prompt:
+        errors.append("continuation contract does not preserve the production-promotion lock")
     if prompt and "34 bounded contexts" not in prompt and "34 contexts" not in prompt:
-        # The contract may describe the count in another canonical document; keep this
-        # validator strict enough to catch accidental loss of the known target cardinality.
-        if manifest and "all 34 contexts" not in manifest and "**34**" not in manifest:
+        if manifest and "all 34 contexts" not in manifest and "34 contexts" not in manifest:
             errors.append("target context cardinality is not documented as 34")
-    if gate and "D11 is **IN PROGRESS**" not in gate:
-        errors.append("Gate-0 D11 state is not canonical IN PROGRESS")
-    if gate and "D11 had not started" in gate and "stale" not in gate:
-        errors.append("Gate-0 contains an apparently stale D11-not-started statement")
+    if gate and "D11 | Reconciliation | IN PROGRESS" not in gate:
+        errors.append("active Gate-0 D11 state is not canonical IN PROGRESS")
 
     tool_root = root / "tools" / "architecture"
     missing_tools = [name for name in REQUIRED_TOOLS if not (tool_root / name).is_file()]
     errors.extend(f"missing architecture verification tool: {name}" for name in missing_tools)
 
-    # The manifest is the human-readable registry of active verification tooling.
     for name in REQUIRED_TOOLS:
         if name not in manifest:
             errors.append(f"architecture tool is not registered in target manifest: {name}")
 
-    # The consolidated workflow must remain the single architecture/source-closure gate.
     workflow = root / ".github" / "workflows" / "architecture-contracts.yml"
     if not workflow.is_file():
         errors.append("missing consolidated architecture-contracts workflow")
