@@ -1,0 +1,40 @@
+{
+  "schema_version": "0.1",
+  "status": "GOVERNED_QUEUE_ONLY",
+  "source_repository": "armanemp/CForex",
+  "target_repository": "armanemp/CFIP",
+  "eligible_for_training": false,
+  "required_states": [
+    "ENUMERATED",
+    "MANIFEST-OBSERVED",
+    "BLOB-LOCATED",
+    "HASH-VERIFIED",
+    "COUNT-VERIFIED",
+    "SCHEMA-VERIFIED",
+    "CLASSIFIED",
+    "ELIGIBLE"
+  ],
+  "entries": [
+    {
+      "generation": "v0.19",
+      "declared_record_count": 204,
+      "observed_record_count": null,
+      "status": "MANIFEST-OBSERVED",
+      "blocking_reason": "direct_blob_count_and_hash_verification_required"
+    },
+    {
+      "generation": "v0.20",
+      "declared_record_count": 222,
+      "observed_record_count": null,
+      "status": "MANIFEST-OBSERVED",
+      "blocking_reason": "direct_blob_count_and_hash_verification_required"
+    },
+    {
+      "generation": "v0.21",
+      "declared_record_count": 330,
+      "observed_record_count": 108,
+      "status": "COUNT-RECONCILIATION-FAILED",
+      "blocking_reason": "declared_count_differs_from_directly_observed_evidence"
+    }
+  ]
+}
