@@ -1,0 +1,15 @@
+{
+  "baseline":"2026-09-16",
+  "gates":[
+    {"id":"architecture","name":"Architecture Gate","checks":["bounded contexts","dependency direction","contracts","ADR impact"]},
+    {"id":"functional","name":"Functional Gate","checks":["domain tests","integration tests","regression coverage"]},
+    {"id":"security","name":"Security Gate","checks":["AuthN/AuthZ","secrets","SBOM","SAST","dependency/container scanning","agent sandbox"]},
+    {"id":"performance","name":"Performance Gate","checks":["latency","throughput","CPU","RAM","startup","query cost","frontend budgets"]},
+    {"id":"data","name":"Data Gate","checks":["PIT","lineage","revision","quality","reproducibility"]},
+    {"id":"ai","name":"AI Gate","checks":["groundedness","citation","evaluation","calibration","drift","policy"]},
+    {"id":"licensing","name":"Licensing Gate","checks":["direct license","transitive licenses","compatibility","redistribution obligations"]},
+    {"id":"migration","name":"Migration Gate","checks":["compatibility","reconciliation","rollback","evidence"]},
+    {"id":"operations","name":"Operational Gate","checks":["health/readiness","backup/restore","observability","runbook"]}
+  ],
+  "promotion_flow":["proposal","classification","checkpoint","sandbox","verification","gates","approval_if_required","promotion","health_guard","rollback"]
+}
