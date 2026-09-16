@@ -1,13 +1,24 @@
 {
   "baseline":"2026-09-16",
+  "decision_freeze":"Accepted decisions are frozen until an ADR explicitly supersedes them; implementation convenience is not sufficient reason to reopen them.",
   "decisions":[
     {"id":"ADR-0001","title":"Composable Platform","status":"accepted","decision":"CFIP owns domain/contracts/governance; OSS supplies reusable capabilities behind adapters."},
-    {"id":"ADR-0002","title":"Modular Monolith First","status":"accepted","decision":"Start with explicit bounded contexts and extract services only with measurable justification."},
-    {"id":"ADR-0003","title":"NATS JetStream Baseline","status":"accepted","decision":"Use NATS JetStream as baseline event infrastructure; benchmark alternatives before any change."},
-    {"id":"ADR-0004","title":"Evidence Core IP","status":"accepted","decision":"Evidence/provenance/trust/freshness contracts remain CFIP-owned."},
-    {"id":"ADR-0005","title":"Elyrava Framework Neutrality","status":"accepted","decision":"Elyrava exposes stable contracts and may adapt multiple agent/model frameworks."},
-    {"id":"ADR-0006","title":"Fork Last","status":"accepted","decision":"Prefer upstream, adapter, extension and upstream patch before fork or bespoke implementation."},
-    {"id":"ADR-0007","title":"OSS Popularity Is Not Evidence","status":"accepted","decision":"Popularity alone is never a runtime adoption criterion."},
-    {"id":"ADR-0008","title":"One Production Implementation Per Capability","status":"accepted","decision":"Avoid simultaneous competing runtime implementations unless a documented architectural reason exists."}
+    {"id":"ADR-0002","title":"Modular Monolith First","status":"accepted","decision":"Start with explicit bounded contexts and extract services only with measurable scale, isolation, ownership or security justification."},
+    {"id":"ADR-0003","title":"NATS JetStream Baseline","status":"accepted","decision":"NATS JetStream is the baseline event plane; alternatives require benchmark evidence and ADR."},
+    {"id":"ADR-0004","title":"Evidence Core IP","status":"accepted","decision":"Evidence, provenance, trust, freshness, claim lineage and reproducibility contracts remain CFIP-owned."},
+    {"id":"ADR-0005","title":"Elyrava Framework Neutrality","status":"accepted","decision":"Elyrava exposes stable contracts and may adapt multiple agent/model/research frameworks."},
+    {"id":"ADR-0006","title":"Fork Last","status":"accepted","decision":"Use upstream, adapter, extension or upstream patch before fork; fork only with documented ownership and maintenance plan."},
+    {"id":"ADR-0007","title":"OSS Popularity Is Not Evidence","status":"accepted","decision":"Stars, hype, vendor branding or repository count never constitute runtime adoption evidence."},
+    {"id":"ADR-0008","title":"One Production Implementation Per Capability","status":"accepted","decision":"Do not run competing search engines, vector stores, workflow engines, brokers or trading engines simultaneously without explicit architecture evidence."},
+    {"id":"ADR-0009","title":"Provider Independence","status":"accepted","decision":"Market/news/economic/broker providers are adapters; provider identity cannot become domain semantics."},
+    {"id":"ADR-0010","title":"PIT and Provenance First","status":"accepted","decision":"Historical truth, revision lineage, event-time semantics and reproducibility are mandatory for research/trading intelligence."},
+    {"id":"ADR-0011","title":"Consensus Is Authoritative","status":"accepted","decision":"Specialist engines emit evidence; one governed consensus boundary produces the platform-level analytical decision."},
+    {"id":"ADR-0012","title":"Risk Before Execution","status":"accepted","decision":"Execution is separately authorized and fail-closed; risk/account/broker constraints are evaluated before order submission."},
+    {"id":"ADR-0013","title":"Autonomy Is Governed","status":"accepted","decision":"Self-development follows proposal, isolation, verification, gates, approval when required, promotion, health guard and rollback."},
+    {"id":"ADR-0014","title":"Search Stack Must Be Benchmarked","status":"accepted","decision":"Vespa/OpenSearch/Elasticsearch/Qdrant/pgvector and alternatives remain candidates until workload-specific evidence selects a runtime composition."},
+    {"id":"ADR-0015","title":"Graph Is Optional","status":"accepted","decision":"A graph database is not assumed to be primary storage; PostgreSQL plus search/vector and projected graph capability may be sufficient."},
+    {"id":"ADR-0016","title":"Workflow Is Not Eventing","status":"accepted","decision":"NATS JetStream transports durable events; Temporal or another workflow engine is evaluated only for durable orchestration semantics."},
+    {"id":"ADR-0017","title":"License Is a Gate","status":"accepted","decision":"License compatibility is evaluated for direct and transitive dependencies before runtime adoption or redistribution."},
+    {"id":"ADR-0018","title":"Core IP Boundary","status":"accepted","decision":"FVG/OB intelligence, evidence contract, research decision model, signal fusion, calibration/outcome attribution, Elyrava governance and domain contracts remain CFIP IP."}
   ]
 }
