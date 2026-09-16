@@ -1,0 +1,7 @@
+{
+  "baseline":"2026-09-16",
+  "edges":[
+    {"from":"experience","to":"api_bff","type":"calls"},{"from":"api_bff","to":"application","type":"invokes"},{"from":"application","to":"domain","type":"orchestrates"},{"from":"domain","to":"ports","type":"depends_on_abstraction"},{"from":"ports","to":"adapters","type":"implemented_by"},{"from":"market_data","to":"nats_jetstream","type":"publishes"},{"from":"nats_jetstream","to":"analysis","type":"feeds"},{"from":"analysis","to":"consensus","type":"feeds"},{"from":"consensus","to":"risk","type":"feeds"},{"from":"risk","to":"execution_boundary","type":"authorizes"},{"from":"elyrava","to":"research","type":"orchestrates"},{"from":"elyrava","to":"tools","type":"controlled_access"},{"from":"elyrava_lab","to":"sandbox","type":"isolated_execution"},{"from":"elyrava_lab","to":"gates","type":"promotion_control"}
+  ],
+  "oss_boundary_rule":"OSS dependencies terminate at explicit capability adapters; Domain and canonical contracts never depend on vendor implementations."
+}
