@@ -1,0 +1,7 @@
+{
+  "baseline": "2026-09-16",
+  "domain_count": 30,
+  "domains": [
+    {"id":"01","name":"Forex / Trading / Quant Core"},{"id":"02","name":"Market & Financial Data"},{"id":"03","name":"Trading Engine / Execution"},{"id":"04","name":"AI / LLM / Agent"},{"id":"05","name":"Research Intelligence / Deep Research"},{"id":"06","name":"Search / Retrieval"},{"id":"07","name":"Web Acquisition"},{"id":"08","name":"Document Intelligence"},{"id":"09","name":"Knowledge Graph / Memory"},{"id":"10","name":"Evidence / Provenance / Trust"},{"id":"11","name":"Machine Learning"},{"id":"12","name":"MLOps / LLMOps"},{"id":"13","name":"Data Platform"},{"id":"14","name":"Streaming / Event Infrastructure"},{"id":"15","name":"Workflow / Distributed Execution"},{"id":"16","name":"Evaluation / Intelligence QA"},{"id":"17","name":"Observability"},{"id":"18","name":"Security / Identity / Governance"},{"id":"19","name":"Autonomous Elyrava / Self-Development"},{"id":"20","name":"Frontend / Terminal / Visualization"},{"id":"21","name":"Realtime"},{"id":"22","name":"Payments / Subscription"},{"id":"23","name":"Testing / Reliability"},{"id":"24","name":"DevOps / Infrastructure"},{"id":"25","name":"Developer Platform"},{"id":"26","name":"Financial Intelligence"},{"id":"27","name":"Decision Intelligence"},{"id":"28","name":"Governance of Intelligence"},{"id":"29","name":"Research Dataset / Knowledge Lifecycle"},{"id":"30","name":"Globalization / Accessibility"}
+  ]
+}
