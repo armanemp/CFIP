@@ -1,15 +1,18 @@
 {
   "baseline":"2026-09-16",
   "gates":[
-    {"id":"architecture","name":"Architecture Gate","checks":["bounded contexts","dependency direction","contracts","ADR impact"]},
-    {"id":"functional","name":"Functional Gate","checks":["domain tests","integration tests","regression coverage"]},
-    {"id":"security","name":"Security Gate","checks":["AuthN/AuthZ","secrets","SBOM","SAST","dependency/container scanning","agent sandbox"]},
-    {"id":"performance","name":"Performance Gate","checks":["latency","throughput","CPU","RAM","startup","query cost","frontend budgets"]},
-    {"id":"data","name":"Data Gate","checks":["PIT","lineage","revision","quality","reproducibility"]},
-    {"id":"ai","name":"AI Gate","checks":["groundedness","citation","evaluation","calibration","drift","policy"]},
-    {"id":"licensing","name":"Licensing Gate","checks":["direct license","transitive licenses","compatibility","redistribution obligations"]},
-    {"id":"migration","name":"Migration Gate","checks":["compatibility","reconciliation","rollback","evidence"]},
-    {"id":"operations","name":"Operational Gate","checks":["health/readiness","backup/restore","observability","runbook"]}
+    {"id":"architecture","name":"Architecture Gate","checks":["bounded contexts","dependency direction","ports/contracts","OSS boundary","ADR impact","anti-sprawl"]},
+    {"id":"functional","name":"Functional Gate","checks":["domain tests","application tests","integration tests","regression coverage","failure semantics"]},
+    {"id":"security","name":"Security Gate","checks":["AuthN/AuthZ","tenant isolation","secrets","SBOM","SAST","dependency/container scanning","SSRF","prompt injection","agent sandbox","audit"]},
+    {"id":"performance","name":"Performance Gate","checks":["latency","throughput","CPU","RAM","startup","query cost","event lag","frontend bundle/render budgets","load/soak"]},
+    {"id":"data","name":"Data Gate","checks":["PIT","lineage","revision","quality","deduplication","event-time","reproducibility","backup/restore"]},
+    {"id":"ai","name":"AI Gate","checks":["groundedness","citation precision/recall","retrieval quality","agent safety","tool authorization","evaluation","calibration","drift","cost","policy"]},
+    {"id":"licensing","name":"Licensing Gate","checks":["direct license","transitive licenses","SPDX identification","compatibility","redistribution obligations","source/notice obligations","commercial restrictions"]},
+    {"id":"migration","name":"Migration Gate","checks":["schema compatibility","data reconciliation","behavioral parity","PIT parity","rollback","dual-read/dual-write where justified","evidence"]},
+    {"id":"operations","name":"Operational Gate","checks":["health/readiness","backup/restore","observability","SLO","runbook","capacity","failure recovery"]},
+    {"id":"adoption","name":"OSS Adoption Gate","checks":["functional fit","maturity","activity","contributors","releases","license","security","Python compatibility","performance","scalability","self-hosting","data ownership","lock-in","API quality","extensibility","resource cost","docs","tests","migration risk","CFIP fit"]}
   ],
-  "promotion_flow":["proposal","classification","checkpoint","sandbox","verification","gates","approval_if_required","promotion","health_guard","rollback"]
+  "promotion_flow":["proposal","classification","checkpoint","dependency/license/security scan","sandbox","benchmark","independent verification","gates","approval_if_required","promotion","health_guard","rollback"],
+  "risk_classes":{"LOW":"bounded and reversible; automatic promotion only after independent verification and all gates","MEDIUM":"human approval required","HIGH":"explicit authorization, strengthened security/release evidence and rollback plan"},
+  "release_rule":"A failed mandatory gate blocks promotion; waivers require an ADR with owner, expiry and compensating control."
 }
