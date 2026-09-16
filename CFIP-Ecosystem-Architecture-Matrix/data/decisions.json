@@ -1,0 +1,13 @@
+{
+  "baseline":"2026-09-16",
+  "decisions":[
+    {"id":"ADR-0001","title":"Composable Platform","status":"accepted","decision":"CFIP owns domain/contracts/governance; OSS supplies reusable capabilities behind adapters."},
+    {"id":"ADR-0002","title":"Modular Monolith First","status":"accepted","decision":"Start with explicit bounded contexts and extract services only with measurable justification."},
+    {"id":"ADR-0003","title":"NATS JetStream Baseline","status":"accepted","decision":"Use NATS JetStream as baseline event infrastructure; benchmark alternatives before any change."},
+    {"id":"ADR-0004","title":"Evidence Core IP","status":"accepted","decision":"Evidence/provenance/trust/freshness contracts remain CFIP-owned."},
+    {"id":"ADR-0005","title":"Elyrava Framework Neutrality","status":"accepted","decision":"Elyrava exposes stable contracts and may adapt multiple agent/model frameworks."},
+    {"id":"ADR-0006","title":"Fork Last","status":"accepted","decision":"Prefer upstream, adapter, extension and upstream patch before fork or bespoke implementation."},
+    {"id":"ADR-0007","title":"OSS Popularity Is Not Evidence","status":"accepted","decision":"Popularity alone is never a runtime adoption criterion."},
+    {"id":"ADR-0008","title":"One Production Implementation Per Capability","status":"accepted","decision":"Avoid simultaneous competing runtime implementations unless a documented architectural reason exists."}
+  ]
+}
