@@ -1,0 +1,7 @@
+{
+  "baseline":"2026-09-16",
+  "policy":"Every capability has a canonical owner, contract and adoption decision.",
+  "core_ip":["Evidence Contract","Research Decision Model","Research Intelligence Fabric","FVG/Order Block intelligence","Signal Fusion","Consensus semantics","Confidence/calibration","Outcome Attribution","Elyrava governance","Self-improvement gates","PIT/reproducibility policy","CFIP domain contracts"],
+  "oss_first":["PDF parsing","OCR","crawling","browser automation","search","vector retrieval","graph storage","workflow execution","generic trading engines","authentication","authorization","observability","ML frameworks","experiment tracking","testing","infrastructure"],
+  "capability_groups":{"trading":["Market Data","Technical Analysis","Market Structure","Liquidity","FVG","Order Blocks","MTF","Signals","Backtest","Replay","Execution","Risk","Portfolio","Journal"],"research":["Search","Retrieval","Reranking","Web Acquisition","Document Intelligence","Evidence","Provenance","Citation","Freshness","Knowledge Graph","Memory"],"ai":["LLM Gateway","Agent Runtime","Tool Calling","Planning","Model Routing","Evaluation","Calibration","Drift"],"platform":["PostgreSQL","ClickHouse","Redis","Object Storage","DuckDB","Arrow/Parquet","NATS JetStream","Workflow","OTel","Identity","Authorization","Secrets","SBOM","Payments","Realtime"]}
+}
