@@ -1,0 +1,6 @@
+{
+  "baseline":"2026-09-16",
+  "ports":["MarketDataProvider","EconomicDataProvider","NewsProvider","SearchProvider","Retriever","Reranker","WebAcquisitionPort","DocumentParser","OCRProvider","EvidenceStore","KnowledgeGraphPort","MemoryProvider","ModelProvider","AgentRuntime","ToolRegistry","ResearchPlanner","ResearchExecutor","SignalEngine","ConsensusService","RiskEngine","OrderGateway","ExecutionGateway","BacktestEngine","ReplayEngine","EvaluationProvider","FeatureStore","WorkflowPort","IdentityProvider","AuthorizationProvider","PaymentProvider","NotificationProvider"],
+  "event_envelope":["id","schema_version","event_type","occurred_at","observed_at","producer","aggregate_type","aggregate_id","correlation_id","causation_id","partition_key","sequence","payload","metadata"],
+  "rules":["versioned schemas","idempotent consumers","explicit retry policy","quarantine poison messages","durable outbox","documented ordering semantics","backward compatibility policy","end-to-end correlation"]
+}
