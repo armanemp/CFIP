@@ -1,9 +1,16 @@
 {
   "baseline":"2026-09-16",
-  "style":["DDD","Clean Architecture","Hexagonal Architecture","event-driven integration","modular monolith first","independently deployable processes when justified"],
+  "style":["Composable Platform","DDD","Clean Architecture","Hexagonal Architecture","event-driven integration","modular monolith first","independently deployable processes when justified"],
   "layers":["Experience","API/BFF","Elyrava Core","CFIP Contracts","Capability Fabric","Data Plane","Event Plane","Observability/Governance","Elyrava Lab"],
-  "data_plane":{"postgresql":"transactional system of record","clickhouse":"analytical/time-series workloads","redis":"cache and bounded ephemeral state","object_storage":"large immutable artifacts and datasets","duckdb":"local/research analytics","arrow_parquet":"columnar interchange"},
-  "event_plane":"NATS JetStream baseline",
+  "contexts":["Identity & Access","Market Reference","Market Data","Data Lineage & Provenance","Realtime & Eventing","Chart & Workspace","Technical Analysis","Structure & Liquidity","Regime & MTF","Confluence & Contradiction","Intelligence & Consensus","Signals & Strategy Research","Backtest & Replay","Risk & Decision","Journal & Execution","Research Intelligence","Learning & Evaluation","Platform Intelligence","AI Gateway","Governance & Autonomy","Entitlements & Billing","Observability & Operations"],
+  "data_plane":{"postgresql":"transactional system of record and domain invariants","clickhouse":"high-volume analytical/time-series workloads","redis":"cache and bounded ephemeral state; never sole source of truth","object_storage":"large immutable artifacts/datasets/models/evidence bundles","duckdb":"local/research analytics","arrow_parquet":"columnar interchange"},
+  "event_plane":"NATS JetStream baseline; Kafka/Redpanda/Pulsar benchmark only until ADR proves replacement or second bus.",
+  "workflow_plane":"No workflow engine is default. Temporal/Prefect/Dagster/Airflow/Celery are evaluated per workload; event transport and durable workflow are distinct concerns.",
+  "ai_plane":"Elyrava is framework-neutral. Agent/model/tool/memory/research implementations are adapters behind CFIP contracts.",
+  "research_pipeline":["discovery","query decomposition","retrieval","acquisition","document extraction","evidence normalization","claim verification","contradiction analysis","synthesis","citation validation","confidence/calibration","reproducibility"],
+  "trading_pipeline":["canonical market data","feature/structure engines","specialist evidence","confluence/contradiction","consensus","decision policy","risk","order intent","execution gateway","reconciliation","outcome attribution"],
+  "autonomy_pipeline":["observe","research","propose","risk classify","checkpoint","sandbox","independent verification","release gates","approval when required","promotion","health guard","rollback"],
   "dependency_rule":"inbound adapter -> application -> domain <- outbound ports/adapters",
-  "anti_sprawl":["one canonical implementation per production capability unless ADR","no redundant datastores","no redundant brokers","no multiple workflow engines without ADR","no direct infrastructure access from agents/domain","no OSS runtime adoption by popularity"]
+  "oss_boundary":"OSS dependencies terminate at explicit capability adapters; Domain, Core IP and canonical contracts never depend on vendor implementations.",
+  "anti_sprawl":["one canonical runtime implementation per production capability unless ADR","no redundant datastores","no redundant brokers","no multiple search/vector systems without benchmark/ADR","no multiple workflow engines without ADR","no direct infrastructure access from agents/domain","no OSS runtime adoption by popularity","no fork before upstream/adapter/extension/upstream-patch analysis","no service extraction without measurable need"]
 }
