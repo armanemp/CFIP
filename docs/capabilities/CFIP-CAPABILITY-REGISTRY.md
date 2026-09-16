@@ -1,8 +1,8 @@
-# CFIP Capability Registry — CForex Source Coverage
+# CFIP Capability Registry — Target Execution Registry
 
-This registry is the starting parity map. It is intentionally capability-oriented rather than file-oriented. A row is `mapped`, not `implemented`, until executable source evidence, contracts and verification exist in CFIP.
+This is the **target execution registry** for `armanemp/CFIP`. It is capability-oriented rather than file-oriented. CForex is used only for capability discovery and behavioral/parity evidence; its implementation and architecture are not the CFIP target. A row is `MAPPED`, not `IMPLEMENTED`, until executable CFIP source evidence, contracts and verification exist.
 
-| Capability ID | CForex capability family | CFIP bounded context | Primary target | Verification requirement |
+| Capability ID | Capability family | CFIP bounded context | Primary target | Verification requirement |
 |---|---|---|---|---|
 | CAP-IDENTITY | identity/access | identity | `contexts/identity` | auth/authz/security/e2e |
 | CAP-ORG-WORKSPACE | organizations/workspaces | organization/workspace | `contexts/organization`, `contexts/workspace` | tenant isolation/e2e |
@@ -50,9 +50,21 @@ This registry is the starting parity map. It is intentionally capability-oriente
 
 No capability may jump directly from `MAPPED` to `PRODUCTION-READY`.
 
+## Evidence boundary
+
+CForex is a **capability-discovery and behavioral-evidence source only**. It must not be treated as the CFIP architecture, code baseline, dependency baseline, or migration destination.
+
+The target registry is distinct from any cross-repository/master capability inventory maintained in CFIP-BOOK. CFIP-BOOK may describe the broader capability universe; this file tracks target execution ownership and closure inside `armanemp/CFIP`.
+
+## API / WebSocket rule
+
+API and WebSocket closure is route/channel-level. The existence of an `apps/api` directory or an architecture document is not implementation evidence. A route is not `IMPLEMENTED` until executable CFIP transport code exists; it is not `VERIFIED` until its contract, security, tests and required observability evidence pass.
+
+Current D1 target audit: `docs/capabilities/CFIP-D1-API-WS-AUDIT-2026-09-16.md`.
+
 ## Source evidence rule
 
-When populating this registry from CForex, prefer evidence in this order:
+When populating capability requirements from CForex, prefer evidence in this order:
 
 1. executable implementation and tests;
 2. migrations, schemas and machine-readable contracts;
