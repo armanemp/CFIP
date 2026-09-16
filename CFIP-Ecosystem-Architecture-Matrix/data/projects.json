@@ -1,0 +1,31 @@
+{
+  "baseline":"2026-09-16",
+  "selection_policy":"No runtime adoption by popularity alone; audit and evidence required.",
+  "projects":[
+    {"name":"NautilusTrader","url":"https://github.com/nautechsystems/nautilus_trader","domains":["01","03"],"candidate_roles":["INTEGRATE","BENCHMARK","REFERENCE"],"reason":"Event-driven trading/backtest/live engine candidate; evaluate before rebuilding generic execution infrastructure."},
+    {"name":"LEAN","url":"https://github.com/QuantConnect/Lean","domains":["01","03"],"candidate_roles":["BENCHMARK","REFERENCE","INTEGRATE"],"reason":"Algorithmic trading engine candidate; compare architecture and execution semantics."},
+    {"name":"Qlib","url":"https://github.com/microsoft/qlib","domains":["01","11","12"],"candidate_roles":["BENCHMARK","REFERENCE","INTEGRATE"],"reason":"Quant/AI research and workflow capabilities."},
+    {"name":"LangGraph","url":"https://github.com/langchain-ai/langgraph","domains":["04","05"],"candidate_roles":["ADAPT","BENCHMARK","INTEGRATE"],"reason":"Agent orchestration candidate behind Elyrava contracts."},
+    {"name":"Haystack","url":"https://github.com/deepset-ai/haystack","domains":["04","05","06"],"candidate_roles":["ADAPT","BENCHMARK","INTEGRATE"],"reason":"Composable AI/RAG pipeline candidate."},
+    {"name":"PydanticAI","url":"https://github.com/pydantic/pydantic-ai","domains":["04","25"],"candidate_roles":["ADAPT","BENCHMARK"],"reason":"Typed Python agent/application integration candidate."},
+    {"name":"Vespa","url":"https://github.com/vespa-engine/vespa","domains":["06"],"candidate_roles":["BENCHMARK","INTEGRATE","REFERENCE"],"reason":"Search/retrieval/ranking platform candidate; must compete with OpenSearch/vector options."},
+    {"name":"OpenSearch","url":"https://github.com/opensearch-project/OpenSearch","domains":["06","17"],"candidate_roles":["BENCHMARK","INTEGRATE"],"reason":"Full-text/search and analytics candidate."},
+    {"name":"Qdrant","url":"https://github.com/qdrant/qdrant","domains":["06","09"],"candidate_roles":["BENCHMARK","INTEGRATE"],"reason":"Vector retrieval candidate."},
+    {"name":"Playwright","url":"https://github.com/microsoft/playwright","domains":["07","23"],"candidate_roles":["INTEGRATE"],"reason":"Browser automation and E2E capability."},
+    {"name":"Scrapy","url":"https://github.com/scrapy/scrapy","domains":["07"],"candidate_roles":["INTEGRATE","ADAPT"],"reason":"Crawling framework candidate."},
+    {"name":"Docling","url":"https://github.com/docling-project/docling","domains":["08"],"candidate_roles":["INTEGRATE","ADAPT","BENCHMARK"],"reason":"Document parsing/layout extraction candidate."},
+    {"name":"MinerU","url":"https://github.com/opendatalab/MinerU","domains":["08"],"candidate_roles":["BENCHMARK","INTEGRATE"],"reason":"PDF/document extraction candidate."},
+    {"name":"Neo4j","url":"https://github.com/neo4j/neo4j","domains":["09"],"candidate_roles":["BENCHMARK","REFERENCE"],"reason":"Graph database candidate; not a default runtime dependency."},
+    {"name":"MLflow","url":"https://github.com/mlflow/mlflow","domains":["12","16"],"candidate_roles":["INTEGRATE","BENCHMARK"],"reason":"Experiment/model lifecycle candidate."},
+    {"name":"Feast","url":"https://github.com/feast-dev/feast","domains":["12","13"],"candidate_roles":["BENCHMARK","INTEGRATE"],"reason":"Feature store/serving candidate."},
+    {"name":"NATS Server","url":"https://github.com/nats-io/nats-server","domains":["14"],"candidate_roles":["INTEGRATE"],"reason":"Baseline event infrastructure; JetStream provides durable streams."},
+    {"name":"Temporal","url":"https://github.com/temporalio/temporal","domains":["15"],"candidate_roles":["BENCHMARK","INTEGRATE"],"reason":"Durable workflow candidate; separate from event transport."},
+    {"name":"OpenTelemetry Collector","url":"https://github.com/open-telemetry/opentelemetry-collector","domains":["17"],"candidate_roles":["INTEGRATE"],"reason":"Telemetry pipeline baseline."},
+    {"name":"Keycloak","url":"https://github.com/keycloak/keycloak","domains":["18"],"candidate_roles":["BENCHMARK","INTEGRATE"],"reason":"Identity/OIDC candidate."},
+    {"name":"OpenFGA","url":"https://github.com/openfga/openfga","domains":["18"],"candidate_roles":["BENCHMARK","INTEGRATE"],"reason":"Fine-grained authorization candidate."},
+    {"name":"OpenHands","url":"https://github.com/All-Hands-AI/OpenHands","domains":["19"],"candidate_roles":["BENCHMARK","REFERENCE","ADAPT"],"reason":"Autonomous coding/development reference and candidate."},
+    {"name":"BTCPay Server","url":"https://github.com/btcpayserver/btcpayserver","domains":["22"],"candidate_roles":["BENCHMARK","INTEGRATE"],"reason":"Self-hosted crypto payment candidate; operational/license lifecycle audit required."},
+    {"name":"Hypothesis","url":"https://github.com/HypothesisWorks/hypothesis","domains":["23"],"candidate_roles":["INTEGRATE"],"reason":"Property-based testing."},
+    {"name":"Trivy","url":"https://github.com/aquasecurity/trivy","domains":["18","24"],"candidate_roles":["INTEGRATE"],"reason":"Container/dependency/security scanning."}
+  ]
+}
