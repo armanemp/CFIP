@@ -1,7 +1,13 @@
 {
   "baseline":"2026-09-16",
+  "graph_type":"capability/dependency/boundary graph",
   "edges":[
-    {"from":"experience","to":"api_bff","type":"calls"},{"from":"api_bff","to":"application","type":"invokes"},{"from":"application","to":"domain","type":"orchestrates"},{"from":"domain","to":"ports","type":"depends_on_abstraction"},{"from":"ports","to":"adapters","type":"implemented_by"},{"from":"market_data","to":"nats_jetstream","type":"publishes"},{"from":"nats_jetstream","to":"analysis","type":"feeds"},{"from":"analysis","to":"consensus","type":"feeds"},{"from":"consensus","to":"risk","type":"feeds"},{"from":"risk","to":"execution_boundary","type":"authorizes"},{"from":"elyrava","to":"research","type":"orchestrates"},{"from":"elyrava","to":"tools","type":"controlled_access"},{"from":"elyrava_lab","to":"sandbox","type":"isolated_execution"},{"from":"elyrava_lab","to":"gates","type":"promotion_control"}
+    {"from":"experience","to":"api_bff","type":"calls"},{"from":"api_bff","to":"application","type":"invokes"},{"from":"application","to":"domain","type":"orchestrates"},{"from":"domain","to":"ports","type":"depends_on_abstraction"},{"from":"ports","to":"adapters","type":"implemented_by"},
+    {"from":"market_data","to":"nats_jetstream","type":"publishes"},{"from":"nats_jetstream","to":"analysis","type":"feeds"},{"from":"analysis","to":"consensus","type":"feeds"},{"from":"consensus","to":"risk","type":"feeds"},{"from":"risk","to":"execution_boundary","type":"authorizes"},
+    {"from":"elyrava","to":"research","type":"orchestrates"},{"from":"elyrava","to":"memory","type":"reads_writes_via_contract"},{"from":"elyrava","to":"tools","type":"controlled_access"},{"from":"research","to":"evidence","type":"produces"},{"from":"evidence","to":"knowledge_graph","type":"projects"},{"from":"evidence","to":"retrieval","type":"indexes"},
+    {"from":"elyrava_lab","to":"sandbox","type":"isolated_execution"},{"from":"elyrava_lab","to":"evaluation","type":"verifies"},{"from":"evaluation","to":"gates","type":"qualifies"},{"from":"gates","to":"promotion","type":"controls"},{"from":"promotion","to":"health_guard","type":"monitors"},{"from":"health_guard","to":"rollback","type":"triggers"},
+    {"from":"postgresql","to":"domain_state","type":"authoritative_store"},{"from":"clickhouse","to":"analytics","type":"analytical_store"},{"from":"redis","to":"cache","type":"ephemeral_store"},{"from":"object_storage","to":"artifacts","type":"immutable_store"},{"from":"duckdb","to":"research","type":"local_analytics"}
   ],
-  "oss_boundary_rule":"OSS dependencies terminate at explicit capability adapters; Domain and canonical contracts never depend on vendor implementations."
+  "oss_boundary_rule":"OSS implementations may connect to infrastructure but terminate at CFIP-owned ports. Vendor types, persistence models and event schemas cannot leak into domain contracts.",
+  "forbidden_edges":["domain->vendor_sdk","domain->database_driver","agent->raw_database","frontend->database","frontend->nats","contextA->contextB.persistence_model","runtime->multiple_competing_implementations_without_ADR"]
 }
