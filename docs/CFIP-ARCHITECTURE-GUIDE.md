@@ -1,256 +1,351 @@
-# CFIP Architecture Guide
+# مرجع مادر معماری و اکوسیستم CFIP
 
-**Status:** Living architecture book  
-**Source baseline:** CForex `main`, v0.9.154  
-**Target:** production-grade global-scale CForex reimplementation  
-**Rule:** source evidence outranks assumptions.
+**وضعیت:** Baseline مرجع معماری — Frozen for decision-making until an explicit ADR changes it  
+**تاریخ baseline:** 2026-09-16  
+**هدف:** ساخت CFIP به‌عنوان یک Composable Financial Intelligence Platform، نه بازنویسی صفر تا صد  
+**اصل محوری:** `CFIP owns Domain + Contracts + Governance + proprietary intelligence; OSS owns reusable capabilities.`
 
----
-
-## 1. Purpose
-
-CFIP is not a rewrite by filename and it is not a cosmetic reorganization. It is a controlled reimplementation of the capabilities embodied by CForex into a stricter, technology-independent architecture.
-
-The governing transformation is:
-
-`CForex implementation → behavioral contract → domain capability → application use case → port → adapter → data/event contract → verification evidence → CFIP implementation`
-
-A capability is complete only when its behavior, data semantics, authorization, failure behavior, observability, tests, replay/PIT implications and operational ownership are understood and verified.
+> این سند جایگزین کامل «کتاب معماری قبلی» است. هدف آن فهرست ابزار نیست؛ بلکه مرجع تصمیم‌گیری برای Build/Integrate/Adapt/Evaluate/Benchmark/Reference/Fork است.
 
 ---
 
-## 2. Source baseline: what CForex already establishes
+## 1. تصمیم مادر
 
-The current CForex repository is a Python-first modular platform with FastAPI, Pydantic, SQLAlchemy/Alembic, PostgreSQL, ClickHouse, Redis, NATS JetStream, a Next.js/React frontend, deterministic analytical engines, workers, learning/autonomy surfaces and governed platform intelligence.
+CFIP از صفر همه‌چیز را نمی‌سازد. ابتدا اکوسیستم Open Source در کل حوزه‌های موردنیاز ممیزی می‌شود، قابلیت‌های mature شناسایی و غربال می‌شوند و سپس CFIP با قراردادها و Domain Model اختصاصی خود، بهترین implementationهای موجود را پشت مرزهای استاندارد قرار می‌دهد.
 
-Its architecture explicitly establishes:
+فرآیند اجباری:
 
-- modular monolith deployment with independently deployable API/worker processes;
-- dependency direction `interfaces → application → domain ← infrastructure adapters`;
-- canonical market-data flow `Provider → Raw → Normalize → Validate → Deduplicate → Event-Time → Quality → Canonical → Outbox → Event Bus`;
-- point-in-time, provenance, lineage, revision and causal correctness;
-- one authoritative analysis-consensus boundary;
-- account-aware risk and position sizing;
-- live/replay/backtest semantic compatibility;
-- governed research and learning;
-- governed self-healing/self-development;
-- Git as canonical version/recovery substrate;
-- OpenTelemetry-compatible observability.
+`Discover → Deduplicate → Classify → Technical Audit → Security/License Audit → Benchmark Evidence → CFIP Fit → Adoption Decision`
 
-These are requirements to preserve, not optional historical details.
+هیچ پروژه OSS فقط به دلیل شهرت وارد runtime نمی‌شود.
 
 ---
 
-## 3. Target architectural style
+## 2. دامنه مادر
 
-CFIP uses a **modular monolith with explicit bounded contexts, Domain-Driven Design, Clean/Hexagonal dependency inversion, event-driven integration and independently deployable application processes**.
+Baseline فعلی شامل **30 حوزه مادر** و بیش از **400 capability/subdomain عملیاتی** است:
 
-The target is intentionally deployment-neutral:
+1. Forex / Trading / Quant Core
+2. Market & Financial Data
+3. Trading Engine / Execution
+4. AI / LLM / Agent
+5. Research Intelligence / Deep Research
+6. Search / Retrieval
+7. Web Acquisition
+8. Document Intelligence
+9. Knowledge Graph / Memory
+10. Evidence / Provenance / Trust
+11. Machine Learning
+12. MLOps / LLMOps
+13. Data Platform
+14. Streaming / Event Infrastructure
+15. Workflow / Distributed Execution
+16. Evaluation / Intelligence QA
+17. Observability
+18. Security / Identity / Governance
+19. Autonomous Elyrava / Self-Development
+20. Frontend / Terminal / Visualization
+21. Realtime
+22. Payments / Subscription
+23. Testing / Reliability
+24. DevOps / Infrastructure
+25. Developer Platform
+26. Financial Intelligence
+27. Decision Intelligence
+28. Governance of Intelligence
+29. Research Dataset / Knowledge Lifecycle
+30. Globalization / Accessibility
+
+در نسخه‌های آینده فقط با ADR می‌توان حوزه مادر را حذف، ادغام یا تغییر داد.
+
+---
+
+## 3. مدل انتخاب OSS
+
+هر repository در کاتالوگ ماشین‌خوان ثبت می‌شود و حداقل این فیلدها را دارد:
+
+- نام و URL رسمی
+- حوزه و capability
+- نقش: `BUILD | INTEGRATE | ADAPT | EVALUATE | BENCHMARK | REFERENCE | FORK | REJECT`
+- دلیل تصمیم
+- license و compatibility
+- وضعیت نگهداری و آخرین release
+- تعداد/تنوع مشارکت‌کنندگان و ریسک single-maintainer
+- maturity و production evidence
+- Python compatibility، در صورت مرتبط بودن
+- architecture و integration surface
+- self-hosting و deployment
+- امنیت و سابقه آسیب‌پذیری
+- performance و scalability
+- CPU/RAM/GPU/storage cost
+- data ownership
+- SaaS/vendor lock-in
+- extensibility/plugin/adapter model
+- documentation و testing
+- migration risk
+- CFIP boundary
+- evidence/reference برای تصمیم
+
+**Fork آخرین انتخاب است:**
+
+`Upstream → Adapter → Extension → Upstream Patch → Fork → Build`
+
+---
+
+## 4. مرز Core IP و OSS
+
+### CFIP Core IP
+
+موارد Domain-specific و governed که مالکیت طراحی آنها باید نزد CFIP بماند:
+
+- Evidence Contract
+- Claim/Evidence/Source مدل
+- Research Decision Model
+- Research Intelligence Fabric
+- FVG/Order Block intelligence
+- Market Structure/Liquidity semantics اختصاصی
+- Signal Fusion
+- Consensus و contradiction semantics
+- Confidence و calibration policy
+- Outcome Attribution
+- Financial Decision Intelligence
+- Elyrava governance
+- self-improvement gates
+- domain contracts و canonical event semantics
+- PIT/reproducibility policy
+- risk decision policy و CFIP execution boundary
+
+### قابلیت‌هایی که ابتدا OSS بررسی می‌شوند
+
+PDF parsing، OCR، crawling، browser automation، search engine، vector search، graph database، workflow engine، generic trading engine، authentication، authorization، observability، ML frameworks، experiment tracking، testing و infrastructure.
+
+---
+
+## 5. معماری کلان
 
 ```text
-                    ┌───────────────────────────────┐
-                    │        External Clients        │
-                    │ Web / Mobile / API / Brokers  │
-                    └───────────────┬───────────────┘
-                                    │
-                          inbound adapters
-                                    │
-                    ┌───────────────▼───────────────┐
-                    │       Application Layer        │
-                    │ commands / queries / policies │
-                    └───────────────┬───────────────┘
-                                    │
-                    ┌───────────────▼───────────────┐
-                    │          Domain Layer          │
-                    │ entities / VOs / invariants   │
-                    │ domain services / domain evt  │
-                    └───────────────┬───────────────┘
-                                    │ ports
-                    ┌───────────────▼───────────────┐
-                    │      Outbound Adapters         │
-                    │ DB / broker / cache / vendors │
-                    └───────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                         CFIP                                │
+│              Financial Intelligence Platform                │
+├─────────────────────────────────────────────────────────────┤
+│ EXPERIENCE                                                  │
+│ Trading Terminal │ Research │ AI │ Journal │ Admin          │
+├─────────────────────────────────────────────────────────────┤
+│ CFIP API / BFF                                              │
+├─────────────────────────────────────────────────────────────┤
+│ ELYRAVA CORE                                                │
+│ Planning │ Reasoning │ Research │ Decision │ Memory          │
+├─────────────────────────────────────────────────────────────┤
+│ CFIP CONTRACT LAYER                                         │
+│ Search │ MarketData │ Evidence │ Agent │ Tool │ Model        │
+│ Document │ Signal │ Risk │ Order │ Research │ Evaluation     │
+├─────────────────────────────────────────────────────────────┤
+│ CAPABILITY FABRIC                                           │
+│ AI/Agent │ Search │ Web │ Documents │ Graph │ Quant           │
+│ ML │ Evaluation │ Workflow │ Data │ Streaming │ Security      │
+├─────────────────────────────────────────────────────────────┤
+│ DATA PLANE                                                  │
+│ PostgreSQL │ ClickHouse │ Redis │ Object Storage │ Search     │
+├─────────────────────────────────────────────────────────────┤
+│ EVENT PLANE                                                 │
+│ NATS JetStream                                              │
+├─────────────────────────────────────────────────────────────┤
+│ OBSERVABILITY / GOVERNANCE                                  │
+│ OpenTelemetry │ Metrics │ Logs │ Traces │ Audit │ Policy      │
+├─────────────────────────────────────────────────────────────┤
+│ ELYRAVA LAB                                                 │
+│ Research → Experiment → Sandbox → Benchmark → Gate           │
+│ → Promotion → Health Guard → Rollback                       │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-Contexts communicate through explicit application contracts and versioned integration events. Direct imports between unrelated contexts are prohibited.
-
 ---
 
-## 4. Bounded contexts
+## 6. Elyrava
 
-The initial context map is derived from the CForex capability surface and is deliberately finer-grained than deployment units.
-
-### Identity & Access
-Users, organizations, workspaces, sessions, authentication, authorization, roles and policy evaluation.
-
-### Market Reference
-Instruments, symbols, venues, currencies, calendars, sessions, specifications and canonical timeframe definitions.
-
-### Market Data
-Provider adapters, ingestion, normalization, validation, deduplication, event-time ordering, quality and canonical observations.
-
-### Data Lineage & Provenance
-Source identity, raw payload lineage, revisions, provenance, data-quality evidence, point-in-time snapshots and reproducibility.
-
-### Realtime & Eventing
-Canonical event envelopes, outbox, JetStream publication, consumers, idempotency, retries, ordering, dead-letter/quarantine and replay.
-
-### Chart & Workspace
-Chart state, layouts, indicators/overlays, drawing state, workspace persistence and realtime presentation contracts.
-
-### Technical Analysis
-Indicators and deterministic technical features.
-
-### Structure & Liquidity
-Market structure, liquidity, FVG, order blocks and related evidence.
-
-### Regime & Multi-Timeframe
-Regime classification, timeframe relationships and cross-timeframe evidence.
-
-### Confluence & Contradiction
-Specialist evidence aggregation, conflict detection and analytical quality signals.
-
-### Intelligence & Consensus
-Specialist vote contracts, confidence, evidence weighting and the sole authoritative consensus service.
-
-### Signals & Strategy Research
-Signal generation, scanners, strategy definitions, research experiments and strategy versioning.
-
-### Backtest & Replay
-Historical replay, simulation, deterministic execution semantics, slippage/fee models, experiment lineage and reproducibility.
-
-### Risk & Decision
-Trade decision policy, account context, equity, leverage, broker constraints, symbol constraints, risk budget, position sizing, SL/TP and safety gates.
-
-### Journal & Execution Boundary
-Journal, orders, execution intent, broker integration boundary and fail-closed execution controls.
-
-### Research Intelligence
-Discovery, retrieval, extraction, evidence, rights/freshness, provenance and point-in-time research staging.
-
-### Learning & Evaluation
-Outcome attribution, calibration, drift, holdout/train boundaries, learning memory, evaluation and governed artifact lifecycle.
-
-### Platform Intelligence
-Engineering/product knowledge, retrieval, diagnostics, performance evidence, recommendations and governed platform learning.
-
-### AI Gateway
-Model/provider abstraction, tool registry, context assembly, structured outputs, policy enforcement and AI telemetry.
-
-### Governance & Autonomy
-Change transactions, checkpoints, risk classification, sandbox verification, independent verification, promotion, health guards and rollback.
-
-### Entitlements & Billing
-Plans, feature entitlements, provider capabilities and policy-driven access.
-
-### Observability & Operations
-Health, readiness, metrics, traces, logs, SLO evidence, incident state and operational controls.
-
----
-
-## 5. Dependency rules
-
-Allowed direction:
+Elyrava یک framework vendor-specific نیست. هسته آن باید مستقل از مدل، agent framework و provider باقی بماند.
 
 ```text
-inbound adapter
-    ↓
-application use case
-    ↓
-domain
-    ↑
-ports implemented by outbound adapters
+Elyrava
+├── Agent Contract
+├── Tool Contract
+├── Model Contract
+├── Memory Contract
+├── Research Contract
+└── Governance Contract
+        │
+        ├── adapter: LangGraph
+        ├── adapter: Haystack
+        ├── adapter: PydanticAI
+        └── future adapters
 ```
 
-Forbidden:
-
-- domain importing FastAPI, SQLAlchemy, Redis, NATS, ClickHouse SDKs or vendor SDKs;
-- application code constructing infrastructure clients directly;
-- one bounded context importing another context's persistence models;
-- AI agents bypassing application ports with raw SQL or unrestricted HTTP;
-- UI reaching databases or event brokers directly;
-- analytical engines owning persistence concerns;
-- infrastructure types appearing in public domain contracts.
+Agentها حق دسترسی مستقیم به DB، broker credential یا HTTP نامحدود ندارند؛ تمام عملیات از application ports و policy checks عبور می‌کند.
 
 ---
 
-## 6. Domain model rules
+## 7. Research Intelligence Fabric
 
-Domain models contain business invariants, not framework configuration.
+CFIP نباید به chatbot + RAG تقلیل پیدا کند.
 
-Prefer:
+```text
+Question
+ ↓
+Research Planner
+ ↓
+Query Decomposition
+ ↓
+Search / Acquisition
+ ↓
+Retrieval
+ ↓
+Evidence Extraction
+ ↓
+Verification
+ ↓
+Contradiction Analysis
+ ↓
+Synthesis
+ ↓
+Citation Validation
+ ↓
+Confidence / Freshness / Trust
+ ↓
+Answer + Evidence Graph
+```
 
-- immutable value objects where practical;
-- explicit aggregate boundaries;
-- domain services for cross-entity rules;
-- domain events for meaningful state transitions;
-- typed identifiers rather than ambiguous strings;
-- explicit units and timeframe semantics;
-- deterministic calculations;
-- no hidden global state.
-
-Every financial quantity must make its unit/precision/scale semantics explicit. Every temporal quantity must identify timezone and event-time meaning.
-
----
-
-## 7. Application layer
-
-Application services implement use cases. A use case owns orchestration, authorization decisions delegated to policy ports, transaction boundaries and interaction with external ports.
-
-Use-case categories:
-
-- command: changes state;
-- query: reads state without mutation;
-- process: consumes an event and performs governed work;
-- projection: materializes a read model;
-- experiment: executes reproducible research/simulation;
-- governance action: proposes, verifies or promotes a controlled mutation.
-
-Application contracts must be explicit and versionable.
+تحقیق خارجی تا زمان ثبت source identity، freshness، provenance، rights و evidence قابل اعتماد تلقی نمی‌شود.
 
 ---
 
-## 8. Market-data correctness
+## 8. Search و Retrieval
 
-The canonical pipeline is mandatory:
+Capabilityها:
 
-`provider → raw → normalize → validate → deduplicate → event-time → quality → canonical → durable outbox → event bus`
+- Web/meta search
+- full-text
+- BM25
+- dense/sparse retrieval
+- hybrid retrieval
+- vector search
+- reranking
+- query expansion
+- temporal retrieval
+- faceting
+- ranking analytics
 
-Every observation needs sufficient identity to determine:
+نامزدهای اصلی برای ممیزی شامل Vespa، OpenSearch، Elasticsearch، Qdrant، Weaviate، Milvus، pgvector، Typesense، Meilisearch، Tantivy، LanceDB و FAISS هستند.
 
-- provider/source;
-- instrument/symbol;
-- timeframe or observation class;
-- event timestamp;
-- ingestion timestamp;
-- revision/version where applicable;
-- quality state;
-- provenance/lineage;
-- content or payload fingerprint where useful;
-- causal metadata for derived events.
-
-A late or revised observation must never silently overwrite the historical truth used by a prior decision. PIT reconstruction must be possible.
-
----
-
-## 9. Timeframe semantics
-
-Timeframes are domain concepts, not UI strings.
-
-Examples:
-
-- `15m` means a 15-minute bar;
-- `4h` means a four-hour bar;
-- bar boundaries are determined by the canonical market/session/timezone policy;
-- event time and processing time are distinct;
-- current/open bars and closed bars must be distinguishable;
-- replay must reproduce the same bar semantics used in live mode.
+هیچ‌کدام از پیش انتخاب‌شده نیستند؛ benchmark و architecture-fit تعیین‌کننده است.
 
 ---
 
-## 10. Event architecture
+## 9. Web Acquisition
 
-All cross-context events use a versioned envelope containing, as applicable:
+Crawling، scraping، browser automation، JS rendering، deduplication، canonicalization، RSS، sitemap، crawl scheduling، politeness و source monitoring باید پشت `WebAcquisitionPort` قرار گیرند.
+
+نامزدهای بررسی: Playwright، Selenium، Scrapy، Browser-use، Firecrawl، trafilatura، newspaper4k، readability، BeautifulSoup و httpx ecosystem.
+
+---
+
+## 10. Document Intelligence
+
+PDF، HTML، DOCX، XLSX، PPTX، OCR، table/layout extraction، chart و multilingual document handling باید capabilityهای مستقل باشند.
+
+نامزدها: Docling، MinerU، Unstructured، Marker، PyMuPDF، PaddleOCR، Tesseract، Surya، Camelot و Tabula.
+
+---
+
+## 11. Knowledge / Memory
+
+CFIP مدل خود را برای Claim Graph، Evidence Graph، Temporal Graph، Entity Resolution و Agent Memory مالک می‌شود؛ database implementation قابل تعویض است.
+
+نامزدهای بررسی: Neo4j، Kuzu، Apache AGE، Memgraph، NetworkX و پروژه‌های فعال GraphRAG/Memory.
+
+اصل: Graph DB تا زمانی که benchmark و workload واقعی نیاز آن را ثابت نکند، جزء الزامی runtime نیست.
+
+---
+
+## 12. Evidence / Provenance / Trust
+
+این لایه Core IP است.
+
+هر Evidence باید تا حد نیاز دارای source، retrieval timestamp، event-time، content hash، provenance، citation span، supporting/contradicting claims، confidence و freshness باشد.
+
+اصل بنیادی: **historical truth قابل بازسازی و PIT-safe باشد.** یک revision جدید نباید بدون trace کردن lineage، تصمیم تاریخی را تغییر دهد.
+
+---
+
+## 13. Trading / Quant
+
+قابلیت‌های بررسی:
+
+Market Data، Tick/OHLCV، Order Book، Microstructure، Technical Analysis، Price Action، Market Structure، Liquidity، FVG، Order Blocks، MTF، Pattern Detection، Indicators، Signals، Strategy Engine، Backtest، Walk-forward، Replay، Paper/Live Trading، Execution، Slippage، Transaction Cost، Portfolio، Position Sizing، Risk، Leverage، Margin، SL/TP، Journal و Performance Attribution.
+
+### Trading engine
+
+NautilusTrader و LEAN باید عمیقاً بررسی و benchmark شوند. Qlib نیز برای research/AI/quant workflow بررسی می‌شود.
+
+FVG/OB و semantics اختصاصی CFIP از engine عمومی جدا می‌مانند.
+
+**چند trading engine همزمان وارد runtime نمی‌شوند.** یک execution boundary استاندارد ساخته می‌شود و فقط یک implementation عملیاتی در هر deployment profile انتخاب می‌شود.
+
+---
+
+## 14. Market Data
+
+Provider نباید وارد Domain شود.
+
+```text
+Provider
+ ↓
+Raw
+ ↓
+Normalize
+ ↓
+Validate
+ ↓
+Deduplicate
+ ↓
+Event-Time
+ ↓
+Quality
+ ↓
+Canonical Observation
+ ↓
+Transactional Outbox
+ ↓
+NATS JetStream
+```
+
+تمام providerها پشت `MarketDataProvider`، `EconomicDataProvider` و `NewsProvider` قرار می‌گیرند.
+
+نامزدها شامل OpenBB، yfinance ecosystem، Nasdaq Data Link tooling، Stooq، Alpha Vantage integrations، FMP integrations، Polygon/Massive integrations، ccxt، pandas-datareader، fredapi، sec-edgar-downloader، edgartools، Arelle/XBRL و exchange-specific clients هستند.
+
+---
+
+## 15. Data Plane
+
+Baseline:
+
+- **PostgreSQL:** system of record و transactional invariants
+- **ClickHouse:** analytical/high-volume time-series workloads
+- **Redis:** cache و ephemeral bounded state
+- **Object Storage:** datasets، immutable artifacts و model/evidence bundles
+- **DuckDB:** local/research analytical execution
+- **Arrow/Parquet:** columnar interchange و datasets
+
+Vespa، graph DB، lakehouse engines و سایر datastoreها فقط با evidence و benchmark اضافه می‌شوند.
+
+---
+
+## 16. Event Plane و Workflow
+
+NATS JetStream baseline event infrastructure است.
+
+Kafka، Redpanda، Pulsar و Redis Streams باید به‌عنوان benchmark/reference بررسی شوند، نه اینکه همزمان وارد runtime شوند.
+
+### Event envelope
 
 ```text
 id
@@ -269,367 +364,364 @@ payload
 metadata
 ```
 
-Required behavior:
+### NATS vs Workflow Engine
 
-- idempotent consumers;
-- explicit retry policy;
-- poison-message quarantine;
-- bounded redelivery;
-- ordering semantics documented per stream;
-- schema compatibility policy;
-- durable outbox for transactional publication;
-- observability from producer through consumer.
+NATS JetStream مسئول durable messaging/event streams است؛ workflow engine مسئول durable execution، timers، retries، compensation و workflow state است.
+
+Temporal، Prefect، Dagster، Airflow، Celery، Dramatiq، Arq و Hatchet باید بر اساس workload واقعی benchmark شوند. استفاده همزمان از چند workflow engine ممنوع است مگر با ADR صریح.
 
 ---
 
-## 11. Storage architecture
+## 17. ML / LLMOps
 
-### PostgreSQL
-System of record for transactional and relational invariants: identity, configuration, entitlements, journals, governance, change ledger, durable metadata and authoritative operational state.
+نامزدها:
 
-### ClickHouse
-High-volume analytical and time-series workloads, observations, evaluation aggregates and research analytics where columnar analytics materially outperform transactional storage.
+PyTorch، scikit-learn، XGBoost، LightGBM، CatBoost، Hugging Face، PyTorch Forecasting، Darts، Nixtla، Ray، JAX، MLflow، Feast، DVC، Kubeflow، Optuna و Evidently.
 
-### Redis
-Cache and bounded ephemeral state only. No unique authoritative business data may exist solely in Redis.
+قابلیت‌های اجباری:
 
-### Object storage
-Use for large immutable artifacts, datasets, model/evidence bundles and generated research artifacts when retention/access patterns justify it.
-
-### MongoDB
-Not a default. Introduce only when a concrete document workload demonstrates a material fit that cannot be served cleanly by PostgreSQL/object storage. Ownership, consistency, retention and backup rules must be documented before adoption.
-
----
-
-## 12. Analysis and consensus
-
-Specialist engines emit typed evidence, confidence, scope, version and provenance. They do not independently produce the platform's final trade decision.
-
-The authoritative flow is:
-
-`market evidence → specialist engines → evidence normalization → contradiction/confluence → AnalysisConsensusService → decision policy → quality gates → risk → signal/execution boundary`
-
-Consensus must be deterministic for identical inputs, parameters and engine versions.
+- dataset versioning
+- experiment lineage
+- train/holdout temporal separation
+- leakage detection
+- model registry
+- evaluation
+- calibration
+- drift
+- reproducibility
+- promotion/rollback
 
 ---
 
-## 13. Risk and position sizing
+## 18. Evaluation
 
-Risk is a first-class domain context.
+معیارها و capabilityها:
 
-Inputs can include:
+RAG recall/precision، MRR، nDCG، citation precision/recall، groundedness، faithfulness، contradiction، freshness، latency، token cost، calibration و financial outcome evaluation.
 
-- account equity;
-- leverage;
-- broker constraints;
-- symbol contract specifications;
-- minimum/maximum/step quantity;
-- tick/point value;
-- configured risk budget;
-- stop distance;
-- existing exposure;
-- correlated exposure;
-- portfolio constraints.
+نامزدها: Ragas، DeepEval، TruLens، Arize Phoenix، Langfuse، promptfoo، OpenAI Evals ecosystem و ابزارهای مشابه.
 
-The result must expose the assumptions used to calculate the decision and remain reproducible later.
-
-Execution remains separately authorized and fail-closed.
+Reference implementation با production dependency یکی نیست.
 
 ---
 
-## 14. Replay and backtest
+## 19. Security / Identity
 
-Replay/backtest is not a separate semantics engine. It is another execution mode over the same canonical contracts.
+Identity: Keycloak، ZITADEL، Authentik، OAuth/OIDC.  
+Authorization: OpenFGA، OPA، Casbin و Zanzibar-style designs.  
+Secrets: Vault، Infisical، SOPS، age.  
+Supply chain: Trivy، Semgrep، Bandit، CodeQL، Gitleaks، Syft، Grype و SBOM tooling.
 
-A reproducible experiment requires:
-
-- dataset identity/version;
-- PIT cutoff;
-- instrument universe;
-- timeframe definitions;
-- strategy/engine versions;
-- parameters;
-- transaction-cost/slippage assumptions;
-- broker/account policy;
-- random seeds where randomness exists;
-- software/dependency fingerprint where required;
-- result artifact identity.
-
-No future information may enter a historical decision.
+Agent permissions باید با همان authorization policyهای governed platform یکپارچه شوند.
 
 ---
 
-## 15. Research Intelligence
+## 20. Autonomous Elyrava
 
-Research is untrusted external input until rights, source identity, freshness and provenance are established.
+چرخه استاندارد:
 
-Pipeline:
-
-`discovery → retrieval → extraction → evidence → provenance/rights/freshness → PIT staging → governed consumption`
-
-Research cannot directly rewrite production configuration, model behavior or risk policy.
-
----
-
-## 16. Learning and evaluation
-
-Learning is an evidence lifecycle, not an uncontrolled feedback loop.
-
-Required controls:
-
-- temporal train/holdout separation;
-- leakage detection;
-- outcome attribution;
-- calibration;
-- drift detection;
-- segment analysis;
-- artifact versioning;
-- promotion criteria;
-- rollback path;
-- reproducible evaluation.
-
-A learning candidate is not production behavior until explicitly promoted through governance.
-
----
-
-## 17. AI architecture
-
-All model access goes through an AI Gateway.
-
-The gateway owns:
-
-- provider/model registry;
-- capability metadata;
-- structured request/response contracts;
-- tool allowlisting;
-- authorization and policy checks;
-- timeout/retry/circuit behavior;
-- token/cost/latency telemetry;
-- provenance;
-- content handling policy.
-
-Agents interact through application tools. They do not receive direct database credentials or unrestricted infrastructure access.
-
-Sensitive prompts and outputs are excluded from telemetry by default and require explicit protected handling when needed.
-
----
-
-## 18. Governed autonomy
-
-Autonomy follows:
-
-`observe → propose → checkpoint → isolate → risk check → sandbox → independent verification → release gates → approval if required → promote → health guard → rollback`
+`Observe → Propose → Checkpoint → Isolate → Risk Check → Sandbox → Independent Verification → Gates → Approval if required → Promote → Health Guard → Rollback`
 
 Risk classes:
 
-- **LOW:** bounded/reversible; automatic promotion only after all gates and independent verification.
-- **MEDIUM:** human approval required.
-- **HIGH:** explicit authorization and strengthened release/security controls.
+- LOW: تغییر محدود و reversible؛ automatic promotion فقط پس از تمام gates
+- MEDIUM: human approval اجباری
+- HIGH: authorization صریح و کنترل‌های تقویت‌شده
 
-Protected governance paths cannot be autonomously modified by runtime agents.
+Self-healing با self-development یکی نیست؛ اولی operational recovery است و دومی تغییر پیشنهادی و governed.
 
-Self-healing restores/mitigates a known operational condition. Self-development proposes a measured change. They share primitives but are not the same behavior.
-
----
-
-## 19. Frontend architecture
-
-The frontend is a first-class client, not a thin API demo.
-
-Target principles:
-
-- feature/module ownership aligned with bounded contexts;
-- typed API contracts;
-- server/client boundaries explicit;
-- chart semantics independent of renderer;
-- realtime subscriptions isolated from view components;
-- i18n from the beginning;
-- RTL/LTR correctness;
-- accessibility as a testable requirement;
-- responsive and touch-capable terminal UX;
-- route-level authorization and noindex protection for private surfaces;
-- deterministic loading/error/empty states;
-- performance budgets and telemetry.
-
-The chart renderer remains replaceable. CForex/CFIP intelligence, drawing semantics and workspace behavior must not be vendor-locked to a chart library.
+نامزدهای بررسی: OpenHands، SWE-agent، Aider، Continue، Roo Code ecosystem، Cline ecosystem، OpenCode و ابزارهای repository/code intelligence.
 
 ---
 
-## 20. Testing pyramid
+## 21. Frontend / Terminal
 
-Every context should have:
+Target:
 
-1. domain unit tests;
-2. application/use-case tests;
-3. adapter contract tests;
-4. integration tests for real infrastructure;
-5. event contract tests;
-6. replay/PIT tests where applicable;
-7. security/authorization tests;
-8. frontend component and accessibility tests;
-9. end-to-end journeys for critical workflows;
-10. performance/load tests for declared budgets.
+Next.js + React + TypeScript + Tailwind + TradingView Lightweight Charts یا renderer جایگزین که contract را حفظ کند.
 
-Architecture tests must enforce dependency direction and protected boundaries.
+CFIP dashboard سنتی نیست؛ chart-first terminal است:
+
+```text
+┌─────────────────────────────────────────────┐
+│                 CFIP TERMINAL               │
+│                                             │
+│ Tools       CHART / MARKET / RESEARCH       │
+│ Rail        Intelligence Workspace          │
+│                                             │
+│ ─────────────────────────────────────────   │
+│ Timeline / Signals / Evidence / AI          │
+└─────────────────────────────────────────────┘
+```
+
+Accessibility، keyboard navigation، responsive، PWA، SEO، i18n و RTL/LTR از ابتدا جزء architecture هستند.
 
 ---
 
-## 21. Observability
+## 22. Realtime
 
-Use OpenTelemetry-compatible traces, metrics and logs.
+Market streaming، signals، research progress، agent events و notifications از event plane تغذیه می‌شوند.
 
-Important trace relationships include:
+NATS → realtime gateway → WebSocket/SSE → typed client state.
 
-`request → use case → domain operation → persistence/event → downstream consumer → derived analysis → decision → risk → outcome`
+Backpressure، reconnect، ordering، idempotency و stale-state handling اجباری است.
 
-Autonomy adds:
+---
+
+## 23. Payments / Entitlements
+
+چرخه:
+
+`Checkout → Intent → Address/Invoice → Verify → Settle → Subscription → Entitlement → Activation → Expiry/Renewal → Reconciliation`
+
+تمام عملیات payment باید idempotent، auditable و قابل reconciliation باشند.
+
+BTCPay Server و crypto payment ecosystem باید از نظر license، operational model، self-hosting و lifecycle audit شوند؛ انتخاب آن پیش‌فرض نیست.
+
+---
+
+## 24. Testing / Reliability
+
+حداقل:
+
+1. unit/domain
+2. application/use-case
+3. adapter contract
+4. integration با infrastructure واقعی
+5. event contract
+6. PIT/replay
+7. authorization/security
+8. frontend/accessibility
+9. E2E critical journeys
+10. load/performance
+11. property-based با Hypothesis
+12. API contract با Schemathesis
+13. browser با Playwright
+14. load با k6/Locust
+15. mutation/chaos در workloadهای مناسب
+
+Architecture tests باید dependency direction و boundaryها را enforce کنند.
+
+---
+
+## 25. Observability
+
+OpenTelemetry baseline است.
+
+Trace باید در صورت امکان مسیر زیر را قابل مشاهده کند:
+
+`request → use case → domain → persistence/event → consumer → analysis → decision → risk → outcome`
+
+برای Elyrava:
 
 `candidate → research/context → sandbox → verification → promotion → health guard`
 
-Every important mutation should be attributable to actor, policy, correlation and evidence.
+Logs، metrics، traces، profiling، SLO، alerting و AI cost telemetry باید correlation و provenance مناسب داشته باشند.
 
 ---
 
-## 22. Security
+## 26. Deployment Profiles
 
-Security boundaries include:
+### Profile A — Development / محدود
+یک deployment ساده با API، worker، web و زیرساخت حداقلی.
 
-- authentication and session security;
-- authorization and tenant/workspace isolation;
-- secret isolation;
-- least privilege;
-- provider/broker credential boundaries;
-- SSRF/tool restrictions;
-- AI tool allowlisting;
-- auditability;
-- immutable governance evidence;
-- supply-chain and dependency controls;
-- secure headers/CSP where applicable;
-- rate limits and abuse controls;
-- safe migrations and rollback.
+### Profile B — Single-node production
+تفکیک processها، persistence durable، backup، monitoring و health gates.
 
-Security controls cannot be disabled by the same runtime agent that is governed by them.
+### Profile C — Scaled production
+Horizontal API/workers، partitioning، ClickHouse scaling، event-stream partitioning، object storage و workload isolation.
+
+### Profile D — Global
+Region-aware routing، data residency policy، regional workers، disaster recovery و SLOهای منطقه‌ای؛ فقط زمانی که workload واقعی توجیه کند.
+
+Microservice extraction فقط با evidence برای scale/fault/security/team ownership انجام می‌شود.
 
 ---
 
-## 23. Deployment model
+## 27. Anti-sprawl
 
-Initial deployment units:
+ممنوع:
 
-- API;
-- realtime gateway where justified;
-- market-data worker;
-- analysis/processing workers;
-- learning worker;
-- autonomy/governance worker;
-- web application.
+- چند vector DB بدون workload مشخص
+- چند graph DB همزمان
+- چند agent framework در runtime بدون boundary
+- چند workflow engine
+- چند event broker
+- چند auth provider عملیاتی
+- datastoreهای redundant
+- service فقط برای «تمیزتر شدن diagram»
+- dependency صرفاً به خاطر popularity
 
-These are operational units over shared domain boundaries. A context becomes a separate service only when measurable scale, fault isolation, team ownership or security requirements justify it.
-
----
-
-## 24. Global-scale rules
-
-Scale readiness comes from:
-
-- stateless API processes;
-- horizontal workers;
-- partitionable event streams;
-- deterministic consumer idempotency;
-- bounded caches;
-- database indexing/partitioning/retention;
-- analytical separation;
-- workload isolation;
-- backpressure;
-- asynchronous processing;
-- observability and SLOs;
-- region-aware design when needed;
-- explicit data residency policy when needed.
-
-Do not create microservices simply because the tree can contain more folders.
+هر capability باید یک owner، یک canonical contract و یک operational reason داشته باشد.
 
 ---
 
-## 25. Repository governance
+## 28. Release Gates
 
-The repository must preserve:
+### Architecture Gate
+Boundary، dependency direction، contracts و ADRها معتبر باشند.
 
-- architecture decision records;
-- capability registry;
-- contract registry;
-- event catalog;
-- data ownership map;
-- dependency policy;
-- release gates;
-- migration/reconciliation evidence;
-- operational runbooks;
-- research/adoption decisions.
+### Functional Gate
+Capability و regression tests کامل باشند.
 
-No destructive deletion of historical evidence without an ADR and explicit retention policy.
+### Security Gate
+AuthN/AuthZ، secrets، supply chain، SBOM، scanning و threat controls پاس شوند.
 
----
+### Performance Gate
+Latency، throughput، memory، CPU، startup، query cost و frontend budgets پاس شوند.
 
-## 26. Definition of Done
+### Data Gate
+PIT، lineage، revision، quality و reproducibility پاس شوند.
 
-A capability is **IMPLEMENTED** only when:
+### AI Gate
+Evaluation، groundedness، citation، calibration، drift و policy checks پاس شوند.
 
-- source behavior from CForex is mapped;
-- target bounded context is assigned;
-- domain/application contract exists;
-- inbound/outbound ports are defined;
-- persistence ownership is explicit;
-- event contracts are explicit where events are involved;
-- PIT/provenance implications are covered;
-- authorization is covered;
-- tests exist at the appropriate levels;
-- observability exists;
-- failure/retry/idempotency behavior is verified;
-- frontend behavior exists where applicable;
-- replay/backtest parity is verified where applicable;
-- release gates pass;
-- evidence is recorded in the capability registry.
+### Licensing Gate
+License و transitive dependency compatibility تأیید شده باشد.
+
+### Migration Gate
+Backward compatibility، reconciliation، rollback و evidence ثبت شده باشد.
+
+### Operational Gate
+Health/readiness، backup/restore، observability و runbook آماده باشد.
 
 ---
 
-## 27. Implementation sequence
+## 29. ADR و Decision Freeze
 
-### Phase 0 — Source canon
-Freeze the CForex source snapshot, inventory all capabilities, endpoints, events, data entities, engines, workers, UI routes, migrations and tests.
+هر تصمیمی که runtime، contract، data ownership، license، security boundary یا operational topology را تغییر دهد، ADR لازم دارد.
 
-### Phase 1 — CFIP skeleton
-Create the target tree, repository governance, tooling, CI, dependency policy, architecture tests and contract registries.
+Decision freeze زمانی فعال است که:
 
-### Phase 2 — Platform kernel
-Implement identity, configuration, shared contracts, error model, observability, event envelope, outbox abstractions and application bootstrap.
+- capability catalog ممیزی شده باشد؛
+- alternatives اصلی بررسی شده باشند؛
+- benchmark evidence ثبت شده باشد؛
+- contract و boundary تثبیت شده باشند؛
+- gates تعریف شده باشند.
 
-### Phase 3 — Market foundation
-Implement reference data, provider adapters, canonical market data, PIT/lineage/quality and eventing.
-
-### Phase 4 — Intelligence kernel
-Implement technical/structure/liquidity/regime/MTF engines, evidence model, contradiction/confluence and authoritative consensus.
-
-### Phase 5 — Decision/risk
-Implement account context, risk policy, sizing, decision contracts, signals and journal/execution boundary.
-
-### Phase 6 — Research/replay/learning
-Implement research intelligence, replay/backtest, evaluation, attribution, calibration, drift and governed learning.
-
-### Phase 7 — AI/autonomy
-Implement AI Gateway, tool governance, platform intelligence, Change Transactions, verification and rollback.
-
-### Phase 8 — Frontend
-Implement chart-first terminal, workspace, realtime, analysis/risk/journal/research/tutor surfaces, i18n/RTL/LTR and accessibility.
-
-### Phase 9 — Global hardening
-Load tests, chaos/failure tests, data-retention tests, security review, dependency audit, deployment validation and operational readiness.
-
-### Phase 10 — Capability parity audit
-Compare every CForex capability against CFIP evidence. No capability is marked complete based on naming similarity alone.
+پس از freeze، تغییر فقط با ADR جدید و impact analysis انجام می‌شود.
 
 ---
 
-## 28. Golden rule
+## 30. Graphهای مرجع
 
-**CFIP must become cleaner than CForex without becoming less capable than CForex.**
+سه graph مستقل باید نگهداری شوند:
 
-Architecture quality is measured by explicit boundaries, reproducibility, evidence, replaceability and operational correctness—not by the number of folders or services.
+### Architecture Dependency Graph
+چه component/contextی به چه contract یا infrastructure متکی است.
+
+### Capability Dependency Graph
+برای هر capability، prerequisites و downstream consumers چیست.
+
+### CFIP ↔ OSS Boundary Graph
+هر OSS دقیقاً پشت کدام port/adapter قرار دارد و آیا runtime dependency، optional dependency، benchmark یا reference است.
+
+---
+
+## 31. قراردادهای Canonical
+
+حداقل contractهای موردنیاز:
+
+`MarketDataProvider`  
+`EconomicDataProvider`  
+`NewsProvider`  
+`SearchProvider`  
+`Retriever`  
+`Reranker`  
+`WebAcquisitionPort`  
+`DocumentParser`  
+`OCRProvider`  
+`EvidenceStore`  
+`KnowledgeGraphPort`  
+`MemoryProvider`  
+`ModelProvider`  
+`AgentRuntime`  
+`ToolRegistry`  
+`ResearchPlanner`  
+`ResearchExecutor`  
+`SignalEngine`  
+`ConsensusService`  
+`RiskEngine`  
+`OrderGateway`  
+`ExecutionGateway`  
+`BacktestEngine`  
+`ReplayEngine`  
+`EvaluationProvider`  
+`FeatureStore`  
+`WorkflowPort`  
+`IdentityProvider`  
+`AuthorizationProvider`  
+`PaymentProvider`  
+`NotificationProvider`
+
+این contractها از implementation مستقل هستند.
+
+---
+
+## 32. Adoption Lifecycle
+
+```text
+DISCOVERED
+   ↓
+SHORTLISTED
+   ↓
+AUDITED
+   ↓
+BENCHMARKED
+   ↓
+CFIP-FIT REVIEW
+   ↓
+DECISION
+   ├── REFERENCE
+   ├── EVALUATE
+   ├── BENCHMARK
+   ├── INTEGRATE
+   ├── ADAPT
+   ├── FORK
+   ├── BUILD
+   └── REJECT
+   ↓
+PILOT
+   ↓
+PRODUCTION
+   ↓
+CONTINUOUS REVIEW
+```
+
+وضعیت upstream، license، security و compatibility باید در releaseهای بعدی دوباره ارزیابی شود.
+
+---
+
+## 33. Baseline repository
+
+CForex منبع رفتاری و مهاجرتی است؛ CFIP مقصد معماری جدید است. `cforex-platform` مقصد معماری محسوب نمی‌شود.
+
+هیچ بخش CForex صرفاً به‌صورت filename migration منتقل نمی‌شود؛ مسیر صحیح:
+
+`CForex implementation → behavioral evidence → domain contract → CFIP capability → port → adapter → verification`
+
+---
+
+## 34. اصل نهایی
+
+CFIP نباید یک انبار سرویس‌های OSS باشد.
+
+مدل صحیح:
+
+```text
+                 CFIP DOMAIN / IP
+                        │
+                CFIP CONTRACTS
+                        │
+              CAPABILITY BOUNDARY
+                 /       |       \
+                /        |        \
+             OSS-A     OSS-B     CFIP-BUILD
+                \        |        /
+                 \       |       /
+                   ADAPTERS
+                       │
+                   RUNTIME
+```
+
+**هر dependency باید دلیلی داشته باشد. هر capability باید owner داشته باشد. هر تصمیم باید evidence داشته باشد. هر تغییر معماری باید قابل بازبینی و rollback باشد.**
