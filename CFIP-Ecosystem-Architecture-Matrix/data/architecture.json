@@ -1,0 +1,9 @@
+{
+  "baseline":"2026-09-16",
+  "style":["DDD","Clean Architecture","Hexagonal Architecture","event-driven integration","modular monolith first","independently deployable processes when justified"],
+  "layers":["Experience","API/BFF","Elyrava Core","CFIP Contracts","Capability Fabric","Data Plane","Event Plane","Observability/Governance","Elyrava Lab"],
+  "data_plane":{"postgresql":"transactional system of record","clickhouse":"analytical/time-series workloads","redis":"cache and bounded ephemeral state","object_storage":"large immutable artifacts and datasets","duckdb":"local/research analytics","arrow_parquet":"columnar interchange"},
+  "event_plane":"NATS JetStream baseline",
+  "dependency_rule":"inbound adapter -> application -> domain <- outbound ports/adapters",
+  "anti_sprawl":["one canonical implementation per production capability unless ADR","no redundant datastores","no redundant brokers","no multiple workflow engines without ADR","no direct infrastructure access from agents/domain","no OSS runtime adoption by popularity"]
+}
